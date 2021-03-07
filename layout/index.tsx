@@ -1,19 +1,12 @@
 import React, { ReactNode } from "react";
 import Head from "next/head";
-import tw, { styled } from "twin.macro";
+import tw, { styled, css } from "twin.macro";
 import Header from "./header";
 
 export interface LayoutProps {
   children?: ReactNode;
   title?: string;
 }
-
-const Wrapper = styled.div`
-  font-family: "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont, segoe ui,
-    Helvetica, PingFang SC, Microsoft YaHei, sans-serif;
-`;
-
-const Container = styled.div(() => [tw`container mx-auto`]);
 
 const Layout: React.FC<LayoutProps> = ({
   children,
@@ -29,12 +22,25 @@ const Layout: React.FC<LayoutProps> = ({
           rel="stylesheet"
         />
       </Head>
-      <Container>
-        <Header />
-        {children}
-      </Container>
+      <Header />
+      <Container>{children}</Container>
     </Wrapper>
   );
 };
 
 export default Layout;
+
+const Wrapper = styled.div(() => [
+  tw`bg-neutral-light dark:bg-neutral-dark`,
+  css`
+    font-family: "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont,
+      segoe ui, Helvetica, PingFang SC, Microsoft YaHei, sans-serif !important;
+  `,
+]);
+
+const Container = styled.div(() => [
+  tw`container mx-auto`,
+  css`
+    padding-top: 86px;
+  `,
+]);

@@ -1,7 +1,9 @@
 import React from "react";
-import tw, { styled } from "twin.macro";
-
-export interface TypographyProps {}
+import tw, { styled, css } from "twin.macro";
+import { LightModeTextColor } from "../colors";
+export interface TypographyProps {
+  bold?: boolean;
+}
 
 export const H1 = styled.h1<TypographyProps>`
   font-size: 56px;
@@ -33,19 +35,32 @@ export const IntroText = styled.span<TypographyProps>`
   font-weight: 500;
 `;
 
-export const MainText = styled.span<TypographyProps>`
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 400;
-`;
+export const MainText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 20px;
+    line-height: 28px;
+  `,
+  bold ? tw`font-bold` : tw`font-normal`,
+]);
 
-export const MediumText = styled.span<TypographyProps>`
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-`;
+export const MediumText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 18px;
+    line-height: 26px;
+    /* color: ${LightModeTextColor}; */
+  `,
+  bold ? tw`font-bold` : tw`font-normal`,
+]);
 
-export const CaptionText = styled.span<TypographyProps>`
+export const CaptionText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 16px;
+    line-height: 24px;
+  `,
+  bold ? tw`font-bold` : tw`font-normal`,
+]);
+
+export const InfoText = styled.span<TypographyProps>`
   font-size: 14px;
   line-height: 22px;
   font-weight: 400;

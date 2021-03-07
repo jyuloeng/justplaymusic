@@ -7,4 +7,7 @@ module.exports = {
 
     return config;
   },
+  images: {
+    domains: ["p2.music.126.net"],
+  },
 };

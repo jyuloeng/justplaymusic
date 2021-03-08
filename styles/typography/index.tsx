@@ -66,8 +66,10 @@ export const InfoText = styled.span<TypographyProps>`
   font-weight: 400;
 `;
 
-export const SmallText = styled.span<TypographyProps>`
-  font-size: 12px;
-  line-height: 20px;
-  font-weight: 300;
-`;
+export const SmallText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 12px;
+    line-height: 20px;
+  `,
+  bold ? tw`font-bold` : tw`font-light`,
+]);

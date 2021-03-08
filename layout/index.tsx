@@ -42,5 +42,9 @@ const Container = styled.div(() => [
   tw`container mx-auto`,
   css`
     padding-top: 86px;
+
+    /* @media (max-width: 768px) {
+      padding-top: 64px;
+    } */
   `,
 ]);

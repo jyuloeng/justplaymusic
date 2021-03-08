@@ -2,18 +2,20 @@ import React from "react";
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button } from "../components/buttons";
-import Avatar from "./avatar";
-import SearchInput from "./search-input";
+import { Button } from "../buttons";
+import Avatar from "../avatar";
+import SearchInput from "../search-input";
 import {
   IconLeftArrow,
   IconNavigation,
   IconRightArrow,
   IconSetting,
-} from "../styles/icons";
-import { MediumText, CaptionText } from "../styles/typography";
+} from "../../styles/icons";
+import { MediumText, CaptionText } from "../../styles/typography";
 
-export interface TopMenuProps {}
+export interface TopMenuProps {
+  onMobileNavClick?: React.MouseEventHandler<HTMLElement>;
+}
 
 const imagePath =
   "https://p2.music.126.net/NP5ShmXQiOcqLe5xjrpjMA==/3297435383057591.jpg?param=512y512";
@@ -40,7 +42,7 @@ const menu: Array<{
   },
 ];
 
-const TopMenu: React.FC<TopMenuProps> = () => {
+const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
   const router = useRouter();
 
   const handleSearch = (value) => {
@@ -58,8 +60,8 @@ const TopMenu: React.FC<TopMenuProps> = () => {
   return (
     <Container>
       <MobileNavContainer>
-        <Button icon={<IconNavigation />} />
-        <CaptionText bold>个性推荐</CaptionText>
+        <Button icon={<IconNavigation />} onClick={onMobileNavClick} />
+        <MediumText bold>个性推荐</MediumText>
         <PlaceHolder />
       </MobileNavContainer>
 
@@ -98,7 +100,7 @@ const TopMenu: React.FC<TopMenuProps> = () => {
 export default TopMenu;
 
 const Container = styled.nav<TopMenuProps>(() => [
-  tw`flex justify-between items-center w-full py-2`,
+  tw`flex justify-between items-center w-full py-2 shadow-sm`,
 ]);
 
 const BaseNavContainer = tw.div`flex justify-between items-center w-full`;

@@ -33,4 +33,5 @@ export { default as IconDrink } from "./drink";
 export { default as IconGrid } from "./grid";
 export { default as IconGlobal } from "./global";
 export { default as IconSmile } from "./smile";
+export { default as IconPlayThread } from "./play-thread";
 export { default as IconHeartThread } from "./heart-thread";

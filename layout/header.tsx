@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import tw, { styled } from "twin.macro";
-import TopMenu from "../components/top-menu";
+import TopMenu from "../components/menus/top-menu";
+import SlideMenu from "../components/menus/slide-menu";
 import {} from "../styles/icons";
 
 export interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
+  const [slideMenuVisible, setSlideMenuVisible] = useState<boolean>(false);
+
   return (
-    <Container>
-      <TopMenu />
-    </Container>
+    <>
+      <Container>
+        <TopMenu
+          onMobileNavClick={() => setSlideMenuVisible((visible) => !visible)}
+        />
+      </Container>
+
+      <SlideMenu
+        visible={slideMenuVisible}
+        onClose={() => setSlideMenuVisible(false)}
+      />
+    </>
   );
 };
 

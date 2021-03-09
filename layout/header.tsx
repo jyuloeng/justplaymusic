@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import tw, { styled } from "twin.macro";
+import tw, { styled, css } from "twin.macro";
 import TopMenu from "../components/menus/top-menu";
 import SlideMenu from "../components/menus/slide-menu";
 import {} from "../styles/icons";
@@ -29,4 +29,7 @@ export default Header;
 
 const Container = styled.header(() => [
   tw`fixed w-full xl:px-16 lg:px-4 md:px-0 bg-neutral-light dark:bg-neutral-dark`,
+  css`
+    z-index: 9999;
+  `,
 ]);

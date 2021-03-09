@@ -87,7 +87,14 @@ const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
         </ButtonGrops>
 
         <SettingContainer>
-          <Button icon={<Avatar src={imagePath} />} isShowHover={false}>
+          <Button
+            icon={
+              <AvatarContainer>
+                <Avatar src={imagePath} />
+              </AvatarContainer>
+            }
+            isShowHover={false}
+          >
             <MediumText bold>送温暖的大红帽丶</MediumText>
           </Button>
           <Button icon={<IconSetting />} />
@@ -139,3 +146,11 @@ const ButtonGrops = styled.div(() => [
 ]);
 
 const SettingContainer = styled.div(() => [tw`flex items-center`]);
+
+const AvatarContainer = styled.div(() => [
+  tw`relative`,
+  css`
+    width: 40px;
+    height: 40px;
+  `,
+]);

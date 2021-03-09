@@ -36,9 +36,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
     <Container cardType={cardType}>
       <Link href="/">
         <CoverContainer cardType={cardType}>
-          <Cover>
-            <Image src={coverPath} layout="fill" />
-          </Cover>
+          <Cover src={coverPath} layout="fill" />
 
           {cardType === "album" && (
             <GlassButtonContainer>
@@ -85,7 +83,7 @@ const Container = styled.div(({ cardType }: { cardType: MediaCardType }) => [
 ]);
 
 const CoverContainer = styled.a(({ cardType }: { cardType: MediaCardType }) => [
-  tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer`,
+  tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer transition`,
   cardType === "movie"
     ? css`
         width: 232px;
@@ -102,8 +100,8 @@ const CoverContainer = styled.a(({ cardType }: { cardType: MediaCardType }) => [
   `,
 ]);
 
-const Cover = styled.div(() => [
-  tw`relative w-full h-full md:rounded-xl rounded-lg overflow-hidden transition`,
+const Cover = styled(Image)(() => [
+  tw`md:rounded-xl rounded-lg overflow-hidden transition`,
 ]);
 
 const GlassButtonContainer = styled.div(() => [

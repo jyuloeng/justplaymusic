@@ -10,6 +10,7 @@ import {
   PlaylistItemCardProps,
 } from "../components/cards";
 import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
+import { Slider } from "../components/controls";
 
 const coverPath =
   "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
@@ -99,6 +100,7 @@ const Home = () => {
       top: 0,
     },
   });
+  const [percent, setPercent] = useState<number>(50);
 
   const handleOnContextMenuClick = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -168,6 +170,20 @@ const Home = () => {
       />
 
       <br />
+
+      <div tw="h-8 flex">
+        <div tw="w-12"></div>
+        <Slider
+          min={0}
+          max={100}
+          onChange={(value) => console.log("onChange" + value)}
+          onAfterChange={(value) => console.log("onAfterChange" + value)}
+        />
+        {/* <ProgressBar
+          percent={percent}
+          onChange={(newPercent) => setPercent(() => newPercent)}
+        /> */}
+      </div>
 
       {playlist.map((item, index) => (
         <PlaylistItemCard

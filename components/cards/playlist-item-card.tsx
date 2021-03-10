@@ -1,3 +1,4 @@
+import React from "react";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import { CaptionText, InfoText, SmallText } from "../../styles/typography";
 import { formatDuration } from "../../lib/format";
 import { tuple } from "../../lib/type";
 
-const PlaylistItemTypes = tuple("default", "active");
+const PlaylistItemTypes = tuple("default", "active", "disabled");
 type PlaylistItemType = typeof PlaylistItemTypes[number];
 
 export interface PlaylistItemCardProps {
@@ -28,6 +29,11 @@ export interface PlaylistItemCardProps {
   isShowDuration?: boolean;
   isShowCover?: boolean;
   isAlbum?: boolean;
+  onDblClick?: (e: React.MouseEvent<HTMLDivElement>, id: string) => void;
+  onContextMenuClick?: (
+    e: React.MouseEvent<HTMLDivElement>,
+    item: Omit<PlaylistItemCardProps, "duration">
+  ) => void;
 }
 
 const coverSize = {
@@ -47,9 +53,36 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   isShowDuration = true,
   isShowCover = true,
   isAlbum = false,
+  onDblClick,
+  onContextMenuClick,
 }) => {
+  const handleDblClick = (e: React.MouseEvent<HTMLEmbedElement>) => {
+    e.preventDefault();
+    if (itemType !== "disabled" && onDblClick) {
+      onDblClick(e, index.toString());
+    }
+  };
+
+  const handleOnContextMenuClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (itemType !== "disabled" && onContextMenuClick) {
+      onContextMenuClick(e, {
+        itemType,
+        index,
+        coverPath,
+        name,
+        artists,
+        album,
+      });
+    }
+  };
+
   return (
-    <Container>
+    <Container
+      itemType={itemType}
+      onContextMenu={handleOnContextMenuClick}
+      onDoubleClick={handleDblClick}
+    >
       <Status>
         {itemType === "active" ? (
           <IconRhythm {...coverSize} fill={PrimaryColor} />
@@ -69,12 +102,12 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
         )}
       </Status>
 
-      <Info isAlbum={isAlbum}>
+      <Info isAlbum={isAlbum} itemType={itemType}>
         <Name bold>{name}</Name>
         {isAlbum && <SplitLine>-</SplitLine>}
 
-        <Details>
-          <Artists>
+        <Details itemType={itemType}>
+          <Artists itemType={itemType}>
             {artists.map((artist, index) => (
               <ArtistContainer key={artist}>
                 <Link href="/">
@@ -100,11 +133,13 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
       </Info>
 
       {!isAlbum && (
-        <Link href="/">
-          <Album>
-            <InfoText>{album}</InfoText>
-          </Album>
-        </Link>
+        <AlbumContainer itemType={itemType}>
+          <Link href="/">
+            <Album>
+              <InfoText>{album}</InfoText>
+            </Album>
+          </Link>
+        </AlbumContainer>
       )}
 
       <Controls>
@@ -119,7 +154,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
           )}
         </Like>
         {isShowDuration && (
-          <Duration>
+          <Duration itemType={itemType}>
             <CaptionText>{formatDuration(duration)}</CaptionText>
           </Duration>
         )}
@@ -130,9 +165,12 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
 
 export default PlaylistItemCard;
 
-const baseControlsIconStyles = tw`cursor-pointer transform active:scale-90 transition`;
+const baseControlsIconStyles = tw`cursor-pointer transform active:scale-75 transition`;
 
-const Duration = styled.div(() => [tw`hidden md:inline-block`]);
+const Duration = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
+  tw`hidden md:inline-block`,
+  itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
+]);
 
 const More = styled.div(() => [
   baseControlsIconStyles,
@@ -147,7 +185,7 @@ const Like = styled.div(() => [
 const Controls = styled.div(() => [tw`flex items-center`]);
 
 const Artist = styled.a(() => [
-  tw`cursor-pointer hover:underline text-light-mode-text opacity-95`,
+  tw`cursor-pointer hover:underline opacity-95`,
   css`
     line-height: 20px;
   `,
@@ -155,47 +193,93 @@ const Artist = styled.a(() => [
 
 const ArtistContainer = styled.span(() => []);
 
-const Artists = styled.div(() => [
+const Artists = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
+  css`
+    height: 20px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `,
+  itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
+]);
+
+const Album = styled.a(() => [
+  tw`cursor-pointer hover:underline`,
   css`
     line-height: 22px;
   `,
 ]);
 
-const Album = styled.a(() => [
-  tw`flex-1 md:inline-block hidden cursor-pointer hover:underline truncate`,
-  css`
-    line-height: 22px;
-  `,
-]);
+const AlbumContainer = styled.div(
+  ({ itemType }: { itemType: PlaylistItemType }) => [
+    tw`flex-1 md:inline-block hidden pr-2 truncate`,
+    css`
+      line-height: 22px;
+    `,
+    itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
+  ]
+);
 
 const SplitLine = styled.span(() => [
   tw`mx-1 text-light-mode-text opacity-80 hidden md:inline-block`,
 ]);
 
-const DetailsSplitLine = styled(SplitLine)(() => [tw`md:hidden inline-block`]);
-
-const DetailsAlbum = styled(Album)(() => [tw`md:hidden inline-block truncate`]);
-
-const Details = styled.div(() => [tw`flex items-center`]);
-
-const Name = styled(CaptionText)(() => [tw`truncate`]);
-
-const Info = styled.div(({ isAlbum }: { isAlbum: boolean }) => [
-  tw`flex flex-col flex-1`,
-  isAlbum && tw`md:flex-row`,
-  !isAlbum && tw`md:ml-3`,
+const DetailsSplitLine = styled(SplitLine)(() => [
+  tw`md:hidden inline-block text-primary2`,
 ]);
 
-const InfoContainer = styled.div(() => [tw`flex-1  flex items-center`]);
+const DetailsAlbum = styled(Album)(() => [
+  tw`md:hidden inline-block`,
+  css`
+    height: 20px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `,
+]);
+
+const Details = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
+  tw`flex items-center`,
+  itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
+  css`
+    line-height: 20px;
+  `,
+]);
+
+const Name = styled(CaptionText)(() => [
+  css`
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `,
+]);
+
+const Info = styled.div(
+  ({ isAlbum, itemType }: { isAlbum: boolean; itemType: PlaylistItemType }) => [
+    tw`flex flex-col flex-1 pr-3 md:pr-2`,
+    isAlbum && tw`md:flex-row`,
+    !isAlbum && tw`md:ml-3`,
+    itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
+  ]
+);
 
 const IconPlayWrapper = styled(IconPlay)(() => [tw`hidden`]);
 
-const IndexText = styled(InfoText)(() => []);
+const IndexText = styled(InfoText)(() => [tw`text-center`]);
 
 const Status = styled.div(() => [
   tw`grid gap-x-2 gap-4 items-center`,
   css`
-    grid-template-columns: 20px auto;
+    grid-template-columns: 12px auto;
+    @media (min-width: 768px) {
+      grid-template-columns: 20px auto;
+    }
   `,
 ]);
 
@@ -204,24 +288,37 @@ const Cover = styled.a(() => [
   tw`md:inline-block`,
 ]);
 
-const Container = styled.div(() => [
+const Container = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
   tw`flex justify-between items-center 
-  py-1 md:py-2 pl-3 pr-3 md:pr-6 hover:bg-background rounded-lg transition`,
-  css`
-    &:hover ${IndexText} {
-      ${tw`hidden`}
-    }
+  py-1 md:py-2 pl-3 pr-3 md:pr-6 rounded-lg transition`,
+  itemType !== "disabled" && [
+    tw`hover:bg-background`,
+    css`
+      &:hover ${IndexText} {
+        ${tw`hidden`}
+      }
 
-    &:hover ${IconPlayWrapper} {
-      ${tw`inline-block`}
-    }
+      &:hover ${IconPlayWrapper} {
+        ${tw`inline-block`}
+      }
 
-    &:hover ${More} {
-      ${tw`visible`}
-    }
+      &:hover ${More} {
+        ${tw`visible`}
+      }
 
-    &:hover ${Like} {
-      ${tw`md:visible`}
-    }
-  `,
+      &:hover ${Like} {
+        ${tw`md:visible`}
+      }
+    `,
+  ],
+  itemType === "disabled" && [
+    tw`opacity-60`,
+    css`
+      filter: grayscale(100%);
+      -webkit-filter: grayscale(100%);
+      -moz-filter: grayscale(100%);
+      -ms-filter: grayscale(100%);
+      -o-filter: grayscale(100%);
+    `,
+  ],
 ]);

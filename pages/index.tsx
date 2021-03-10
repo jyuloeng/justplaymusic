@@ -1,3 +1,4 @@
+import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import TitleBoard from "../components/boards/title-board";
 import CaptionBoard from "../components/boards/caption-board";
@@ -8,6 +9,7 @@ import {
   PlaylistItemCard,
   PlaylistItemCardProps,
 } from "../components/cards";
+import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
 
 const coverPath =
   "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
@@ -87,8 +89,44 @@ const playlist: Omit<PlaylistItemCardProps, "index">[] = [
 ];
 
 const Home = () => {
+  const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
+    visible: false,
+    name: "",
+    artists: [],
+    coverPath: "",
+    position: {
+      left: 0,
+      top: 0,
+    },
+  });
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    item: PlaylistItemCardProps
+  ) => {
+    console.log(e, item);
+
+    let { pageX, pageY } = e;
+    const { name, artists, coverPath } = item;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+
+    setContextMenuInfo({
+      visible: true,
+      name,
+      artists,
+      coverPath,
+      position: {
+        left: pageX,
+        top: pageY,
+      },
+    });
+  };
+
   return (
-    <Container>
+    <Container onClick={() => setContextMenuInfo({ visible: false })}>
       <TitleBoardContainer>
         <TitleBoard title="For you" info="三月八日，星期一" />
       </TitleBoardContainer>
@@ -131,31 +169,12 @@ const Home = () => {
 
       <br />
 
-      {/* <PlaylistItemCard
-        itemType="default"
-        coverPath={coverPath2}
-        index={10}
-        name="Breathe (In The Air) [2011 - Remaster]"
-        artist="Pink Floyd"
-        album="The Dark Side Of The Moon (2011 - Remaster)"
-        duration={137342}
-      />
-
-      <PlaylistItemCard
-        itemType="active"
-        coverPath={coverPath2}
-        index={10}
-        name="Breathe (In The Air) [2011 - Remaster]"
-        artist="Pink Floyd"
-        album="The Dark Side Of The Moon (2011 - Remaster)"
-        duration={137342}
-        isLike={true}
-      /> */}
-
       {playlist.map((item, index) => (
         <PlaylistItemCard
           key={index}
-          itemType="default"
+          itemType={
+            index === 0 ? "active" : index === 3 ? "disabled" : "default"
+          }
           coverPath={item.coverPath}
           index={index + 1}
           name={item.name}
@@ -163,13 +182,17 @@ const Home = () => {
           album={item.album}
           duration={item.duration}
           isLike={false}
+          onDblClick={(e, id) => console.log(e, id)}
+          onContextMenuClick={handleOnContextMenuClick}
         />
       ))}
 
       {playlist.map((item, index) => (
         <PlaylistItemCard
-          key={index * 2}
-          itemType="default"
+          key={index}
+          itemType={
+            index === 0 ? "active" : index === 3 ? "disabled" : "default"
+          }
           coverPath={item.coverPath}
           index={index + 1}
           name={item.name}
@@ -181,6 +204,16 @@ const Home = () => {
           isShowCover={false}
         />
       ))}
+
+      <br />
+
+      <MoreActionMenu
+        coverPath={contextMenuInfo.coverPath}
+        name={contextMenuInfo.name}
+        artists={contextMenuInfo.artists}
+        visible={contextMenuInfo.visible}
+        position={contextMenuInfo.position}
+      />
     </Container>
   );
 };

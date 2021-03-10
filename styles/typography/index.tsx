@@ -60,11 +60,13 @@ export const CaptionText = styled.span<TypographyProps>(({ bold }) => [
   bold ? tw`font-bold` : tw`font-normal`,
 ]);
 
-export const InfoText = styled.span<TypographyProps>`
-  font-size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-`;
+export const InfoText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 14px;
+    line-height: 22px;
+  `,
+  bold ? tw`font-bold` : tw`font-normal`,
+]);
 
 export const SmallText = styled.span<TypographyProps>(({ bold }) => [
   css`

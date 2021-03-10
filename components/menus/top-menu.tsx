@@ -107,7 +107,7 @@ const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
 export default TopMenu;
 
 const Container = styled.nav<TopMenuProps>(() => [
-  tw`flex justify-between items-center w-full py-2 shadow-sm`,
+  tw`flex justify-between items-center w-full py-2 shadow-sm md:shadow-none`,
 ]);
 
 const BaseNavContainer = tw.div`flex justify-between items-center w-full`;

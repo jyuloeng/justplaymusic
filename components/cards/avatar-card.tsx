@@ -99,7 +99,7 @@ const BaseTextStyles = css`
 
 const CaptionContainer = styled(CaptionText)(() => [
   BaseTextStyles,
-  tw`mt-2 px-1 text-center`,
+  tw`mt-1 md:mt-2 px-1 text-center`,
 ]);
 
 const Caption = styled(CaptionText)(() => [tw`hover:underline cursor-pointer`]);

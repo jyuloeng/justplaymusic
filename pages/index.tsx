@@ -105,6 +105,8 @@ const Home = () => {
   const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
   const [personalizedArtists, setPersonalizedArtists] = useState([]);
   const [newAlbums, setNewAlbums] = useState([]);
+  const [personalizedMovie, setPersonalizedMovie] = useState([]);
+  const [personalizedSongs, setPersonalizedSongs] = useState([]);
 
   const handleOnContextMenuClick = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -163,6 +165,24 @@ const Home = () => {
       .then((data) => setNewAlbums(data.albums));
   }, []);
 
+  useEffect(() => {
+    fetch(
+      "https://music.qier222.com/api/personalized/mv?offset=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        setPersonalizedMovie(getRandomArrayElements(data.result, 2))
+      );
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://music.qier222.com/api/personalized/newsong?offset=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+    )
+      .then((res) => res.json())
+      .then((data) => setPersonalizedSongs(data.result));
+  }, []);
+
   return (
     <Container onClick={() => setContextMenuInfo({ visible: false })}>
       <TitleBoardContainer>
@@ -176,49 +196,49 @@ const Home = () => {
         />
       </CaptionBoardContainer>
 
-      <PlaylistConntainer>
-        {personalizedPlaylist?.map((playlist) => (
-          <MediaCard
-            key={playlist.id}
-            cardType="album"
-            coverPath={playlist.picUrl + "?param=512y512"}
-            title={playlist.name}
-            caption={playlist.copywriter}
-            playCount={playlist.playCount}
-            isCanCaptionClick={false}
-          />
-        ))}
-      </PlaylistConntainer>
+      <PlaylistWrapper>
+        <PlaylistConntainer>
+          {personalizedPlaylist?.map((playlist) => (
+            <MediaCard
+              key={playlist.id}
+              cardType="album"
+              coverPath={playlist.picUrl + "?param=512y512"}
+              title={playlist.name}
+              caption={playlist.copywriter}
+              playCount={playlist.playCount}
+              isCanCaptionClick={false}
+            />
+          ))}
+        </PlaylistConntainer>
+      </PlaylistWrapper>
 
       <FlexModalContainer>
-        <RecommendMovieContainer>
-          <CaptionBoardContainer>
+        <RecommendMovieWrapper>
+          <CaptionBoardContainer tw="lg:mx-0">
             <CaptionBoard
               caption="推荐视频"
               onMoreClick={handleMoreHotArtistClick}
             />
           </CaptionBoardContainer>
 
-          <RecommendMovies>
-            <MediaCard
-              cardType="movie"
-              coverPath={movieCoverPath}
-              title="干杯"
-              caption="五月天"
-              playCount={860}
-            />
+          <RecommendMoviesWrapper>
+            <RecommendMoviesContainer>
+              {personalizedMovie?.map((movie) => (
+                <RecommendMovieContainer key={movie.id}>
+                  <MediaCard
+                    cardType="movie"
+                    coverPath={movie.picUrl + "?param=464y260"}
+                    title={movie.name}
+                    caption={movie.artistName}
+                    playCount={movie.playCount}
+                  />
+                </RecommendMovieContainer>
+              ))}
+            </RecommendMoviesContainer>
+          </RecommendMoviesWrapper>
+        </RecommendMovieWrapper>
 
-            <MediaCard
-              cardType="movie"
-              coverPath={movieCoverPath}
-              title="干杯"
-              caption="五月天"
-              playCount={860}
-            />
-          </RecommendMovies>
-        </RecommendMovieContainer>
-
-        <RecommendSongsContainer>
+        <RecommendSongsWrapper>
           <CaptionBoardContainer>
             <CaptionBoard
               caption="推荐歌曲"
@@ -227,18 +247,18 @@ const Home = () => {
           </CaptionBoardContainer>
 
           <RecommendSongs>
-            {playlist.map((item, index) => (
+            {personalizedSongs?.map((song, index) => (
               <PlaylistItemCard
-                key={index}
+                key={song.id}
                 itemType={
                   index === 0 ? "active" : index === 3 ? "disabled" : "default"
                 }
-                coverPath={item.coverPath}
+                coverPath={song.picUrl + "?param=100y100"}
                 index={index + 1}
-                name={item.name}
-                artists={item.artists}
-                album={item.album}
-                duration={item.duration}
+                name={song.name}
+                artists={song.song.artists}
+                album={song.song.album.name}
+                duration={song.duration}
                 isLike={false}
                 onDblClick={(e, id) => console.log(e, id)}
                 onContextMenuClick={handleOnContextMenuClick}
@@ -246,22 +266,28 @@ const Home = () => {
             ))}
           </RecommendSongs>
 
-          <MobileRecommendSongs>
-            {playlist.map((item, index) => (
-              <MiniPlaylistItemCard
-                key={index}
-                itemType={
-                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
-                }
-                coverPath={item.coverPath}
-                name={item.name}
-                artists={item.artists}
-                onDblClick={(e, id) => console.log(e, id)}
-                onContextMenuClick={handleOnContextMenuClick}
-              />
-            ))}
-          </MobileRecommendSongs>
-        </RecommendSongsContainer>
+          <MobileRecommendSongsContainer>
+            <MobileRecommendSongs>
+              {personalizedSongs?.map((song, index) => (
+                <MiniPlaylistItemCard
+                  key={song.id}
+                  itemType={
+                    index === 0
+                      ? "active"
+                      : index === 3
+                      ? "disabled"
+                      : "default"
+                  }
+                  coverPath={song.picUrl + "?param=100y100"}
+                  name={song.name}
+                  artists={song.song.artists}
+                  onDblClick={(e, id) => console.log(e, id)}
+                  onContextMenuClick={handleOnContextMenuClick}
+                />
+              ))}
+            </MobileRecommendSongs>
+          </MobileRecommendSongsContainer>
+        </RecommendSongsWrapper>
       </FlexModalContainer>
 
       <CaptionBoardContainer>
@@ -271,15 +297,17 @@ const Home = () => {
         />
       </CaptionBoardContainer>
 
-      <PlaylistConntainer>
-        {personalizedArtists?.map((artist) => (
-          <AvatarCard
-            key={artist.id}
-            src={artist.picUrl + "?param=512y512"}
-            caption={artist.name}
-          />
-        ))}
-      </PlaylistConntainer>
+      <ArtistsWrapper>
+        <ArtistsConntainer>
+          {personalizedArtists?.map((artist) => (
+            <AvatarCard
+              key={artist.id}
+              src={artist.picUrl + "?param=512y512"}
+              caption={artist.name}
+            />
+          ))}
+        </ArtistsConntainer>
+      </ArtistsWrapper>
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -288,48 +316,103 @@ const Home = () => {
         />
       </CaptionBoardContainer>
 
-      <PlaylistConntainer>
-        {newAlbums?.map((album) => (
-          <MediaCard
-            key={album.id}
-            cardType="album"
-            coverPath={album.picUrl + "?param=512y512"}
-            title={album.name}
-            caption={album.artist.name}
-            isShowPlayCount={false}
-          />
-        ))}
-      </PlaylistConntainer>
+      <PlaylistWrapper>
+        <PlaylistConntainer>
+          {newAlbums?.map((album) => (
+            <MediaCard
+              key={album.id}
+              cardType="album"
+              coverPath={album.picUrl + "?param=512y512"}
+              title={album.name}
+              caption={album.artist.name}
+              isShowPlayCount={false}
+            />
+          ))}
+        </PlaylistConntainer>
+      </PlaylistWrapper>
     </Container>
   );
 };
 
 export default Home;
 
+const scrollbarHiddenStyles = css`
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+`;
+
 const MobileRecommendSongs = styled.div(() => [
-  tw`grid grid-cols-2 gap-2 ml-2 md:hidden`,
+  tw`grid grid-cols-4 gap-2 md:w-full ml-2 pr-2 md:hidden`,
+  css`
+    width: 800px;
+  `,
 ]);
 
 const RecommendSongs = styled.div(() => [tw`hidden md:block`]);
 
-const RecommendSongsContainer = styled.div(() => [tw`flex-1`]);
+const RecommendSongsWrapper = styled.div(() => [tw`flex-1`]);
 
-const RecommendMovies = styled.div(() => [tw`grid gap-1`]);
+const RecommendMovieContainer = styled.div(() => []);
 
-const RecommendMovieContainer = styled.div(() => [tw`flex-1`]);
+const RecommendMoviesContainer = styled.div(() => [
+  tw`grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-1 pr-3 lg:pr-0`,
+  css`
+    @media (max-width: 767px) {
+      width: 436px;
+    }
+  `,
+]);
+
+const RecommendMoviesWrapper = styled.div(() => [
+  scrollbarHiddenStyles,
+  tw`pl-3 lg:pl-0 overflow-x-scroll md:overflow-visible`,
+]);
+
+const RecommendMovieWrapper = styled.div(() => [tw`flex-1`]);
+
+const MobileRecommendSongsContainer = styled.div(() => [
+  scrollbarHiddenStyles,
+  tw`overflow-x-scroll`,
+]);
 
 const FlexModalContainer = styled.div(() => [
-  tw`flex md:flex-row flex-col-reverse`,
+  tw`flex flex-col-reverse md:grid gap-3 lg:gap-5 lg:gap-7 mx-0 lg:mx-7`,
+  css`
+    grid-template-columns: 30% 70%;
+  `,
 ]);
 
 const PlaylistConntainer = styled.div(() => [
-  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 mx-3 lg:mx-7`,
+  tw`grid grid-cols-10 md:grid-cols-5 gap-2 lg:gap-6 md:w-full pr-3 lg:pr-0`,
+  css`
+    width: 1280px;
+  `,
 ]);
+
+const PlaylistWrapper = styled.div(() => [
+  scrollbarHiddenStyles,
+  tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll lg:overflow-visible`,
+]);
+
+const ArtistsConntainer = styled(PlaylistConntainer)(() => [
+  tw`grid-cols-5 pr-3 lg:pr-0`,
+  css`
+    width: 544px;
+  `,
+]);
+
+const ArtistsWrapper = styled(PlaylistWrapper)(() => [tw`ml-0 pl-3 lg:pl-0`]);
 
 const CaptionBoardContainer = styled.div(() => [
-  tw`mt-2 md:mt-7 mx-2 md:mx-7 mb-3 md:mb-6`,
+  tw`mt-2 lg:mt-7 mx-2 lg:mx-7 mb-3 lg:mb-6`,
 ]);
 
-const TitleBoardContainer = styled.div(() => [tw`mx-5 md:mx-10 mt-4 md:mt-6`]);
+const TitleBoardContainer = styled.div(() => [tw`mx-5 lg:mx-10 mt-4 lg:mt-6`]);
 
 const Container = styled.div``;

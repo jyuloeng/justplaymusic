@@ -7,7 +7,7 @@ export interface MiniPlaylistItemCardProps {
   itemType?: PlaylistItemType;
   coverPath?: string;
   name?: string;
-  artists?: string[];
+  artists?: any[];
   onDblClick?: (e: React.MouseEvent<HTMLDivElement>, id: string) => void;
   onContextMenuClick?: (
     e: React.MouseEvent<HTMLDivElement>,
@@ -55,9 +55,9 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
         <Name bold>{name}</Name>
         <Artists>
           {artists.map((artist, index) => (
-            <ArtistContainer key={artist}>
+            <ArtistContainer key={artist.id}>
               <Artist>
-                <SmallText>{artist}</SmallText>
+                <SmallText>{artist.name}</SmallText>
               </Artist>
               {index !== artists.length - 1 && (
                 <SmallText>,&nbsp;&nbsp;</SmallText>

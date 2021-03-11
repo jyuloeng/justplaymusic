@@ -35,10 +35,15 @@ const MediaCard: React.FC<MediaCardProps> = ({
   onCaptionClick,
 }) => {
   return (
-    <Container cardType={cardType}>
+    <Container>
       <Link href="/">
-        <CoverContainer cardType={cardType}>
-          <Cover src={coverPath} layout="responsive" width={0} height={0} />
+        <CoverContainer>
+          <Cover
+            src={coverPath}
+            layout="responsive"
+            width={cardType === "movie" ? 232 : 0}
+            height={cardType === "movie" ? 130 : 0}
+          />
 
           {cardType === "album" && (
             <GlassButtonContainer>
@@ -75,30 +80,18 @@ const MediaCard: React.FC<MediaCardProps> = ({
 
 export default MediaCard;
 
-const Container = styled.div(({ cardType }: { cardType: MediaCardType }) => [
-  tw`inline-block`,
-  cardType === "movie"
-    ? css`
-        /* max-width: 232px; */
-      `
-    : css``,
-]);
+const Container = styled.div(() => []);
 
 const GlassButtonContainer = styled.div(() => [
   tw`absolute w-full h-full top-0 left-0 flex justify-center items-center invisible`,
 ]);
 
-const CoverContainer = styled.a(({ cardType }: { cardType: MediaCardType }) => [
+const Cover = styled(Image)(() => [
+  tw`md:rounded-xl rounded-lg overflow-hidden transition`,
+]);
+
+const CoverContainer = styled.a(() => [
   tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer transition`,
-  cardType === "movie"
-    ? css`
-        /* width: 232px;
-        height: 130px; */
-      `
-    : css`
-        /* width: 174px;
-        height: 174px; */
-      `,
   css`
     &:hover {
       transform: scale(1.02);
@@ -108,10 +101,6 @@ const CoverContainer = styled.a(({ cardType }: { cardType: MediaCardType }) => [
       }
     }
   `,
-]);
-
-const Cover = styled(Image)(() => [
-  tw`md:rounded-xl rounded-lg overflow-hidden transition`,
 ]);
 
 const PlayCountContainer = styled.div(() => [
@@ -139,4 +128,4 @@ const Caption = styled(
   isCanCaptionClick && tw`cursor-pointer hover:underline`,
 ]);
 
-const Info = styled.div(() => [tw`flex flex-col mt-2`]);
+const Info = styled.div(() => [tw`flex flex-col mt-1 md:mt-2`]);

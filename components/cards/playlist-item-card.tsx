@@ -22,7 +22,7 @@ export interface PlaylistItemCardProps {
   index: number;
   coverPath: string;
   name: string;
-  artists: string[];
+  artists: any[];
   album: string;
   duration: number;
   isLike?: boolean;
@@ -109,10 +109,10 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
         <Details itemType={itemType}>
           <Artists itemType={itemType}>
             {artists.map((artist, index) => (
-              <ArtistContainer key={artist}>
+              <ArtistContainer key={artist.id}>
                 <Link href="/">
                   <Artist>
-                    <SmallText>{artist}</SmallText>
+                    <SmallText>{artist.name}</SmallText>
                   </Artist>
                 </Link>
                 {index !== artists.length - 1 && (

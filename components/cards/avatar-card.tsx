@@ -54,15 +54,12 @@ export default AvatarCard;
 
 const GlassButtonContainer = styled.div(() => [
   tw`absolute w-full h-full top-0 left-0 flex justify-center items-center transition invisible`,
-]);
-
-const Cover = styled.div(() => [
-  tw`relative rounded-full`,
   css`
-    width: 144px;
-    height: 144px;
+    transform: scale(1.02);
   `,
 ]);
+
+const Cover = styled.div(() => [tw`relative rounded-full`, css``]);
 
 const CoverContainer = styled.div(
   ({
@@ -89,12 +86,7 @@ const CoverContainer = styled.div(
   ]
 );
 
-const Container = styled.div(() => [
-  tw`inline-block`,
-  css`
-    width: 144px;
-  `,
-]);
+const Container = styled.div(() => [tw`inline-block`, css``]);
 
 const BaseTextStyles = css`
   padding: 0 4px;

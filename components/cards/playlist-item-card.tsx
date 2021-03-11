@@ -15,7 +15,7 @@ import { formatDuration } from "../../lib/format";
 import { tuple } from "../../lib/type";
 
 const PlaylistItemTypes = tuple("default", "active", "disabled");
-type PlaylistItemType = typeof PlaylistItemTypes[number];
+export type PlaylistItemType = typeof PlaylistItemTypes[number];
 
 export interface PlaylistItemCardProps {
   itemType: PlaylistItemType;

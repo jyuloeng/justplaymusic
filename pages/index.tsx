@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import TitleBoard from "../components/boards/title-board";
 import CaptionBoard from "../components/boards/caption-board";
@@ -7,10 +7,12 @@ import {
   AvatarCard,
   ArtistCard,
   PlaylistItemCard,
+  MiniPlaylistItemCard,
   PlaylistItemCardProps,
 } from "../components/cards";
 import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
 import { Slider } from "../components/controls";
+import { getRandomArrayElements } from "../lib/array";
 
 const coverPath =
   "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
@@ -100,7 +102,9 @@ const Home = () => {
       top: 0,
     },
   });
-  const [percent, setPercent] = useState<number>(50);
+  const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
+  const [personalizedArtists, setPersonalizedArtists] = useState([]);
+  const [newAlbums, setNewAlbums] = useState([]);
 
   const handleOnContextMenuClick = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -127,115 +131,205 @@ const Home = () => {
     });
   };
 
+  const handleMorePlaylistClick = () => {};
+
+  const handleMoreHotArtistClick = () => {};
+
+  const handleMoreNewAlbumClick = () => {};
+
+  useEffect(() => {
+    fetch(
+      "https://music.qier222.com/api/personalized?limit=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+    )
+      .then((res) => res.json())
+      .then((data) => setPersonalizedPlaylist(data.result));
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://music.qier222.com/api//top/artists?cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        setPersonalizedArtists(getRandomArrayElements(data.artists, 5))
+      );
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "https://music.qier222.com/api/album/new?area=EA&limit=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+    )
+      .then((res) => res.json())
+      .then((data) => setNewAlbums(data.albums));
+  }, []);
+
   return (
     <Container onClick={() => setContextMenuInfo({ visible: false })}>
       <TitleBoardContainer>
         <TitleBoard title="For you" info="三月八日，星期一" />
       </TitleBoardContainer>
 
-      <CaptionBoard caption="推荐歌单" />
-
-      <MediaCard
-        cardType="album"
-        coverPath={coverPath}
-        title="减肥！跑步歌单（中文）减肥！跑步歌单（中文）"
-        caption="根据你喜欢的单曲《爱你》推荐根据你喜欢的单曲《爱你》推荐根据你喜欢的单曲《爱你》推荐"
-        playCount={860}
-        isCanCaptionClick={false}
-      />
-
-      <br />
-
-      <MediaCard
-        cardType="movie"
-        coverPath={movieCoverPath}
-        title="干杯"
-        caption="五月天"
-        playCount={860}
-      />
-
-      <br />
-
-      <AvatarCard src={avatarPath} caption="Alan Walker Alan Walker" />
-
-      <br />
-
-      <ArtistCard
-        src={avatarPath}
-        title="G.E.M. 邓紫棋"
-        caption="邓紫棋"
-        songs={410}
-        albums={47}
-        movies={82}
-      />
-
-      <br />
-
-      <div tw="h-8 flex">
-        <div tw="w-12"></div>
-        <Slider
-          min={0}
-          max={100}
-          onChange={(value) => console.log("onChange" + value)}
-          onAfterChange={(value) => console.log("onAfterChange" + value)}
+      <CaptionBoardContainer>
+        <CaptionBoard
+          caption="推荐歌单"
+          onMoreClick={handleMorePlaylistClick}
         />
-        {/* <ProgressBar
-          percent={percent}
-          onChange={(newPercent) => setPercent(() => newPercent)}
-        /> */}
-      </div>
+      </CaptionBoardContainer>
 
-      {playlist.map((item, index) => (
-        <PlaylistItemCard
-          key={index}
-          itemType={
-            index === 0 ? "active" : index === 3 ? "disabled" : "default"
-          }
-          coverPath={item.coverPath}
-          index={index + 1}
-          name={item.name}
-          artists={item.artists}
-          album={item.album}
-          duration={item.duration}
-          isLike={false}
-          onDblClick={(e, id) => console.log(e, id)}
-          onContextMenuClick={handleOnContextMenuClick}
+      <PlaylistConntainer>
+        {personalizedPlaylist?.map((playlist) => (
+          <MediaCard
+            key={playlist.id}
+            cardType="album"
+            coverPath={playlist.picUrl + "?param=512y512"}
+            title={playlist.name}
+            caption={playlist.copywriter}
+            playCount={playlist.playCount}
+            isCanCaptionClick={false}
+          />
+        ))}
+      </PlaylistConntainer>
+
+      <FlexModalContainer>
+        <RecommendMovieContainer>
+          <CaptionBoardContainer>
+            <CaptionBoard
+              caption="推荐视频"
+              onMoreClick={handleMoreHotArtistClick}
+            />
+          </CaptionBoardContainer>
+
+          <RecommendMovies>
+            <MediaCard
+              cardType="movie"
+              coverPath={movieCoverPath}
+              title="干杯"
+              caption="五月天"
+              playCount={860}
+            />
+
+            <MediaCard
+              cardType="movie"
+              coverPath={movieCoverPath}
+              title="干杯"
+              caption="五月天"
+              playCount={860}
+            />
+          </RecommendMovies>
+        </RecommendMovieContainer>
+
+        <RecommendSongsContainer>
+          <CaptionBoardContainer>
+            <CaptionBoard
+              caption="推荐歌曲"
+              onMoreClick={handleMoreHotArtistClick}
+            />
+          </CaptionBoardContainer>
+
+          <RecommendSongs>
+            {playlist.map((item, index) => (
+              <PlaylistItemCard
+                key={index}
+                itemType={
+                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                }
+                coverPath={item.coverPath}
+                index={index + 1}
+                name={item.name}
+                artists={item.artists}
+                album={item.album}
+                duration={item.duration}
+                isLike={false}
+                onDblClick={(e, id) => console.log(e, id)}
+                onContextMenuClick={handleOnContextMenuClick}
+              />
+            ))}
+          </RecommendSongs>
+
+          <MobileRecommendSongs>
+            {playlist.map((item, index) => (
+              <MiniPlaylistItemCard
+                key={index}
+                itemType={
+                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                }
+                coverPath={item.coverPath}
+                name={item.name}
+                artists={item.artists}
+                onDblClick={(e, id) => console.log(e, id)}
+                onContextMenuClick={handleOnContextMenuClick}
+              />
+            ))}
+          </MobileRecommendSongs>
+        </RecommendSongsContainer>
+      </FlexModalContainer>
+
+      <CaptionBoardContainer>
+        <CaptionBoard
+          caption="热门歌手"
+          onMoreClick={handleMoreHotArtistClick}
         />
-      ))}
+      </CaptionBoardContainer>
 
-      {playlist.map((item, index) => (
-        <PlaylistItemCard
-          key={index}
-          itemType={
-            index === 0 ? "active" : index === 3 ? "disabled" : "default"
-          }
-          coverPath={item.coverPath}
-          index={index + 1}
-          name={item.name}
-          artists={item.artists}
-          album={item.album}
-          duration={item.duration}
-          isLike={false}
-          isAlbum={true}
-          isShowCover={false}
+      <PlaylistConntainer>
+        {personalizedArtists?.map((artist) => (
+          <AvatarCard
+            key={artist.id}
+            src={artist.picUrl + "?param=512y512"}
+            caption={artist.name}
+          />
+        ))}
+      </PlaylistConntainer>
+
+      <CaptionBoardContainer>
+        <CaptionBoard
+          caption="新碟上架"
+          onMoreClick={handleMoreNewAlbumClick}
         />
-      ))}
+      </CaptionBoardContainer>
 
-      <br />
-
-      <MoreActionMenu
-        coverPath={contextMenuInfo.coverPath}
-        name={contextMenuInfo.name}
-        artists={contextMenuInfo.artists}
-        visible={contextMenuInfo.visible}
-        position={contextMenuInfo.position}
-      />
+      <PlaylistConntainer>
+        {newAlbums?.map((album) => (
+          <MediaCard
+            key={album.id}
+            cardType="album"
+            coverPath={album.picUrl + "?param=512y512"}
+            title={album.name}
+            caption={album.artist.name}
+            isShowPlayCount={false}
+          />
+        ))}
+      </PlaylistConntainer>
     </Container>
   );
 };
 
 export default Home;
 
-const Container = styled.div``;
+const MobileRecommendSongs = styled.div(() => [
+  tw`grid grid-cols-2 gap-2 ml-2 md:hidden`,
+]);
 
-const TitleBoardContainer = tw.div`ml-10 mt-6`;
+const RecommendSongs = styled.div(() => [tw`hidden md:block`]);
+
+const RecommendSongsContainer = styled.div(() => [tw`flex-1`]);
+
+const RecommendMovies = styled.div(() => [tw`grid gap-1`]);
+
+const RecommendMovieContainer = styled.div(() => [tw`flex-1`]);
+
+const FlexModalContainer = styled.div(() => [
+  tw`flex md:flex-row flex-col-reverse`,
+]);
+
+const PlaylistConntainer = styled.div(() => [
+  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-6 mx-3 lg:mx-7`,
+]);
+
+const CaptionBoardContainer = styled.div(() => [
+  tw`mt-2 md:mt-7 mx-2 md:mx-7 mb-3 md:mb-6`,
+]);
+
+const TitleBoardContainer = styled.div(() => [tw`mx-5 md:mx-10 mt-4 md:mt-6`]);
+
+const Container = styled.div``;

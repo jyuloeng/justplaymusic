@@ -17,7 +17,7 @@ const PlayCountCard: React.FC<PlayCountCardProps> = ({ count }) => {
         height={iconSize}
         fill={DarkModeTextColor}
       />
-      <SmallText>{count} thousand</SmallText>
+      <SmallText>{count}</SmallText>
     </Container>
   );
 };
@@ -28,7 +28,7 @@ const Container = styled.div(() => [
   tw`inline-flex rounded-lg items-center`,
   css`
     padding: 0 6px;
-    background: rgba(244, 245, 247, 0.3);
+    background: rgba(56, 59, 101, 0.3);
     backdrop-filter: blur(8px);
 
     & > :not(:first-child) {

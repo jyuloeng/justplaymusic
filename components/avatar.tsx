@@ -7,7 +7,7 @@ export interface AvatarProps {
 }
 
 const Avatar: React.FC<AvatarProps> = ({ src }) => {
-  return <Container src={src} layout="fill" />;
+  return <Container src={src} layout="responsive" width={0} height={0} />;
 };
 
 export default Avatar;

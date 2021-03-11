@@ -16,18 +16,20 @@ export interface MediaCardProps {
   coverPath: string;
   title: string;
   caption?: string;
-  playCount: number;
+  playCount?: number;
+  isShowPlayCount?: boolean;
   onTitleClick?: React.MouseEventHandler<HTMLElement>;
   isCanCaptionClick?: boolean;
   onCaptionClick?: React.MouseEventHandler<HTMLElement>;
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({
-  cardType,
+  cardType = "album",
   coverPath,
   title,
   caption,
   playCount,
+  isShowPlayCount = true,
   onTitleClick,
   isCanCaptionClick,
   onCaptionClick,
@@ -36,7 +38,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
     <Container cardType={cardType}>
       <Link href="/">
         <CoverContainer cardType={cardType}>
-          <Cover src={coverPath} layout="fill" />
+          <Cover src={coverPath} layout="responsive" width={0} height={0} />
 
           {cardType === "album" && (
             <GlassButtonContainer>
@@ -46,9 +48,11 @@ const MediaCard: React.FC<MediaCardProps> = ({
             </GlassButtonContainer>
           )}
 
-          <PlayCountContainer>
-            <PlayCountCard count={playCount} />
-          </PlayCountContainer>
+          {isShowPlayCount && (
+            <PlayCountContainer>
+              <PlayCountCard count={playCount} />
+            </PlayCountContainer>
+          )}
         </CoverContainer>
       </Link>
 
@@ -75,27 +79,33 @@ const Container = styled.div(({ cardType }: { cardType: MediaCardType }) => [
   tw`inline-block`,
   cardType === "movie"
     ? css`
-        max-width: 232px;
+        /* max-width: 232px; */
       `
-    : css`
-        max-width: 174px;
-      `,
+    : css``,
+]);
+
+const GlassButtonContainer = styled.div(() => [
+  tw`absolute w-full h-full top-0 left-0 flex justify-center items-center invisible`,
 ]);
 
 const CoverContainer = styled.a(({ cardType }: { cardType: MediaCardType }) => [
   tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer transition`,
   cardType === "movie"
     ? css`
-        width: 232px;
-        height: 130px;
+        /* width: 232px;
+        height: 130px; */
       `
     : css`
-        width: 174px;
-        height: 174px;
+        /* width: 174px;
+        height: 174px; */
       `,
   css`
     &:hover {
       transform: scale(1.02);
+      ${GlassButtonContainer} {
+        ${tw`visible`}
+        transform: scale(1.02);
+      }
     }
   `,
 ]);
@@ -104,11 +114,9 @@ const Cover = styled(Image)(() => [
   tw`md:rounded-xl rounded-lg overflow-hidden transition`,
 ]);
 
-const GlassButtonContainer = styled.div(() => [
-  tw`absolute w-full h-full top-0 left-0 flex justify-center items-center`,
+const PlayCountContainer = styled.div(() => [
+  tw`absolute top-1 lg:top-2 right-1 lg:right-2`,
 ]);
-
-const PlayCountContainer = styled.div(() => [tw`absolute top-2 right-2`]);
 
 const BaseTextStyles = css`
   padding: 0 4px;

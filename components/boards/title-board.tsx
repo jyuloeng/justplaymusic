@@ -6,7 +6,7 @@ const TitleBoardTypes = tuple("default", "search");
 type TitleBoardType = typeof TitleBoardTypes[number];
 
 export interface TitleBoardProps {
-  title: string;
+  title: string | string[];
   info: string;
   type?: TitleBoardType;
 }
@@ -16,7 +16,15 @@ const TitleBoard: React.FC<TitleBoardProps> = ({ title, info, type }) => {
     <Container>
       {type === "search" ? (
         <H3>
-          <SearchText>搜索</SearchText> “{title}”
+          {typeof title === "string" ? (
+            <>
+              <SearchText>搜索</SearchText> “{title}”
+            </>
+          ) : (
+            <>
+              <SearchText>搜索</SearchText> “{title?.join(', ')}”
+            </>
+          )}
         </H3>
       ) : (
         <H3>{title}</H3>

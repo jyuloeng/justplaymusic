@@ -1,22 +1,37 @@
 import tw, { styled, css } from "twin.macro";
-import { IconPlayThread } from "../../styles/icons";
-import { DarkModeTextColor } from "../../styles/colors";
+import { IconPlay, IconPlayThread } from "../../styles/icons";
+import { DarkModeTextColor, LightModeTextColor } from "../../styles/colors";
 import { SmallText } from "../../styles/typography";
+import { tuple } from "../../lib/type";
 
+const PlayCountCardTypes = tuple("default", "solid");
+type PlayCountCardType = typeof PlayCountCardTypes[number];
 export interface PlayCountCardProps {
+  cardType?: PlayCountCardType;
   count: number;
 }
 
 const iconSize = 10;
 
-const PlayCountCard: React.FC<PlayCountCardProps> = ({ count }) => {
+const PlayCountCard: React.FC<PlayCountCardProps> = ({
+  cardType = "default",
+  count,
+}) => {
   return (
-    <Container>
-      <IconPlayThread
-        width={iconSize}
-        height={iconSize}
-        fill={DarkModeTextColor}
-      />
+    <Container cardType={cardType}>
+      {cardType === "default" ? (
+        <IconPlayThread
+          width={iconSize}
+          height={iconSize}
+          fill={DarkModeTextColor}
+        />
+      ) : (
+        <IconPlay
+          width={iconSize}
+          height={iconSize}
+          fill={LightModeTextColor}
+        />
+      )}
       <SmallText>{count}</SmallText>
     </Container>
   );
@@ -24,16 +39,25 @@ const PlayCountCard: React.FC<PlayCountCardProps> = ({ count }) => {
 
 export default PlayCountCard;
 
-const Container = styled.div(() => [
-  tw`inline-flex rounded-lg items-center`,
-  css`
-    padding: 0 6px;
-    background: rgba(56, 59, 101, 0.3);
-    backdrop-filter: blur(8px);
+const Container = styled.div(
+  ({ cardType }: { cardType: PlayCountCardType }) => [
+    tw`inline-flex rounded-lg items-center`,
+    cardType === "default"
+      ? css`
+          padding: 0 6px;
+          background: rgba(56, 59, 101, 0.3);
+          backdrop-filter: blur(8px);
 
-    & > :not(:first-child) {
-      margin-left: 4px;
-      color: ${DarkModeTextColor};
-    }
-  `,
-]);
+          & > :not(:first-child) {
+            margin-left: 4px;
+            color: ${DarkModeTextColor};
+          }
+        `
+      : css`
+          & > :not(:first-child) {
+            margin-left: 4px;
+            color: ${LightModeTextColor};
+          }
+        `,
+  ]
+);

@@ -2,7 +2,7 @@ import tw, { styled, css } from "twin.macro";
 import { AvatarCard } from "./index";
 import { Button } from "../buttons";
 import { IconCollect } from "../../styles/icons";
-import { H4, MainText, MediumText, InfoText } from "../../styles/typography";
+import { H2, MainText, MediumText, InfoText } from "../../styles/typography";
 
 export interface ArtistProps {
   src: string;
@@ -80,18 +80,33 @@ const DataNum = styled(InfoText)(() => [tw`text-light-mode-text opacity-60`]);
 
 const DataItem = styled.div(() => [tw`cursor-pointer hover:underline`]);
 
-const Data = styled.div(() => [tw`grid grid-cols-3 gap-x-3 mb-4`]);
-
-const Caption = styled(MainText)(() => [
-  tw`inline-block mt-1 mb-3 text-light-mode-text`,
+const Data = styled.div(() => [
+  tw`grid gap-x-3 mt-2 md:mt-4 mb-3 md:mb-5`,
+  css`
+    grid-template-columns: repeat(3, minmax(0, max-content));
+  `,
 ]);
 
-const Title = styled(H4)(() => [tw`text-light-mode-text`]);
+const Caption = styled(MainText)(() => [tw`inline-block text-light-mode-text opacity-90`]);
 
-const Info = styled.div(() => []);
+const Title = styled(H2)(() => [tw`mb-2 text-light-mode-text`]);
 
-const InfoContainer = styled.div(() => [tw`ml-6`]);
+const Info = styled.div(() => [tw``]);
 
-const AvatarContianer = styled.div(() => []);
+const InfoContainer = styled.div(() => [tw`flex flex-col items-center md:block mt-3 md:mt-0 md:ml-8 text-center md:text-left`]);
 
-const Container = styled.div(() => [tw`flex`]);
+const AvatarContianer = styled.div(() => [
+  css`
+    width: 100px;
+    height: 100px;
+
+    @media (min-width: 768px) {
+      width: 200px;
+      height: 200px;
+    }
+  `,
+]);
+
+const Container = styled.div(() => [
+  tw`flex flex-col md:flex-row items-center`,
+]);

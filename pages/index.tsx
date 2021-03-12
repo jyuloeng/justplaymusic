@@ -153,7 +153,7 @@ const Home = () => {
     )
       .then((res) => res.json())
       .then((data) =>
-        setPersonalizedArtists(getRandomArrayElements(data.artists, 5))
+        setPersonalizedArtists(getRandomArrayElements(data.artists, 6))
       );
   }, []);
 
@@ -192,12 +192,13 @@ const Home = () => {
       <CaptionBoardContainer>
         <CaptionBoard
           caption="推荐歌单"
+          moreText="更多"
           onMoreClick={handleMorePlaylistClick}
         />
       </CaptionBoardContainer>
 
       <PlaylistWrapper>
-        <PlaylistConntainer>
+        <PlaylistContainer>
           {personalizedPlaylist?.map((playlist) => (
             <MediaCard
               key={playlist.id}
@@ -209,7 +210,7 @@ const Home = () => {
               isCanCaptionClick={false}
             />
           ))}
-        </PlaylistConntainer>
+        </PlaylistContainer>
       </PlaylistWrapper>
 
       <FlexModalContainer>
@@ -217,6 +218,7 @@ const Home = () => {
           <CaptionBoardContainer tw="lg:mx-0">
             <CaptionBoard
               caption="推荐视频"
+              moreText="更多"
               onMoreClick={handleMoreHotArtistClick}
             />
           </CaptionBoardContainer>
@@ -224,15 +226,14 @@ const Home = () => {
           <RecommendMoviesWrapper>
             <RecommendMoviesContainer>
               {personalizedMovie?.map((movie) => (
-                <RecommendMovieContainer key={movie.id}>
-                  <MediaCard
-                    cardType="movie"
-                    coverPath={movie.picUrl + "?param=464y260"}
-                    title={movie.name}
-                    caption={movie.artistName}
-                    playCount={movie.playCount}
-                  />
-                </RecommendMovieContainer>
+                <MediaCard
+                  key={movie.id}
+                  cardType="movie"
+                  coverPath={movie.picUrl + "?param=464y260"}
+                  title={movie.name}
+                  caption={movie.artistName}
+                  playCount={movie.playCount}
+                />
               ))}
             </RecommendMoviesContainer>
           </RecommendMoviesWrapper>
@@ -242,6 +243,7 @@ const Home = () => {
           <CaptionBoardContainer>
             <CaptionBoard
               caption="推荐歌曲"
+              moreText="更多"
               onMoreClick={handleMoreHotArtistClick}
             />
           </CaptionBoardContainer>
@@ -293,6 +295,7 @@ const Home = () => {
       <CaptionBoardContainer>
         <CaptionBoard
           caption="热门歌手"
+          moreText="更多"
           onMoreClick={handleMoreHotArtistClick}
         />
       </CaptionBoardContainer>
@@ -312,12 +315,13 @@ const Home = () => {
       <CaptionBoardContainer>
         <CaptionBoard
           caption="新碟上架"
+          moreText="更多"
           onMoreClick={handleMoreNewAlbumClick}
         />
       </CaptionBoardContainer>
 
       <PlaylistWrapper>
-        <PlaylistConntainer>
+        <PlaylistContainer>
           {newAlbums?.map((album) => (
             <MediaCard
               key={album.id}
@@ -328,7 +332,7 @@ const Home = () => {
               isShowPlayCount={false}
             />
           ))}
-        </PlaylistConntainer>
+        </PlaylistContainer>
       </PlaylistWrapper>
     </Container>
   );
@@ -336,7 +340,7 @@ const Home = () => {
 
 export default Home;
 
-const scrollbarHiddenStyles = css`
+export const scrollbarHiddenStyles = css`
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
     display: none;
@@ -348,7 +352,7 @@ const scrollbarHiddenStyles = css`
 `;
 
 const MobileRecommendSongs = styled.div(() => [
-  tw`grid grid-cols-4 gap-2 md:w-full ml-2 pr-2 md:hidden`,
+  tw`grid grid-cols-4 gap-2 md:w-full ml-3 pr-3 md:hidden`,
   css`
     width: 800px;
   `,
@@ -357,8 +361,6 @@ const MobileRecommendSongs = styled.div(() => [
 const RecommendSongs = styled.div(() => [tw`hidden md:block`]);
 
 const RecommendSongsWrapper = styled.div(() => [tw`flex-1`]);
-
-const RecommendMovieContainer = styled.div(() => []);
 
 const RecommendMoviesContainer = styled.div(() => [
   tw`grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-1 pr-3 lg:pr-0`,
@@ -388,7 +390,7 @@ const FlexModalContainer = styled.div(() => [
   `,
 ]);
 
-const PlaylistConntainer = styled.div(() => [
+const PlaylistContainer = styled.div(() => [
   tw`grid grid-cols-10 md:grid-cols-5 gap-2 lg:gap-6 md:w-full pr-3 lg:pr-0`,
   css`
     width: 1280px;
@@ -400,10 +402,10 @@ const PlaylistWrapper = styled.div(() => [
   tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll lg:overflow-visible`,
 ]);
 
-const ArtistsConntainer = styled(PlaylistConntainer)(() => [
-  tw`grid-cols-5 pr-3 lg:pr-0`,
+const ArtistsConntainer = styled(PlaylistContainer)(() => [
+  tw`grid-cols-6 md:grid-cols-6 pr-3 lg:pr-0`,
   css`
-    width: 544px;
+    width: 652px;
   `,
 ]);
 

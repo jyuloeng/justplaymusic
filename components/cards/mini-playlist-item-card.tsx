@@ -1,5 +1,6 @@
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
+import Link from "next/link";
 import { PlaylistItemType } from "./index";
 import { CaptionText, SmallText } from "../../styles/typography";
 
@@ -8,6 +9,7 @@ export interface MiniPlaylistItemCardProps {
   coverPath?: string;
   name?: string;
   artists?: any[];
+  isShowHover?: boolean;
   onDblClick?: (e: React.MouseEvent<HTMLDivElement>, id: string) => void;
   onContextMenuClick?: (
     e: React.MouseEvent<HTMLDivElement>,
@@ -20,6 +22,7 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
   coverPath,
   name,
   artists,
+  isShowHover = false,
   onDblClick,
   onContextMenuClick,
 }) => {
@@ -45,6 +48,7 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
   return (
     <Container
       itemType={itemType}
+      isShowHover={isShowHover}
       onContextMenu={handleOnContextMenuClick}
       onDoubleClick={handleDblClick}
     >
@@ -56,9 +60,11 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
         <Artists>
           {artists.map((artist, index) => (
             <ArtistContainer key={artist.id}>
-              <Artist>
-                <SmallText>{artist.name}</SmallText>
-              </Artist>
+              <Link href="/">
+                <Artist>
+                  <SmallText>{artist.name}</SmallText>
+                </Artist>
+              </Link>
               {index !== artists.length - 1 && (
                 <SmallText>,&nbsp;&nbsp;</SmallText>
               )}
@@ -73,6 +79,7 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
 export default MiniPlaylistItemCard;
 
 const Artist = styled.span(() => [
+  tw`cursor-pointer hover:underline`,
   css`
     line-height: 20px;
   `,
@@ -108,20 +115,30 @@ const Info = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
 
 const Cover = styled.div(() => [tw`w-10 h-10 rounded-lg overflow-hidden`]);
 
-const Container = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
-  tw`grid gap-2 items-center rounded-lg overflow-hidden`,
-  css`
-    grid-template-columns: repeat(2, minmax(40px, max-content));
-  `,
-  itemType !== "disabled" && tw`cursor-pointer`,
-  itemType === "disabled" && [
-    tw`opacity-60`,
+const Container = styled.div(
+  ({
+    itemType,
+    isShowHover,
+  }: {
+    itemType: PlaylistItemType;
+    isShowHover: boolean;
+  }) => [
+    tw`grid gap-2 items-center rounded-lg overflow-hidden`,
+    isShowHover && itemType !== "disabled" && tw`hover:bg-background`,
+    isShowHover && tw`md:p-2`,
     css`
-      filter: grayscale(100%);
-      -webkit-filter: grayscale(100%);
-      -moz-filter: grayscale(100%);
-      -ms-filter: grayscale(100%);
-      -o-filter: grayscale(100%);
+      grid-template-columns: repeat(2, minmax(40px, max-content));
     `,
-  ],
-]);
+    itemType !== "disabled" && tw`cursor-pointer`,
+    itemType === "disabled" && [
+      tw`opacity-60`,
+      css`
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+      `,
+    ],
+  ]
+);

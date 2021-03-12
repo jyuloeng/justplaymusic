@@ -10,21 +10,26 @@ export interface CaptionBoardProps {
 
 const CaptionBoard: React.FC<CaptionBoardProps> = ({
   caption,
-  moreText = "更多",
+  moreText,
   onMoreClick,
 }) => {
   return (
-    <Container>
+    <Container moreText={moreText}>
       <Button isShowHover={false}>
         <MainText bold>{caption}</MainText>
       </Button>
-      <Button onClick={onMoreClick}>
-        <SmallText bold>{moreText}</SmallText>
-      </Button>
+      {moreText && (
+        <Button onClick={onMoreClick}>
+          <SmallText bold>{moreText}</SmallText>
+        </Button>
+      )}
     </Container>
   );
 };
 
 export default CaptionBoard;
 
-const Container = tw.div`flex justify-between items-center`;
+const Container = styled.div(({ moreText }: { moreText: string }) => [
+  tw`flex items-center w-full`,
+  moreText && tw`justify-between`,
+]);

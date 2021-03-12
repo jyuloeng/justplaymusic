@@ -86,7 +86,7 @@ const CoverContainer = styled.div(
   ]
 );
 
-const Container = styled.div(() => [tw`inline-block`, css``]);
+const Container = styled.div(() => [tw``, css``]);
 
 const BaseTextStyles = css`
   padding: 0 4px;

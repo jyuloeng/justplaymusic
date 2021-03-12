@@ -54,7 +54,7 @@ export const MediumText = styled.span<TypographyProps>(({ bold }) => [
 
 export const CaptionText = styled.span<TypographyProps>(({ bold }) => [
   css`
-    font-size: 16px;
+    font-size: 17px;
     line-height: 24px;
   `,
   bold ? tw`font-bold` : tw`font-normal`,
@@ -62,7 +62,7 @@ export const CaptionText = styled.span<TypographyProps>(({ bold }) => [
 
 export const InfoText = styled.span<TypographyProps>(({ bold }) => [
   css`
-    font-size: 14px;
+    font-size: 15px;
     line-height: 22px;
   `,
   bold ? tw`font-bold` : tw`font-normal`,
@@ -70,7 +70,7 @@ export const InfoText = styled.span<TypographyProps>(({ bold }) => [
 
 export const SmallText = styled.span<TypographyProps>(({ bold }) => [
   css`
-    font-size: 12px;
+    font-size: 13px;
     line-height: 20px;
   `,
   bold ? tw`font-bold` : tw`font-light`,

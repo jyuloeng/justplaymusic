@@ -8,9 +8,10 @@ export interface ArtistProps {
   src: string;
   title: string;
   caption?: string;
-  songs: number;
-  albums: number;
-  movies: number;
+  songs?: number;
+  albums?: number;
+  movies?: number;
+  isShowCollect?: boolean;
   onSongsClick?: React.MouseEventHandler<HTMLElement>;
   onAlbumsClick?: React.MouseEventHandler<HTMLElement>;
   onMoviesClick?: React.MouseEventHandler<HTMLElement>;
@@ -24,6 +25,7 @@ const ArtistCard: React.FC<ArtistProps> = ({
   songs,
   albums,
   movies,
+  isShowCollect = true,
   onSongsClick,
   onAlbumsClick,
   onMoviesClick,
@@ -50,21 +52,25 @@ const ArtistCard: React.FC<ArtistProps> = ({
         <Info>
           <Title>{title}</Title>
           {caption && <Caption>{caption}</Caption>}
-          <Data>
-            {displayDataList.map((item) => (
-              <DataItem key={item.text} onClick={item.onClick}>
-                <DataText>{item.text}</DataText>
-                <DataNum>{item.num}</DataNum>
-              </DataItem>
-            ))}
-          </Data>
+          {songs && albums && movies && (
+            <Data>
+              {displayDataList.map((item) => (
+                <DataItem key={item.text} onClick={item.onClick}>
+                  <DataText>{item.text}</DataText>
+                  <DataNum>{item.num}</DataNum>
+                </DataItem>
+              ))}
+            </Data>
+          )}
         </Info>
 
-        <Collect>
-          <Button icon={<IconCollect />} isShowBackground={true}>
-            <MediumText bold>收藏</MediumText>
-          </Button>
-        </Collect>
+        {isShowCollect && (
+          <Collect>
+            <Button icon={<IconCollect />} isShowBackground={true}>
+              <MediumText bold>收藏</MediumText>
+            </Button>
+          </Collect>
+        )}
       </InfoContainer>
     </Container>
   );
@@ -87,13 +93,17 @@ const Data = styled.div(() => [
   `,
 ]);
 
-const Caption = styled(MainText)(() => [tw`inline-block text-light-mode-text opacity-90`]);
+const Caption = styled(MainText)(() => [
+  tw`inline-block text-light-mode-text opacity-90`,
+]);
 
 const Title = styled(H2)(() => [tw`mb-2 text-light-mode-text`]);
 
 const Info = styled.div(() => [tw``]);
 
-const InfoContainer = styled.div(() => [tw`flex flex-col items-center md:block mt-3 md:mt-0 md:ml-8 text-center md:text-left`]);
+const InfoContainer = styled.div(() => [
+  tw`flex flex-col items-center md:block mt-3 md:mt-0 md:ml-8 text-center md:text-left`,
+]);
 
 const AvatarContianer = styled.div(() => [
   css`

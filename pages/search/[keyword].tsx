@@ -58,7 +58,7 @@ const Search: React.FC<SearchProps> = () => {
 
   useEffect(() => {
     fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=10&limit=6&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
+      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=10&limit=12&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
     )
       .then((res) => res.json())
       .then((data) => {
@@ -74,7 +74,22 @@ const Search: React.FC<SearchProps> = () => {
       .then((res) => res.json())
       .then((data) => {
         const { result } = data;
-        setSearchSongsRes(result);
+        const songids = [];
+        result.songs.forEach((song) => {
+          songids.push(song.id);
+        });
+
+        fetch(
+          `https://music.qier222.com/api/song/detail?ids=${songids.join(",")}`
+        )
+          .then((res) => res.json())
+          .then((songsData) => {
+            setSearchSongsRes({
+              hasMore: result.hasMore,
+              songCount: result.songCount,
+              songs: songsData.songs,
+            });
+          });
       });
   }, []);
 
@@ -170,7 +185,7 @@ const Search: React.FC<SearchProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {/* <SearchSongsContainer>
+      <SearchSongsContainer>
         <SearchSongs>
           {searchSongsRes?.songs?.map((song, index) => (
             <MiniPlaylistItemCard
@@ -178,16 +193,15 @@ const Search: React.FC<SearchProps> = () => {
               itemType={
                 index === 0 ? "active" : index === 3 ? "disabled" : "default"
               }
-              coverPath={song.album.picUrl + "?param=100y100"}
+              coverPath={song.al.picUrl + "?param=100y100"}
               name={song.name}
-              artists={song.artists}
+              artists={song.ar}
               isShowHover={true}
               onDblClick={(e, id) => console.log(e, id)}
-              onContextMenuClick={handleOnContextMenuClick}
             />
           ))}
         </SearchSongs>
-      </SearchSongsContainer> */}
+      </SearchSongsContainer>
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -285,21 +299,6 @@ const SearchSongsContainer = styled.div(() => [
   scrollbarHiddenStyles,
   tw`lg:mx-5 overflow-x-scroll`,
 ]);
-
-// const SearchSimilarArtistsContainer = styled.div(() => [
-//   tw`grid grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,
-//   css`
-//     width: 436px;
-//     @media (min-width: 768px) {
-//       width: 79.34%;
-//     }
-//   `,
-// ]);
-
-// const SearchSimilarArtistsWrapper = styled.div(() => [
-//   scrollbarHiddenStyles,
-//   tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll lg:overflow-visible`,
-// ]);
 
 const SearchSimilarArtistsContainer = styled(SearchPlaylistsContainer)(() => [
   tw`grid-cols-6 md:grid-cols-6 pr-3 lg:pr-0`,

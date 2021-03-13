@@ -1,19 +1,27 @@
 import React, { useState } from "react";
 import tw, { styled, css } from "twin.macro";
+import { useRouter } from "next/router";
 import TopMenu from "../components/menus/top-menu";
 import SlideMenu from "../components/menus/slide-menu";
-import {} from "../styles/icons";
+import { url } from "node:inspector";
 
 export interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
+  const router = useRouter();
   const [slideMenuVisible, setSlideMenuVisible] = useState<boolean>(false);
+
+  const handleSearch = (value) => {
+    router.push("/search/" + value);
+  };
 
   return (
     <>
       <Container>
         <TopMenu
+          onNicknameClick={() => router.push("/zone")}
           onMobileNavClick={() => setSlideMenuVisible((visible) => !visible)}
+          onSearch={handleSearch}
         />
       </Container>
 

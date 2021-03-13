@@ -15,6 +15,8 @@ import { MediumText, CaptionText } from "../../styles/typography";
 
 export interface TopMenuProps {
   onMobileNavClick?: React.MouseEventHandler<HTMLElement>;
+  onNicknameClick?: React.MouseEventHandler<HTMLElement>;
+  onSearch?: (value: string) => void;
 }
 
 const imagePath =
@@ -42,12 +44,12 @@ const menu: Array<{
   },
 ];
 
-const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
+const TopMenu: React.FC<TopMenuProps> = ({
+  onMobileNavClick,
+  onNicknameClick,
+  onSearch,
+}) => {
   const router = useRouter();
-
-  const handleSearch = (value) => {
-    console.log(value);
-  };
 
   const handleGoBack = () => {
     router.back();
@@ -69,7 +71,7 @@ const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
         <SearchContainer>
           <Button icon={<IconLeftArrow />} onClick={handleGoBack} />
           <Button icon={<IconRightArrow />} onClick={handleGoNext} />
-          <SearchInput onSearch={handleSearch} />
+          <SearchInput onSearch={onSearch} />
         </SearchContainer>
 
         <ButtonGrops>
@@ -94,6 +96,7 @@ const TopMenu: React.FC<TopMenuProps> = ({ onMobileNavClick }) => {
               </AvatarContainer>
             }
             isShowHover={false}
+            onClick={onNicknameClick}
           >
             <MediumText bold>送温暖的大红帽丶</MediumText>
           </Button>

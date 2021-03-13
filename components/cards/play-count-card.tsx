@@ -8,7 +8,7 @@ const PlayCountCardTypes = tuple("default", "solid");
 type PlayCountCardType = typeof PlayCountCardTypes[number];
 export interface PlayCountCardProps {
   cardType?: PlayCountCardType;
-  count: number;
+  count: number | string;
 }
 
 const iconSize = 10;

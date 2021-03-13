@@ -358,7 +358,22 @@ const MobileRecommendSongs = styled.div(() => [
   `,
 ]);
 
-const RecommendSongs = styled.div(() => [tw`hidden md:block`]);
+const RecommendSongs = styled.div(() => [
+  tw`hidden md:block overflow-hidden`,
+  css`
+    @media (min-width: 768px) {
+      max-height: 360px;
+    }
+
+    @media (min-width: 1024px) {
+      max-height: 480px;
+    }
+
+    @media (min-width: 1280px) {
+      max-height: 600px;
+    }
+  `,
+]);
 
 const RecommendSongsWrapper = styled.div(() => [tw`flex-1`]);
 
@@ -384,7 +399,7 @@ const MobileRecommendSongsContainer = styled.div(() => [
 ]);
 
 const FlexModalContainer = styled.div(() => [
-  tw`flex flex-col-reverse md:grid gap-3 lg:gap-5 lg:gap-7 mx-0 lg:mx-7`,
+  tw`flex flex-col-reverse md:grid md:gap-2 lg:gap-5 lg:gap-7 mx-0 lg:mx-7`,
   css`
     grid-template-columns: 30% 70%;
   `,

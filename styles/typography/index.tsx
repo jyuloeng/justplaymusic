@@ -23,17 +23,19 @@ export const H3 = styled.h3<TypographyProps>`
   font-weight: bold;
 `;
 
-export const H4 = styled.h3<TypographyProps>`
+export const H4 = styled.h4<TypographyProps>`
   font-size: 30px;
   line-height: 38px;
   font-weight: bold;
 `;
 
-export const IntroText = styled.span<TypographyProps>`
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 500;
-`;
+export const IntroText = styled.span<TypographyProps>(({ bold }) => [
+  css`
+    font-size: 24px;
+    line-height: 32px;
+  `,
+  bold ? tw`font-bold` : tw`font-medium`,
+]);
 
 export const MainText = styled.span<TypographyProps>(({ bold }) => [
   css`

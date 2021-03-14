@@ -8,3 +8,4 @@ export type {
   PlaylistItemType,
 } from "./playlist-item-card";
 export { default as MiniPlaylistItemCard } from "./mini-playlist-item-card";
+export { default as PlaylistIntroCard } from "./playlist-intro-card";

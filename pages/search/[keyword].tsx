@@ -10,9 +10,9 @@ import {
 import { getSpecifiedArrayElements } from "../../lib/array";
 import { scrollbarHiddenStyles } from "../index";
 
-export interface SearchProps {}
+export interface SearchKeywordProps {}
 
-const Search: React.FC<SearchProps> = () => {
+const SearchKeyword: React.FC<SearchKeywordProps> = () => {
   const { query } = useRouter();
 
   const [searchArtistsRes, setSearchArtistsRes] = useState<{
@@ -260,7 +260,7 @@ const Search: React.FC<SearchProps> = () => {
   );
 };
 
-export default Search;
+export default SearchKeyword;
 
 const SearchMoviesContainer = styled.div(() => [
   tw`grid grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,

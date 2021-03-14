@@ -20,7 +20,7 @@ export type PlaylistItemType = typeof PlaylistItemTypes[number];
 export interface PlaylistItemCardProps {
   itemType: PlaylistItemType;
   index: number;
-  coverPath: string;
+  coverPath?: string;
   name: string;
   artists: any[];
   album: string;
@@ -80,6 +80,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   return (
     <Container
       itemType={itemType}
+      isAlbum={isAlbum}
       onContextMenu={handleOnContextMenuClick}
       onDoubleClick={handleDblClick}
     >
@@ -262,7 +263,7 @@ const Name = styled(CaptionText)(() => [
 
 const Info = styled.div(
   ({ isAlbum, itemType }: { isAlbum: boolean; itemType: PlaylistItemType }) => [
-    tw`flex flex-col flex-1 pr-3 md:pr-2`,
+    tw`flex flex-col flex-1 md:pl-1 pr-3 md:pr-2`,
     isAlbum && tw`md:flex-row`,
     !isAlbum && tw`md:ml-3`,
     itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
@@ -288,37 +289,39 @@ const Cover = styled.a(() => [
   tw`md:inline-block`,
 ]);
 
-const Container = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
-  tw`flex justify-between items-center 
-  py-1 md:py-2 pl-3 pr-3 md:pr-6 rounded-lg transition`,
-  itemType !== "disabled" && [
-    tw`hover:bg-background`,
-    css`
-      &:hover ${IndexText} {
-        ${tw`hidden`}
-      }
+const Container = styled.div(
+  ({ itemType, isAlbum }: { itemType: PlaylistItemType; isAlbum: boolean }) => [
+    tw`flex justify-between items-center py-2 pl-3 pr-3 md:pr-6 rounded-lg transition`,
+    isAlbum ? tw`md:py-3` : tw`md:py-2`,
+    itemType !== "disabled" && [
+      tw`hover:bg-background`,
+      css`
+        &:hover ${IndexText} {
+          ${tw`hidden`}
+        }
 
-      &:hover ${IconPlayWrapper} {
-        ${tw`inline-block`}
-      }
+        &:hover ${IconPlayWrapper} {
+          ${tw`inline-block`}
+        }
 
-      &:hover ${More} {
-        ${tw`visible`}
-      }
+        &:hover ${More} {
+          ${tw`visible`}
+        }
 
-      &:hover ${Like} {
-        ${tw`md:visible`}
-      }
-    `,
-  ],
-  itemType === "disabled" && [
-    tw`opacity-60`,
-    css`
-      filter: grayscale(100%);
-      -webkit-filter: grayscale(100%);
-      -moz-filter: grayscale(100%);
-      -ms-filter: grayscale(100%);
-      -o-filter: grayscale(100%);
-    `,
-  ],
-]);
+        &:hover ${Like} {
+          ${tw`md:visible`}
+        }
+      `,
+    ],
+    itemType === "disabled" && [
+      tw`opacity-60`,
+      css`
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+      `,
+    ],
+  ]
+);

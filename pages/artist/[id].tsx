@@ -7,12 +7,12 @@ import { MiniPlaylistItemCard, MediaCard } from "../../components/cards";
 import { scrollbarHiddenStyles } from "../index";
 import { getSpecifiedArrayElements } from "../../lib/array";
 
-export interface ArtistProps {}
+export interface ArtistIdProps {}
 
 const coverPath =
   "https://p2.music.126.net/R5fsMgpLHC9mJbLLA6EKLA==/109951164561120345.jpg?param=512y512";
 
-const Artist: React.FC<ArtistProps> = () => {
+const ArtistId: React.FC<ArtistIdProps> = () => {
   const { query } = useRouter();
 
   const [artist, setArtist] = useState(null);
@@ -260,7 +260,7 @@ const Artist: React.FC<ArtistProps> = () => {
   );
 };
 
-export default Artist;
+export default ArtistId;
 
 const RecommendMoviesContainer = styled.div(() => [
   tw`grid grid-cols-5 md:grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,

@@ -8,7 +8,7 @@ import { Button } from "../../components/buttons";
 import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
 
-export interface PlayListProps {}
+export interface PlaylistProps {}
 
 const coverPath =
   "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
@@ -40,7 +40,7 @@ const hotPlaylistMenu = [
   },
 ];
 
-const PlayList: React.FC<PlayListProps> = () => {
+const Playlist: React.FC<PlaylistProps> = () => {
   const router = useRouter();
 
   const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
@@ -104,7 +104,7 @@ const PlayList: React.FC<PlayListProps> = () => {
   );
 };
 
-export default PlayList;
+export default Playlist;
 
 const LoadMoreContainer = styled.div(() => [tw`flex justify-center w-full my-5 md:my-6`]);
 

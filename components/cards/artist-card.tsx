@@ -10,11 +10,11 @@ export interface ArtistProps {
   caption?: string;
   songs?: number;
   albums?: number;
-  movies?: number;
+  mvs?: number;
   isShowCollect?: boolean;
   onSongsClick?: React.MouseEventHandler<HTMLElement>;
   onAlbumsClick?: React.MouseEventHandler<HTMLElement>;
-  onMoviesClick?: React.MouseEventHandler<HTMLElement>;
+  onMvsClick?: React.MouseEventHandler<HTMLElement>;
   onCollectClick?: React.MouseEventHandler<HTMLElement>;
 }
 
@@ -24,17 +24,17 @@ const ArtistCard: React.FC<ArtistProps> = ({
   caption,
   songs,
   albums,
-  movies,
+  mvs,
   isShowCollect = true,
   onSongsClick,
   onAlbumsClick,
-  onMoviesClick,
+  onMvsClick,
   onCollectClick,
 }) => {
   const displayDataList = [
     { text: "单曲数：", num: songs, onClick: onSongsClick },
     { text: "专辑数：", num: albums, onClick: onAlbumsClick },
-    { text: "MV数：", num: movies, onClick: onMoviesClick },
+    { text: "MV数：", num: mvs, onClick: onMvsClick },
   ];
 
   return (
@@ -52,7 +52,7 @@ const ArtistCard: React.FC<ArtistProps> = ({
         <Info>
           <Title>{title}</Title>
           {caption && <Caption>{caption}</Caption>}
-          {songs && albums && movies && (
+          {songs && albums && mvs && (
             <Data>
               {displayDataList.map((item) => (
                 <DataItem key={item.text} onClick={item.onClick}>

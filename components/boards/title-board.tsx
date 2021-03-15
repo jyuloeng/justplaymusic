@@ -3,33 +3,39 @@ import { H3, InfoText } from "../../styles/typography";
 import { tuple } from "../../lib/type";
 
 const TitleBoardTypes = tuple("default", "search");
-type TitleBoardType = typeof TitleBoardTypes[number];
+export type TitleBoardType = typeof TitleBoardTypes[number];
 
 export interface TitleBoardProps {
   title: string | string[];
-  info: string;
+  info?: string;
+  searchPrevText?: string;
   type?: TitleBoardType;
 }
 
-const TitleBoard: React.FC<TitleBoardProps> = ({ title, info, type }) => {
+const TitleBoard: React.FC<TitleBoardProps> = ({
+  title,
+  info,
+  searchPrevText: searchText = "搜索",
+  type,
+}) => {
   return (
     <Container>
       {type === "search" ? (
         <H3>
           {typeof title === "string" ? (
             <>
-              <SearchText>搜索</SearchText> “{title}”
+              <SearchText>{searchText}</SearchText> “{title}”
             </>
           ) : (
             <>
-              <SearchText>搜索</SearchText> “{title?.join(', ')}”
+              <SearchText>{searchText}</SearchText> “{title?.join(", ")}”
             </>
           )}
         </H3>
       ) : (
         <H3>{title}</H3>
       )}
-      <InfoText>{info}</InfoText>
+      {info && <InfoText>{info}</InfoText>}
     </Container>
   );
 };

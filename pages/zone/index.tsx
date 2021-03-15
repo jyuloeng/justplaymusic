@@ -57,7 +57,7 @@ const Zone: React.FC<ZoneProps> = () => {
 
   const [likedAlbumsRes, setLikedAlbumsRes] = useState<commonLikedRes>(null);
   const [likedArtistsRes, setLikedArtistsRes] = useState<commonLikedRes>(null);
-  const [likedMoviesRes, setLikedMoviesRes] = useState<commonLikedRes>(null);
+  const [likedMvsRes, setLikedMvsRes] = useState<commonLikedRes>(null);
 
   const handleTabClick = (key) => {
     setActiveTab(() => key);
@@ -73,7 +73,7 @@ const Zone: React.FC<ZoneProps> = () => {
         } else if (key === "artist") {
           setLikedArtistsRes(data);
         } else if (key === "mv") {
-          setLikedMoviesRes(data);
+          setLikedMvsRes(data);
         }
       });
   };
@@ -284,18 +284,18 @@ const Zone: React.FC<ZoneProps> = () => {
       )}
 
       {activeTab === "mv" && (
-        <MoviesContainer>
-          {likedMoviesRes?.data?.map((movie) => (
+        <MvsContainer>
+          {likedMvsRes?.data?.map((mv) => (
             <MediaCard
-              key={movie.id}
-              cardType="movie"
-              coverPath={movie.coverUrl + "?param=464y260"}
-              title={movie.title}
-              caption={movie.type === 0 ?  movie.creator[0].userName :''}
-              playCount={movie.playTime}
+              key={mv.id}
+              cardType="mv"
+              coverPath={mv.coverUrl + "?param=464y260"}
+              title={mv.title}
+              caption={mv.type === 0 ?  mv.creator[0].userName :''}
+              playCount={mv.playTime}
             />
           ))}
-        </MoviesContainer>
+        </MvsContainer>
       )}
     </Container>
   );
@@ -303,7 +303,7 @@ const Zone: React.FC<ZoneProps> = () => {
 
 export default Zone;
 
-const MoviesContainer = styled.div(() => [
+const MvsContainer = styled.div(() => [
   tw`grid grid-cols-2 md:grid-cols-4 gap-2 lg:gap-6 mx-3 lg:mx-7`,
 ]);
 

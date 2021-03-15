@@ -14,83 +14,6 @@ import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
 import { Slider } from "../components/controls";
 import { getRandomArrayElements } from "../lib/array";
 
-const coverPath =
-  "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
-
-const movieCoverPath =
-  "https://p1.music.126.net/c6y8xjSlDESdDuiELIAh4A==/5888984278505748.jpg?param=464y260";
-
-const avatarPath =
-  "https://p2.music.126.net/k0-V3Zom2-va2KPr9yAmpQ==/109951165745417214.jpg?param=512y512";
-
-const coverPath2 =
-  "http://p2.music.126.net/06AEb-q2iWrhS4zg_b51yA==/2537672837122343.jpg?param=224y224";
-
-const playlist: Omit<PlaylistItemCardProps, "index">[] = [
-  {
-    itemType: "default",
-    coverPath:
-      "https://p2.music.126.net/Yp9UQkKPDx7zZV6LogAAoA==/109951165682825214.jpg?param=224y224",
-    name: '「FREE」"BREATHE" Anime Opening Type Bea',
-    artists: ["Mocookie"],
-    album: '「FREE」"BREATHE" Anime Opening Type Beat',
-    duration: 123456,
-    isLike: false,
-    isShowDuration: false,
-    isShowCover: false,
-  },
-  {
-    itemType: "default",
-    coverPath:
-      "https://p2.music.126.net/EFa8vTDquiMpjs14bmV7jQ==/109951165667270306.jpg?param=224y224",
-    name: " ''Unwind''-Dance Hall Type beat（Prod by 17＆AFB） ",
-    artists: ["LRUI17", "AlcoholFreeBaby"],
-    album: "''Unwind''-Dance Hall Type Beat",
-    duration: 123456,
-    isLike: false,
-    isShowDuration: false,
-    isShowCover: false,
-  },
-  {
-    itemType: "default",
-    coverPath:
-      "https://p2.music.126.net/3fTliWFKVkrMdpIJwF-0mQ==/109951165671945704.jpg?param=224y224",
-    name: " [FREE] WITOUT U ",
-    artists: ["Jianastic.X", "GOAT MUSIC"],
-    album: "[FREE] WITOUT U/GOAT CYPHER/ SOLO/",
-    duration: 123456,
-    isLike: false,
-    isShowDuration: false,
-    isShowCover: false,
-  },
-  {
-    itemType: "default",
-    coverPath:
-      "https://p2.music.126.net/qfs4JBmh5B05kUV5XHINvA==/109951165660973993.jpg?param=224y224",
-    name: "日暮途穷",
-    artists: ["Lv9", "GOAT MUSIC"],
-    album: "日暮途穷",
-    duration: 123456,
-    isLike: false,
-    isShowDuration: false,
-    isShowCover: false,
-  },
-  {
-    itemType: "default",
-    coverPath:
-      "https://p2.music.126.net/fdv_FHmqJ7a1ZGBK5_zslQ==/109951164589169828.jpg?param=224y224",
-    name:
-      "會 不 會 有 那 麼 壹 刻 ， 妳 仰 望 夜 空 的 方 向 剛 好 和 我 壹 樣",
-    artists: ["Vicious"],
-    album:
-      "會 不 會 有 那 麼 壹 刻 ， 妳 仰 望 夜 空 的 方 向 剛 好 和 我 壹 樣",
-    duration: 123456,
-    isLike: false,
-    isShowDuration: false,
-    isShowCover: false,
-  },
-];
-
 const Home = () => {
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
     visible: false,
@@ -105,7 +28,7 @@ const Home = () => {
   const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
   const [personalizedArtists, setPersonalizedArtists] = useState([]);
   const [newAlbums, setNewAlbums] = useState([]);
-  const [personalizedMovie, setPersonalizedMovie] = useState([]);
+  const [personalizedMv, setPersonalizedMv] = useState([]);
   const [personalizedSongs, setPersonalizedSongs] = useState([]);
 
   const handleOnContextMenuClick = (
@@ -171,7 +94,7 @@ const Home = () => {
     )
       .then((res) => res.json())
       .then((data) =>
-        setPersonalizedMovie(getRandomArrayElements(data.result, 2))
+        setPersonalizedMv(getRandomArrayElements(data.result, 2))
       );
   }, []);
 
@@ -214,7 +137,7 @@ const Home = () => {
       </PlaylistWrapper>
 
       <FlexModalContainer>
-        <RecommendMovieWrapper>
+        <RecommendMvWrapper>
           <CaptionBoardContainer tw="lg:mx-0">
             <CaptionBoard
               caption="推荐视频"
@@ -223,21 +146,21 @@ const Home = () => {
             />
           </CaptionBoardContainer>
 
-          <RecommendMoviesWrapper>
-            <RecommendMoviesContainer>
-              {personalizedMovie?.map((movie) => (
+          <RecommendMvsWrapper>
+            <RecommendMvContainer>
+              {personalizedMv?.map((mv) => (
                 <MediaCard
-                  key={movie.id}
-                  cardType="movie"
-                  coverPath={movie.picUrl + "?param=464y260"}
-                  title={movie.name}
-                  caption={movie.artistName}
-                  playCount={movie.playCount}
+                  key={mv.id}
+                  cardType="mv"
+                  coverPath={mv.picUrl + "?param=464y260"}
+                  title={mv.name}
+                  caption={mv.artistName}
+                  playCount={mv.playCount}
                 />
               ))}
-            </RecommendMoviesContainer>
-          </RecommendMoviesWrapper>
-        </RecommendMovieWrapper>
+            </RecommendMvContainer>
+          </RecommendMvsWrapper>
+        </RecommendMvWrapper>
 
         <RecommendSongsWrapper>
           <CaptionBoardContainer>
@@ -377,7 +300,7 @@ const RecommendSongs = styled.div(() => [
 
 const RecommendSongsWrapper = styled.div(() => [tw`flex-1`]);
 
-const RecommendMoviesContainer = styled.div(() => [
+const RecommendMvContainer = styled.div(() => [
   tw`grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-1 pr-3 lg:pr-0`,
   css`
     @media (max-width: 767px) {
@@ -386,12 +309,12 @@ const RecommendMoviesContainer = styled.div(() => [
   `,
 ]);
 
-const RecommendMoviesWrapper = styled.div(() => [
+const RecommendMvsWrapper = styled.div(() => [
   scrollbarHiddenStyles,
   tw`pl-3 lg:pl-0 overflow-x-scroll md:overflow-visible`,
 ]);
 
-const RecommendMovieWrapper = styled.div(() => [tw`flex-1`]);
+const RecommendMvWrapper = styled.div(() => [tw`flex-1`]);
 
 const MobileRecommendSongsContainer = styled.div(() => [
   scrollbarHiddenStyles,

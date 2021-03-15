@@ -3,6 +3,7 @@ import tw, { styled, css } from "twin.macro";
 
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
+import { getSpecifiedArrayElements } from "../../lib/array";
 
 export interface RankingProps {}
 
@@ -39,18 +40,35 @@ const Ranking: React.FC<RankingProps> = () => {
       </TitleBoardContainer>
 
       <CaptionBoardContainer>
-        <CaptionBoard caption="全球榜" />
+        <CaptionBoard caption="官方榜" />
       </CaptionBoardContainer>
 
       <PlaylistContainer>
-        {globalRankList?.map((ranklist) => (
-          // <div key={ranklist.id}>{ranklist.name}</div>
+        {officialrankList?.map((ranklist) => (
           <MediaCard
             key={ranklist.id}
             cardType="album"
             coverPath={ranklist.coverImgUrl + "?param=512y512"}
             title={ranklist.name}
-            caption={ranklist.description}
+            caption={ranklist.updateFrequency}
+            playCount={ranklist.playCount}
+            isCanCaptionClick={false}
+          />
+        ))}
+      </PlaylistContainer>
+
+      <CaptionBoardContainer>
+        <CaptionBoard caption="全球榜" />
+      </CaptionBoardContainer>
+
+      <PlaylistContainer>
+        {globalRankList?.map((ranklist) => (
+          <MediaCard
+            key={ranklist.id}
+            cardType="album"
+            coverPath={ranklist.coverImgUrl + "?param=512y512"}
+            title={ranklist.name}
+            caption={ranklist.updateFrequency}
             playCount={ranklist.playCount}
             isCanCaptionClick={false}
           />

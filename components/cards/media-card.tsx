@@ -8,13 +8,13 @@ import { IconPlay } from "../../styles/icons";
 import { DarkModeTextColor } from "../../styles/colors";
 import { tuple } from "../../lib/type";
 
-const MediaCardTypes = tuple("album", "movie");
+const MediaCardTypes = tuple("album", "mv");
 type MediaCardType = typeof MediaCardTypes[number];
 
 export interface MediaCardProps {
-  cardType: MediaCardType;
+  cardType?: MediaCardType;
   coverPath: string;
-  title: string;
+  title?: string;
   caption?: string;
   playCount?: number;
   isShowPlayCount?: boolean;
@@ -41,8 +41,8 @@ const MediaCard: React.FC<MediaCardProps> = ({
           <Cover
             src={coverPath}
             layout="responsive"
-            width={cardType === "movie" ? 232 : 0}
-            height={cardType === "movie" ? 130 : 0}
+            width={cardType === "mv" ? 232 : 0}
+            height={cardType === "mv" ? 130 : 0}
           />
 
           {cardType === "album" && (
@@ -61,19 +61,25 @@ const MediaCard: React.FC<MediaCardProps> = ({
         </CoverContainer>
       </Link>
 
-      <Info>
-        <TitleContainer>
-          <Title onClick={onTitleClick}>{title}</Title>
-        </TitleContainer>
-        <CaptionContainer>
-          <Caption
-            isCanCaptionClick={isCanCaptionClick}
-            onClick={onCaptionClick}
-          >
-            {caption}
-          </Caption>
-        </CaptionContainer>
-      </Info>
+      {(title || caption) && (
+        <Info>
+          {title && (
+            <TitleContainer>
+              <Title onClick={onTitleClick}>{title}</Title>
+            </TitleContainer>
+          )}
+          {caption && (
+            <CaptionContainer>
+              <Caption
+                isCanCaptionClick={isCanCaptionClick}
+                onClick={onCaptionClick}
+              >
+                {caption}
+              </Caption>
+            </CaptionContainer>
+          )}
+        </Info>
+      )}
     </Container>
   );
 };
@@ -94,10 +100,9 @@ const CoverContainer = styled.a(() => [
   tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer transition`,
   css`
     &:hover {
-      transform: scale(1.02);
+      transform: translateY(-6%);
       ${GlassButtonContainer} {
         ${tw`visible`}
-        transform: scale(1.02);
       }
     }
   `,

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
-import { ArtistCard, AvatarCard } from "../../components/cards";
-import { CaptionBoard } from "../../components/boards";
-import { MiniPlaylistItemCard, MediaCard } from "../../components/cards";
-import { scrollbarHiddenStyles } from "../index";
-import { getSpecifiedArrayElements } from "../../lib/array";
+import { ArtistCard, AvatarCard } from "../../../components/cards";
+import { CaptionBoard } from "../../../components/boards";
+import { MiniPlaylistItemCard, MediaCard } from "../../../components/cards";
+import { scrollbarHiddenStyles } from "../../index";
+import { getSpecifiedArrayElements } from "../../../lib/array";
 
 export interface ArtistIdProps {}
 
@@ -19,7 +19,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
   const [hotSongs, setHotSongs] = useState([]);
   const [singleAlbums, setSingleAlbums] = useState([]);
   const [defaultalbums, setDefaultalbums] = useState([]);
-  const [movies, setMovies] = useState([]);
+  const [mvs, setMvs] = useState([]);
   const [similarArtists, setSimilarArtists] = useState([]);
   const [isShowingMoreHotSons, setIsShowingMoreHotSons] = useState<boolean>(
     false
@@ -97,7 +97,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
       .then((res) => res.json())
       .then((data) => {
         const { mvs } = data;
-        setMovies(mvs);
+        setMvs(mvs);
       });
   }, []);
 
@@ -122,7 +122,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
             caption={artist.alias?.join(", ")}
             songs={artist.musicSize}
             albums={artist.albumSize}
-            movies={artist.mvSize}
+            mvs={artist.mvSize}
           />
         )}
       </ArtistCardContainer>
@@ -186,26 +186,26 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="Moives"
+          caption="Music Video"
           moreText="查看全部"
           onMoreClick={handleAllMoives}
         />
       </CaptionBoardContainer>
 
-      <RecommendMoviesWrapper>
-        <RecommendMoviesContainer>
-          {getSpecifiedArrayElements(movies, 8)?.map((movie) => (
+      <RecommendMvsWrapper>
+        <RecommendMvsContainer>
+          {getSpecifiedArrayElements(mvs, 8)?.map((mv) => (
             <MediaCard
-              key={movie.id}
-              cardType="movie"
-              coverPath={movie.imgurl16v9 + "?param=464y260"}
-              title={movie.name}
-              caption={movie.artistName}
-              playCount={movie.playCount}
+              key={mv.id}
+              cardType="mv"
+              coverPath={mv.imgurl16v9 + "?param=464y260"}
+              title={mv.name}
+              caption={mv.artistName}
+              playCount={mv.playCount}
             />
           ))}
-        </RecommendMoviesContainer>
-      </RecommendMoviesWrapper>
+        </RecommendMvsContainer>
+      </RecommendMvsWrapper>
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -262,7 +262,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
 export default ArtistId;
 
-const RecommendMoviesContainer = styled.div(() => [
+const RecommendMvsContainer = styled.div(() => [
   tw`grid grid-cols-5 md:grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,
   css`
     @media (max-width: 767px) {
@@ -271,7 +271,7 @@ const RecommendMoviesContainer = styled.div(() => [
   `,
 ]);
 
-const RecommendMoviesWrapper = styled.div(() => [
+const RecommendMvsWrapper = styled.div(() => [
   scrollbarHiddenStyles,
   tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll md:overflow-visible`,
 ]);

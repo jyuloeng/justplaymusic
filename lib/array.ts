@@ -1,4 +1,6 @@
 export const getRandomArrayElements = (arr: any[], count: number) => {
+  if (arr === null) return [];
+
   const len = arr.length;
   if (len === 0) return arr;
 
@@ -16,6 +18,8 @@ export const getRandomArrayElements = (arr: any[], count: number) => {
 };
 
 export const getSpecifiedArrayElements = (arr: any[], count: number) => {
+  if (arr === null) return [];
+
   const len = arr.length;
   if (len === 0) return arr;
 

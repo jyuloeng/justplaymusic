@@ -92,6 +92,7 @@ const Container = styled.button<ButtonProps>(
       css`
         &:hover {
           background-color: ${ButtonBackgroundColors[backgroundColor]};
+          color: ${ButtonTypeColors[backgroundColor]};
         }
       `,
   ]

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
-import { TitleBoard, CaptionBoard } from "../../components/boards";
+import { TitleBoard, CaptionBoard } from "../../../components/boards";
 import {
   MiniPlaylistItemCard,
   MediaCard,
   AvatarCard,
-} from "../../components/cards";
-import { getSpecifiedArrayElements } from "../../lib/array";
-import { scrollbarHiddenStyles } from "../index";
+} from "../../../components/cards";
+import { getSpecifiedArrayElements } from "../../../lib/array";
+import { scrollbarHiddenStyles } from "../../index";
 
 export interface SearchKeywordProps {}
 
@@ -32,7 +32,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
     songs?: any[];
   }>(null);
 
-  const [searchMoviesRes, setSearchMoviesRes] = useState<{
+  const [searchMvsRes, setSearchMvsRes] = useState<{
     mvCount?: number;
     mvs?: any[];
   }>(null);
@@ -43,7 +43,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
     playlists?: any[];
   }>(null);
 
-  const handleAllMoives = () => {};
+  const handleAllMvs = () => {};
 
   useEffect(() => {
     fetch(
@@ -100,7 +100,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
       .then((res) => res.json())
       .then((data) => {
         const { result } = data;
-        setSearchMoviesRes(result);
+        setSearchMvsRes(result);
       });
   }, []);
 
@@ -232,37 +232,37 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="Moives"
+          caption="Music Video"
           moreText={
-            searchMoviesRes?.mvCount > 4
-              ? `查看全部 ${searchMoviesRes?.mvCount} 个Movies`
+            searchMvsRes?.mvCount > 4
+              ? `查看全部 ${searchMvsRes?.mvCount} 个Mvs`
               : ""
           }
-          onMoreClick={handleAllMoives}
+          onMoreClick={handleAllMvs}
         />
       </CaptionBoardContainer>
 
-      <SearchMoviesWrapper>
-        <SearchMoviesContainer>
-          {searchMoviesRes?.mvs?.map((movie) => (
+      <SearchMvsWrapper>
+        <SearchMvsContainer>
+          {searchMvsRes?.mvs?.map((mv) => (
             <MediaCard
-              key={movie.id}
-              cardType="movie"
-              coverPath={movie.cover + "?param=464y260"}
-              title={movie.name}
-              caption={movie.artistName}
-              playCount={movie.playCount}
+              key={mv.id}
+              cardType="mv"
+              coverPath={mv.cover + "?param=464y260"}
+              title={mv.name}
+              caption={mv.artistName}
+              playCount={mv.playCount}
             />
           ))}
-        </SearchMoviesContainer>
-      </SearchMoviesWrapper>
+        </SearchMvsContainer>
+      </SearchMvsWrapper>
     </Container>
   );
 };
 
 export default SearchKeyword;
 
-const SearchMoviesContainer = styled.div(() => [
+const SearchMvsContainer = styled.div(() => [
   tw`grid grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,
   css`
     @media (max-width: 767px) {
@@ -271,7 +271,7 @@ const SearchMoviesContainer = styled.div(() => [
   `,
 ]);
 
-const SearchMoviesWrapper = styled.div(() => [
+const SearchMvsWrapper = styled.div(() => [
   scrollbarHiddenStyles,
   tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll md:overflow-visible`,
 ]);

@@ -9,3 +9,4 @@ export type {
 } from "./playlist-item-card";
 export { default as MiniPlaylistItemCard } from "./mini-playlist-item-card";
 export { default as PlaylistIntroCard } from "./playlist-intro-card";
+export { default as MiniAvatarCard } from "./mini-avatar-card";

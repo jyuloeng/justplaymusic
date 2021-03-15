@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../components/boards";
-import { AvatarCard } from "../../components/cards";
+import { MiniAvatarCard, AvatarCard } from "../../components/cards";
 import { ViewMoreCommonContainer } from "../../components/containers";
 import { TabsMenu } from "../../components/menus";
-import { IconGlobal, IconLibrary, IconStyle } from "../../styles/icons";
+import {
+  IconGlobal,
+  IconHeartThread,
+  IconLibrary,
+  IconStyle,
+} from "../../styles/icons";
 import { generateLowerChar } from "../../lib/util";
-import { url } from "node:inspector";
 
 export interface SearchKeywordArtistsProps {}
 
@@ -134,7 +138,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
         titleBoard={
           <TitleBoard title="歌手" info="你还是那么喜欢听ta的歌呢~" />
         }
-        extension={
+        header={
           <>
             <TabsMenuContainer>
               <TabsMenu
@@ -168,20 +172,44 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
           </>
         }
         isShowLoadMore={searchArtistsRes?.more}
-      >
-        {searchArtistsRes?.artists?.map((artist) => (
-          <AvatarCard
-            key={artist.id}
-            src={artist.picUrl + "?param=512y512"}
-            caption={artist.name}
-          />
-        ))}
-      </ViewMoreCommonContainer>
+        isNeedChildrenContainer={false}
+        footer={
+          <>
+            <ArtistsContainer>
+              {searchArtistsRes?.artists?.map((artist) => (
+                <AvatarCard
+                  key={artist.id}
+                  src={artist.picUrl + "?param=512y512"}
+                  caption={artist.name}
+                />
+              ))}
+            </ArtistsContainer>
+
+            <MobileArtistsContainer>
+              {searchArtistsRes?.artists?.map((artist) => (
+                <MiniAvatarCard
+                  key={artist.id}
+                  coverPath={artist.picUrl + "?param=256y256"}
+                  caption={artist.name}
+                  buttonIcon={<IconHeartThread />}
+                  buttonText={"关注"}
+                />
+              ))}
+            </MobileArtistsContainer>
+          </>
+        }
+      ></ViewMoreCommonContainer>
     </Container>
   );
 };
 
 export default SearchKeywordArtists;
+
+const MobileArtistsContainer = styled.div(() => [tw`block md:hidden`]);
+
+const ArtistsContainer = styled.div(() => [
+  tw`hidden md:grid grid-cols-3 md:grid-cols-6 gap-2 lg:gap-6`,
+]);
 
 const TabsMenuContainer = styled.div(() => [tw`mb-2 md:mb-6`]);
 

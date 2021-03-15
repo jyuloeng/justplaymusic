@@ -5,24 +5,28 @@ import { CaptionText } from "../../styles/typography";
 
 export interface ViewMoreCommonContainerProps {
   titleBoard?: React.ReactNode;
-  extension?: React.ReactNode;
+  header?: React.ReactNode;
   children?: React.ReactNode;
+  isNeedChildrenContainer?: boolean;
   cols?: number;
   mdCols?: number;
   gap?: number;
   lgGap?: number;
+  footer?: React.ReactNode;
   isShowLoadMore?: boolean;
   onLoadMoreClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
   titleBoard,
-  extension,
+  header,
   children,
+  isNeedChildrenContainer = true,
   cols = 3,
   mdCols = 6,
   gap = 2,
   lgGap = 6,
+  footer,
   isShowLoadMore = true,
   onLoadMoreClick,
 }) => {
@@ -30,13 +34,15 @@ const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
     <Container>
       {titleBoard && <TitleBoardContainer>{titleBoard}</TitleBoardContainer>}
 
-      {extension && <ExtensionContainer>{extension}</ExtensionContainer>}
+      {header && <HeaderContainer>{header}</HeaderContainer>}
 
-      {children && (
+      {isNeedChildrenContainer && children && (
         <ChlidrenContainer cols={cols} mdCols={mdCols} gap={gap} lgGap={lgGap}>
           {children}
         </ChlidrenContainer>
       )}
+
+      {footer && <FooterContainer>{footer}</FooterContainer>}
 
       {isShowLoadMore && (
         <LoadMoreContainer>
@@ -55,6 +61,8 @@ const LoadMoreContainer = styled.div(() => [
   tw`flex justify-center w-full my-2 md:my-6`,
 ]);
 
+const FooterContainer = styled.div(() => [tw`pt-5 lg:pt-10 px-3 md:px-7`]);
+
 const ChlidrenContainer = styled.div(
   ({
     cols,
@@ -67,20 +75,23 @@ const ChlidrenContainer = styled.div(
     gap?: number;
     lgGap?: number;
   }) => [
-    tw`grid lg:gap-6 pt-5 lg:pt-10 px-3 md:px-7`,
+    tw`grid pt-5 lg:pt-10 px-3 md:px-7`,
     css`
       grid-template-columns: repeat(${cols}, minmax(0, 1fr));
       gap: ${gap * 0.25}rem;
 
       @media (min-width: 768px) {
         grid-template-columns: repeat(${mdCols}, minmax(0, 1fr));
+      }
+
+      @media (min-width: 1024px) {
         gap: ${lgGap * 0.25}rem;
       }
     `,
   ]
 );
 
-const ExtensionContainer = styled.div(() => [tw`pt-5 lg:pt-10 px-3 md:px-7`]);
+const HeaderContainer = styled.div(() => [tw`pt-5 lg:pt-10 px-3 md:px-7`]);
 
 const TitleBoardContainer = styled.div(() => [tw`mx-5 lg:mx-10 mt-4 lg:mt-6`]);
 

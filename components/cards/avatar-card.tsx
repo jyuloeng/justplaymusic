@@ -1,13 +1,12 @@
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
-import Avatar from "../avatar";
+import { Avatar, AvatarProps } from "../commons";
 import { GlassButton } from "../buttons";
 import { IconPlay } from "../../styles/icons";
 import { DarkModeTextColor } from "../../styles/colors";
 import { CaptionText } from "../../styles/typography";
 
-export interface AvatarCardProps {
-  src: string;
+export interface AvatarCardProps extends AvatarProps {
   caption?: string;
   isShowButton?: boolean;
   isShowHover?: boolean;

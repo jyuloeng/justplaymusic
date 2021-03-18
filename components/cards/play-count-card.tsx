@@ -5,17 +5,17 @@ import { SmallText } from "../../styles/typography";
 import { tuple } from "../../lib/type";
 
 const PlayCountCardTypes = tuple("default", "solid");
-type PlayCountCardType = typeof PlayCountCardTypes[number];
+export type PlayCountCardType = typeof PlayCountCardTypes[number];
 export interface PlayCountCardProps {
   cardType?: PlayCountCardType;
   count: number | string;
+  iconSize?: number;
 }
-
-const iconSize = 10;
 
 const PlayCountCard: React.FC<PlayCountCardProps> = ({
   cardType = "default",
   count,
+  iconSize = 10,
 }) => {
   return (
     <Container cardType={cardType}>

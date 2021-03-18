@@ -1,6 +1,5 @@
 import React from "react";
 import tw, { styled, css } from "twin.macro";
-import { tuple } from "./../../lib/type";
 import {
   BackgroundColor,
   LightModeTextColor,
@@ -8,9 +7,10 @@ import {
   Secondary2Color,
   PrimaryBackgroundColor,
 } from "../../styles/colors";
+import { tuple } from "./../../lib/type";
 
 const ButtonTypes = tuple("default", "primary", "secondary");
-type ButtonType = typeof ButtonTypes[number];
+export type ButtonType = typeof ButtonTypes[number];
 
 const ButtonTypeColors = {
   default: LightModeTextColor,
@@ -26,7 +26,6 @@ const ButtonBackgroundColors = {
 
 export interface ButtonProps {
   icon?: React.ReactNode;
-  children?: React.ReactNode;
   btnType?: ButtonType;
   backgroundColor?: ButtonType;
   isShowBackground?: boolean;

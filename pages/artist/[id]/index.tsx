@@ -4,34 +4,35 @@ import { useRouter } from "next/router";
 import { ArtistCard, AvatarCard } from "../../../components/cards";
 import { CaptionBoard } from "../../../components/boards";
 import { MiniPlaylistItemCard, MediaCard } from "../../../components/cards";
+import { LoadingContainer } from "../../../components/containers";
 import { scrollbarHiddenStyles } from "../../index";
 import { getSpecifiedArrayElements } from "../../../lib/array";
+import {
+  useArtist,
+  useArtistAlbum,
+  useArtistMV,
+  useSimiArtist,
+} from "./../../../hooks/artist";
 
 export interface ArtistIdProps {}
-
-const coverPath =
-  "https://p2.music.126.net/R5fsMgpLHC9mJbLLA6EKLA==/109951164561120345.jpg?param=512y512";
 
 const ArtistId: React.FC<ArtistIdProps> = () => {
   const { query } = useRouter();
 
-  const [artist, setArtist] = useState(null);
-  const [hotSongs, setHotSongs] = useState([]);
-  const [singleAlbums, setSingleAlbums] = useState([]);
-  const [defaultalbums, setDefaultalbums] = useState([]);
-  const [mvs, setMvs] = useState([]);
-  const [similarArtists, setSimilarArtists] = useState([]);
   const [isShowingMoreHotSons, setIsShowingMoreHotSons] = useState<boolean>(
     false
   );
+
   const [
     isShowingMoreSingleAlbums,
     setIsShowingMoreSingleAlbums,
   ] = useState<boolean>(false);
+
   const [
     isShowingMoreDefaultalbums,
     setIsShowingMoreDefaultalbums,
   ] = useState<boolean>(false);
+
   const [
     isShowingMoreSimilarArtists,
     setIsShowingMoreSimilarArtists,
@@ -56,74 +57,44 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
     setIsShowingMoreSimilarArtists((value) => !value);
   };
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/artists?id=7763&timestamp=1615530859019&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { artist: resArtist, hotSongs: resHotSongs } = data;
-        setArtist(resArtist);
-        setHotSongs(resHotSongs);
-      });
-  }, []);
+  const { artist, hotSongs, isLoading: isArtistLoading } = useArtist(
+    query.id as string
+  );
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/artist/album?id=7763&limit=200&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { hotAlbums } = data;
-        const sAlbums = [];
-        const dAlbums = [];
-        hotAlbums.forEach((item) => {
-          if (item.type !== "专辑") {
-            sAlbums.push(item);
-          } else {
-            dAlbums.push(item);
-          }
-        });
+  const {
+    singleAlbums,
+    defaultAlbums,
+    isLoading: isArtistAlbumLoading,
+  } = useArtistAlbum({
+    id: query.id as string,
+    limit: 200,
+  });
 
-        setSingleAlbums(sAlbums);
-        setDefaultalbums(dAlbums);
-      });
-  }, []);
+  const { mvs, isLoading: isMVLoading } = useArtistMV({
+    id: query.id as string,
+    limit: 8,
+  });
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/artist/mv?id=7763&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { mvs } = data;
-        setMvs(mvs);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/simi/artist?id=7763&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { artists } = data;
-        setSimilarArtists(artists);
-      });
-  }, []);
+  const { similarArtists, isLoading: isSimiArtistLoading } = useSimiArtist(
+    query.id as string
+  );
 
   return (
     <Container>
       <ArtistCardContainer>
-        {artist && (
-          <ArtistCard
-            src={artist.picUrl + "?param=512y512"}
-            title={artist.name}
-            caption={artist.alias?.join(", ")}
-            songs={artist.musicSize}
-            albums={artist.albumSize}
-            mvs={artist.mvSize}
-          />
+        {isArtistLoading ? (
+          <LoadingContainer></LoadingContainer>
+        ) : (
+          artist && (
+            <ArtistCard
+              src={artist.picUrl + "?param=512y512"}
+              title={artist.name}
+              caption={artist.alias?.join(", ")}
+              songs={artist.musicSize}
+              albums={artist.albumSize}
+              mvs={artist.mvSize}
+            />
+          )
         )}
       </ArtistCardContainer>
 
@@ -136,25 +107,29 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
       </CaptionBoardContainer>
 
       <HotSongsContainer>
-        <HotSongs>
-          {getSpecifiedArrayElements(
-            hotSongs,
-            isShowingMoreHotSons ? 24 : 12
-          )?.map((song, index) => (
-            <MiniPlaylistItemCard
-              key={song.id}
-              itemType={
-                index === 0 ? "active" : index === 3 ? "disabled" : "default"
-              }
-              coverPath={song.al.picUrl + "?param=100y100"}
-              name={song.name}
-              artists={song.ar}
-              isShowHover={true}
-              onDblClick={(e, id) => console.log(e, id)}
-              onContextMenuClick={handleOnContextMenuClick}
-            />
-          ))}
-        </HotSongs>
+        {isArtistLoading ? (
+          <LoadingContainer></LoadingContainer>
+        ) : (
+          <HotSongs>
+            {getSpecifiedArrayElements(
+              hotSongs,
+              isShowingMoreHotSons ? 24 : 12
+            )?.map((song, index) => (
+              <MiniPlaylistItemCard
+                key={song.id}
+                itemType={
+                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                }
+                coverPath={song.al.picUrl + "?param=100y100"}
+                name={song.name}
+                artists={song.ar}
+                isShowHover={true}
+                onDblClick={(e, id) => console.log(e, id)}
+                onContextMenuClick={handleOnContextMenuClick}
+              />
+            ))}
+          </HotSongs>
+        )}
       </HotSongsContainer>
 
       <CaptionBoardContainer>
@@ -194,7 +169,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <RecommendMvsWrapper>
         <RecommendMvsContainer>
-          {getSpecifiedArrayElements(mvs, 8)?.map((mv) => (
+          {mvs?.map((mv) => (
             <MediaCard
               key={mv.id}
               cardType="mv"
@@ -218,8 +193,8 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
       <PlaylistWrapper>
         <PlaylistContainer>
           {getSpecifiedArrayElements(
-            defaultalbums,
-            isShowingMoreDefaultalbums ? defaultalbums.length : 10
+            defaultAlbums,
+            isShowingMoreDefaultalbums ? defaultAlbums.length : 10
           )?.map((album) => (
             <MediaCard
               key={album.id}

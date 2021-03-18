@@ -1,13 +1,11 @@
 import tw, { styled, css } from "twin.macro";
-import { AvatarCard } from "./index";
+import { AvatarCard, AvatarCardProps } from "./index";
 import { Button } from "../buttons";
 import { IconCollect } from "../../styles/icons";
 import { H2, MainText, MediumText, InfoText } from "../../styles/typography";
 
-export interface ArtistProps {
-  src: string;
+export interface ArtistCardProps extends AvatarCardProps {
   title: string;
-  caption?: string;
   songs?: number;
   albums?: number;
   mvs?: number;
@@ -18,7 +16,7 @@ export interface ArtistProps {
   onCollectClick?: React.MouseEventHandler<HTMLElement>;
 }
 
-const ArtistCard: React.FC<ArtistProps> = ({
+const ArtistCard: React.FC<ArtistCardProps> = ({
   src,
   title,
   caption,

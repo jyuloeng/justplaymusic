@@ -21,6 +21,7 @@ export interface PlaylistItemCardProps {
   itemType: PlaylistItemType;
   index: number;
   coverPath?: string;
+  coverSize?: { width: number; height: number };
   name: string;
   artists: any[];
   album: string;
@@ -36,15 +37,14 @@ export interface PlaylistItemCardProps {
   ) => void;
 }
 
-const coverSize = {
-  width: 20,
-  height: 20,
-};
-
 const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   itemType,
   index,
   coverPath,
+  coverSize = {
+    width: 20,
+    height: 20,
+  },
   name,
   artists,
   album,

@@ -13,7 +13,7 @@ export interface MiniPlaylistItemCardProps {
   onDblClick?: (e: React.MouseEvent<HTMLDivElement>, id: string) => void;
   onContextMenuClick?: (
     e: React.MouseEvent<HTMLDivElement>,
-    item: Omit<MiniPlaylistItemCardProps, "duration">
+    item: MiniPlaylistItemCardProps
   ) => void;
 }
 

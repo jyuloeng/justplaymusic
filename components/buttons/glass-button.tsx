@@ -1,7 +1,6 @@
 import tw, { styled, css } from "twin.macro";
 
 export interface GlassButtonProps {
-  children?: React.ReactNode;
   borderRaduis?: number;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }

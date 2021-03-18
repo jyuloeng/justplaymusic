@@ -6,7 +6,6 @@ import { CaptionText } from "../../styles/typography";
 export interface ViewMoreCommonContainerProps {
   titleBoard?: React.ReactNode;
   header?: React.ReactNode;
-  children?: React.ReactNode;
   isNeedChildrenContainer?: boolean;
   cols?: number;
   mdCols?: number;

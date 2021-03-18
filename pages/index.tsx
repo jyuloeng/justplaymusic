@@ -13,6 +13,8 @@ import {
 import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
 import { Slider } from "../components/controls";
 import { getRandomArrayElements } from "../lib/array";
+import "nprogress/nprogress.css";
+import { useTopArtists } from "./../hooks/artist";
 
 const Home = () => {
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
@@ -26,7 +28,6 @@ const Home = () => {
     },
   });
   const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
-  const [personalizedArtists, setPersonalizedArtists] = useState([]);
   const [newAlbums, setNewAlbums] = useState([]);
   const [personalizedMv, setPersonalizedMv] = useState([]);
   const [personalizedSongs, setPersonalizedSongs] = useState([]);
@@ -70,15 +71,9 @@ const Home = () => {
       .then((data) => setPersonalizedPlaylist(data.result));
   }, []);
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api//top/artists?cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) =>
-        setPersonalizedArtists(getRandomArrayElements(data.artists, 6))
-      );
-  }, []);
+  const { topArtists, isLoading: isTopArtistsLoading } = useTopArtists({
+    limit: 50,
+  });
 
   useEffect(() => {
     fetch(
@@ -225,7 +220,7 @@ const Home = () => {
 
       <ArtistsWrapper>
         <ArtistsConntainer>
-          {personalizedArtists?.map((artist) => (
+          {getRandomArrayElements(topArtists, 6)?.map((artist) => (
             <AvatarCard
               key={artist.id}
               src={artist.picUrl + "?param=512y512"}

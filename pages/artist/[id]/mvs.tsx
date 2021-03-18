@@ -4,30 +4,17 @@ import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
+import { useArtistMV } from "../../../hooks";
 
 export interface ArtistIdMvsProps {}
 
 const ArtistIdMvs: React.FC<ArtistIdMvsProps> = () => {
-  const { query, isReady } = useRouter();
-  const [searchMvsResult, setSearchMvsResult] = useState<{
-    code?: number;
-    hasMore?: boolean;
-    mvs?: any[];
-  }>(null);
+  const { query } = useRouter();
 
-  useEffect(() => {
-    if (isReady) {
-      const { id } = query;
-
-      fetch(
-        `https://music.qier222.com/api/artist/mv?id=${id}&limit=16&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setSearchMvsResult(data);
-        });
-    }
-  }, [isReady]);
+  const { data: searchMvsResult, isLoading: isMVLoading } = useArtistMV({
+    id: query.id as string,
+    limit: 24,
+  });
 
   return (
     <Container>

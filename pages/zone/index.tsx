@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
-import Avatar from "../../components/avatar";
+import Avatar from "../../components/commons/avatar";
 import {
   MediaCard,
   ArtistCard,

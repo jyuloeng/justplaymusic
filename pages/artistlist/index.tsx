@@ -12,8 +12,9 @@ import {
   IconStyle,
 } from "../../styles/icons";
 import { generateLowerChar } from "../../lib/util";
+import { useArtistList } from "../../hooks";
 
-export interface SearchKeywordArtistsProps {}
+export interface ArtistList {}
 
 const areaList = [
   {
@@ -67,70 +68,85 @@ const initialList = [
   { key: 0, name: "#" },
 ];
 
-const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
+interface ArtistListSearchKey {
+  area?: number;
+  type?: number;
+  initial?: string;
+}
+
+const ArtistList: React.FC<ArtistList> = () => {
   const router = useRouter();
 
-  const [searchArtistsRes, setSearchArtistsRes] = useState<{
-    more?: boolean;
-    code?: number;
-    artists?: any[];
-  }>(null);
-
-  const [searchAreaKey, setSearchAreaKey] = useState<string | number>(
-    areaList[0].key
-  );
-  const [searchTypeKey, setSearchTypeKey] = useState<string | number>(
-    typeList[0].key
-  );
-  const [searchInitialKey, setSearchInitialKey] = useState<string | number>(
-    initialList[0].key
-  );
+  const [searchKey, setSearchKey] = useState<ArtistListSearchKey>({
+    area: areaList[0].key,
+    type: typeList[0].key,
+    initial: initialList[0].key,
+  });
 
   const handleAreaTabClick = (key: string | number) => {
-    setSearchAreaKey(key);
-    router.push({
-      pathname: "/artistlist",
-      query: {
-        area: key,
-        type: searchTypeKey,
-        initial: searchInitialKey,
-      },
+    setSearchKey({
+      ...searchKey,
+      area: key as number,
     });
+
+    router.push(
+      {
+        pathname: "/artistlist",
+        query: {
+          ...searchKey,
+          area: key,
+        },
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
   const handleTypeTabClick = (key: string | number) => {
-    setSearchTypeKey(key);
-    router.push({
-      pathname: "/artistlist",
-      query: {
-        area: searchAreaKey,
-        type: key,
-        initial: searchInitialKey,
-      },
+    setSearchKey({
+      ...searchKey,
+      type: key as number,
     });
+
+    router.push(
+      {
+        pathname: "/artistlist",
+        query: {
+          ...searchKey,
+          type: key,
+        },
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
   const handleInitialTabClick = (key: string | number) => {
-    setSearchInitialKey(key);
-    router.push({
-      pathname: "/artistlist",
-      query: {
-        area: searchAreaKey,
-        type: searchTypeKey,
-        initial: key,
-      },
+    setSearchKey({
+      ...searchKey,
+      initial: key as string,
     });
+
+    router.push(
+      {
+        pathname: "/artistlist",
+        query: {
+          ...searchKey,
+          initial: key,
+        },
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
-  useEffect(() => {
-    fetch(
-      `https://music.qier222.com/api/artist/list?type=2&area=96&initial=b&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3Bhttps://music.qier222.com/api/playlist/detail?id=19723756,3779629&timestamp=1615772549053&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setSearchArtistsRes(data);
-      });
-  }, []);
+  const { data: searchArtistsRes } = useArtistList({ ...searchKey });
 
   return (
     <Container>
@@ -145,7 +161,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
                 title="地区"
                 titleIcon={<IconGlobal />}
                 tabList={areaList}
-                activeKey={searchAreaKey}
+                activeKey={searchKey.area}
                 onTabClick={(key) => handleAreaTabClick(key)}
               />
             </TabsMenuContainer>
@@ -155,7 +171,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
                 title="分类"
                 titleIcon={<IconStyle />}
                 tabList={typeList}
-                activeKey={searchTypeKey}
+                activeKey={searchKey.type}
                 onTabClick={(key) => handleTypeTabClick(key)}
               />
             </TabsMenuContainer>
@@ -165,7 +181,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
                 title="筛选"
                 titleIcon={<IconLibrary />}
                 tabList={initialList}
-                activeKey={searchInitialKey}
+                activeKey={searchKey.initial}
                 onTabClick={(key) => handleInitialTabClick(key)}
               />
             </InitialTabsMenuContainer>
@@ -203,7 +219,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
   );
 };
 
-export default SearchKeywordArtists;
+export default ArtistList;
 
 const MobileArtistsContainer = styled.div(() => [tw`block md:hidden`]);
 

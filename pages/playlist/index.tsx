@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
-
 import { useRouter } from "next/router";
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
 import { Button } from "../../components/buttons";
 import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
+import { usePersonalizedPlaylist } from "../../hooks";
+import { LoadingContainer } from "../../components/containers";
 
 export interface PlaylistProps {}
-
-const coverPath =
-  "https://p2.music.126.net/2Ctl_VC8ZzxIiitZQFyy3A==/109951163966538110.jpg?param=512y512";
 
 const hotPlaylistMenu = [
   {
@@ -43,70 +41,75 @@ const hotPlaylistMenu = [
 const Playlist: React.FC<PlaylistProps> = () => {
   const router = useRouter();
 
-  const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
-  const handleMorePlaylistClick = () => {};
+  const [limit, setLimit] = useState(10);
+  const handleMorePlaylistClick = () => {
+    setLimit((value) => (value += 10));
+  };
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/personalized?limit=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => setPersonalizedPlaylist(data.result));
-  }, []);
+  const {
+    personalizedPlaylist,
+    setPersonalizedPlaylist,
+    isLoading,
+    error,
+  } = usePersonalizedPlaylist(limit);
 
   return (
     <Container>
-      <TitleBoardContainer>
-        <TitleBoard title="歌单" info="看看今天有什么新的歌单吧~" />
-      </TitleBoardContainer>
+      <>
+        <TitleBoardContainer>
+          <TitleBoard title="歌单" info="看看今天有什么新的歌单吧~" />
+        </TitleBoardContainer>
 
-      <CaptionBoardContainer>
-        <Button isShowHover={false} onClick={handleMorePlaylistClick}>
-          <MainText bold>全部歌单</MainText>
-        </Button>
-        <Buttons>
-          {hotPlaylistMenu.map((menu) => (
-            <Button key={menu.name}>
-              <CaptionText bold>{menu.name}</CaptionText>
-            </Button>
-          ))}
-        </Buttons>
-      </CaptionBoardContainer>
+        <CaptionBoardContainer>
+          <Button isShowHover={false}>
+            <MainText bold>全部歌单</MainText>
+          </Button>
+          <Buttons>
+            {hotPlaylistMenu.map((menu) => (
+              <Button key={menu.name}>
+                <CaptionText bold>{menu.name}</CaptionText>
+              </Button>
+            ))}
+          </Buttons>
+        </CaptionBoardContainer>
 
-      <MobileCaptionBoardContainer>
-        <CaptionBoard
-          caption="全部歌单"
-          moreText="更多"
-          onMoreClick={handleMorePlaylistClick}
-        />
-      </MobileCaptionBoardContainer>
-
-      <PlaylistContainer>
-        {personalizedPlaylist?.map((playlist) => (
-          <MediaCard
-            key={playlist.id}
-            cardType="album"
-            coverPath={playlist.picUrl + "?param=512y512"}
-            title={playlist.name}
-            caption={playlist.copywriter}
-            playCount={playlist.playCount}
-            isCanCaptionClick={false}
+        <MobileCaptionBoardContainer>
+          <CaptionBoard
+            caption="全部歌单"
+            moreText="更多"
+            onMoreClick={handleMorePlaylistClick}
           />
-        ))}
-      </PlaylistContainer>
+        </MobileCaptionBoardContainer>
 
-      <LoadMoreContainer>
-        <Button icon={<IconLoading />}>
-          <CaptionText bold>加载更多</CaptionText>
-        </Button>
-      </LoadMoreContainer>
+        <PlaylistContainer>
+          {personalizedPlaylist?.map((playlist) => (
+            <MediaCard
+              key={playlist.id}
+              cardType="album"
+              coverPath={playlist.picUrl + "?param=512y512"}
+              title={playlist.name}
+              caption={playlist.copywriter}
+              playCount={playlist.playCount}
+              isCanCaptionClick={false}
+            />
+          ))}
+        </PlaylistContainer>
+
+        <LoadMoreContainer>
+          <Button icon={<IconLoading />} onClick={handleMorePlaylistClick}>
+            <CaptionText bold>加载更多</CaptionText>
+          </Button>
+        </LoadMoreContainer>
+      </>
     </Container>
   );
 };
 
 export default Playlist;
 
-const LoadMoreContainer = styled.div(() => [tw`flex justify-center w-full my-5 md:my-6`]);
+const LoadMoreContainer = styled.div(() => [
+  tw`flex justify-center w-full my-5 md:my-6`,
+]);
 
 const PlaylistContainer = styled.div(() => [
   tw`grid grid-cols-3 md:grid-cols-5 gap-2 lg:gap-6 mx-3 lg:mx-7`,

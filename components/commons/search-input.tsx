@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
 import tw, { styled, css } from "twin.macro";
-import { IconSearch } from "../styles/icons";
+import { IconSearch } from "../../styles/icons";
 import {
   Primary2Color,
   BackgroundColor,
   PrimaryBackgroundColor,
   LightModeTextColor,
-} from "../styles/colors";
+} from "../../styles/colors";
 
 export interface SearchInputProps {
   placeholder?: string;

@@ -1,7 +1,7 @@
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
 import Link from "next/link";
-import Avatar from "../avatar";
+import Avatar from "../commons/avatar";
 import { Button } from "../buttons";
 import { IconPlay, IconCollect } from "../../styles/icons";
 import { PrimaryBackgroundColor, PrimaryColor } from "../../styles/colors";

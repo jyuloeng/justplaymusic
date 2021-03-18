@@ -1,5 +1,5 @@
 import tw, { styled, css } from "twin.macro";
-import Avatar from "../avatar";
+import { Avatar } from "../commons";
 import { Button } from "../buttons";
 import { InfoText, CaptionText } from "../../styles/typography";
 

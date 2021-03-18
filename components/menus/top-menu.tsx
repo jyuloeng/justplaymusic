@@ -3,8 +3,8 @@ import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Button } from "../buttons";
-import Avatar from "../avatar";
-import SearchInput from "../search-input";
+import Avatar from "../commons/avatar";
+import SearchInput from "../commons/search-input";
 import {
   IconLeftArrow,
   IconNavigation,

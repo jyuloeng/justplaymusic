@@ -3,7 +3,6 @@ import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import TopMenu from "../components/menus/top-menu";
 import SlideMenu from "../components/menus/slide-menu";
-import { url } from "node:inspector";
 
 export interface HeaderProps {}
 

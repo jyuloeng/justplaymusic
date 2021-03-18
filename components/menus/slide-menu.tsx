@@ -2,7 +2,7 @@ import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Button } from "../buttons";
-import SearchInput from "../search-input";
+import SearchInput from "../commons/search-input";
 import { MediumText } from "../../styles/typography";
 
 export interface SlideMenuProps {

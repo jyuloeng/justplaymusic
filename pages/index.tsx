@@ -5,16 +5,20 @@ import CaptionBoard from "../components/boards/caption-board";
 import {
   MediaCard,
   AvatarCard,
-  ArtistCard,
   PlaylistItemCard,
   MiniPlaylistItemCard,
   PlaylistItemCardProps,
 } from "../components/cards";
 import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
-import { Slider } from "../components/controls";
 import { getRandomArrayElements } from "../lib/array";
 import "nprogress/nprogress.css";
-import { useTopArtists } from "./../hooks/artist";
+import {
+  usePersonalizedPlaylist,
+  useTopArtists,
+  usePersonalizedSong,
+  usePersonalizedMV,
+  useAlbumNewest,
+} from "./../hooks";
 
 const Home = () => {
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
@@ -27,10 +31,6 @@ const Home = () => {
       top: 0,
     },
   });
-  const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
-  const [newAlbums, setNewAlbums] = useState([]);
-  const [personalizedMv, setPersonalizedMv] = useState([]);
-  const [personalizedSongs, setPersonalizedSongs] = useState([]);
 
   const handleOnContextMenuClick = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -63,43 +63,22 @@ const Home = () => {
 
   const handleMoreNewAlbumClick = () => {};
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/personalized?limit=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => setPersonalizedPlaylist(data.result));
-  }, []);
+  const {
+    personalizedPlaylist,
+    setPersonalizedPlaylist,
+    isLoading,
+    error,
+  } = usePersonalizedPlaylist(10);
 
   const { topArtists, isLoading: isTopArtistsLoading } = useTopArtists({
     limit: 50,
   });
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/album/new?area=EA&limit=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => setNewAlbums(data.albums));
-  }, []);
+  const { newestAlbums } = useAlbumNewest();
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/personalized/mv?offset=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) =>
-        setPersonalizedMv(getRandomArrayElements(data.result, 2))
-      );
-  }, []);
+  const { personalizedMV } = usePersonalizedMV();
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/personalized/newsong?offset=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => setPersonalizedSongs(data.result));
-  }, []);
+  const { personalizedSongs } = usePersonalizedSong(10);
 
   return (
     <Container onClick={() => setContextMenuInfo({ visible: false })}>
@@ -143,7 +122,7 @@ const Home = () => {
 
           <RecommendMvsWrapper>
             <RecommendMvContainer>
-              {personalizedMv?.map((mv) => (
+              {getRandomArrayElements(personalizedMV, 2)?.map((mv) => (
                 <MediaCard
                   key={mv.id}
                   cardType="mv"
@@ -160,7 +139,7 @@ const Home = () => {
         <RecommendSongsWrapper>
           <CaptionBoardContainer>
             <CaptionBoard
-              caption="推荐歌曲"
+              caption="新歌送达"
               moreText="更多"
               onMoreClick={handleMoreHotArtistClick}
             />
@@ -178,7 +157,7 @@ const Home = () => {
                 name={song.name}
                 artists={song.song.artists}
                 album={song.song.album.name}
-                duration={song.duration}
+                duration={song.song.duration}
                 isLike={false}
                 onDblClick={(e, id) => console.log(e, id)}
                 onContextMenuClick={handleOnContextMenuClick}
@@ -240,7 +219,7 @@ const Home = () => {
 
       <PlaylistWrapper>
         <PlaylistContainer>
-          {newAlbums?.map((album) => (
+          {getRandomArrayElements(newestAlbums, 10)?.map((album) => (
             <MediaCard
               key={album.id}
               cardType="album"

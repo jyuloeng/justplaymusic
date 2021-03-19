@@ -15,6 +15,7 @@ import { CaptionText, H3, IntroText, SmallText } from "../../styles/typography";
 import { DarkModeTextColor } from "../../styles/colors";
 import { IconHeart, IconPlay } from "../../styles/icons";
 import { getSpecifiedArrayElements } from "../../lib/array";
+import { useUserPlaylist, useUserProfile } from "../../hooks";
 
 export interface ZoneProps {}
 type commonLikedRes = {
@@ -44,16 +45,11 @@ const tabsMenu = [
   },
 ];
 
+const cookie = `MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`;
+
 const Zone: React.FC<ZoneProps> = () => {
-  const [userProfile, setUserProfile] = useState(null);
   const [myFavoriteMusic, setMyFavoriteMusic] = useState([]);
   const [activeTab, setActiveTab] = useState(tabsMenu[0].key);
-  const [userPlaylistRes, setUserPlaylistRes] = useState<{
-    code?: number;
-    more?: boolean;
-    playlist?: any[];
-    version?: string;
-  }>(null);
 
   const [likedAlbumsRes, setLikedAlbumsRes] = useState<commonLikedRes>(null);
   const [likedArtistsRes, setLikedArtistsRes] = useState<commonLikedRes>(null);
@@ -78,15 +74,7 @@ const Zone: React.FC<ZoneProps> = () => {
       });
   };
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/user/account?timestamp=1615603073217&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setUserProfile(data.profile);
-      });
-  }, []);
+  const { userProfile } = useUserProfile(cookie);
 
   useEffect(() => {
     fetch(
@@ -112,15 +100,9 @@ const Zone: React.FC<ZoneProps> = () => {
       });
   }, []);
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/user/playlist?timestamp=1615601004337&limit=20&uid=107112048&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setUserPlaylistRes(data);
-      });
-  }, []);
+  const { userPlaylistRes } = useUserPlaylist({
+    uid: 107112048,
+  });
 
   return (
     <Container>
@@ -291,7 +273,7 @@ const Zone: React.FC<ZoneProps> = () => {
               cardType="mv"
               coverPath={mv.coverUrl + "?param=464y260"}
               title={mv.title}
-              caption={mv.type === 0 ?  mv.creator[0].userName :''}
+              caption={mv.type === 0 ? mv.creator[0].userName : ""}
               playCount={mv.playTime}
             />
           ))}

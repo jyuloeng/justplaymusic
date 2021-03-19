@@ -4,29 +4,16 @@ import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
+import { useSearchMVs } from "../../../hooks";
 
 export interface SearchKeywordMvsProps {}
 
 const SearchKeywordMvs: React.FC<SearchKeywordMvsProps> = () => {
-  const { query, isReady } = useRouter();
-  const [searchMvsResult, setSearchMvsRes] = useState<{
-    mvCount?: number;
-    mvs?: any[];
-  }>(null);
+  const { query } = useRouter();
 
-  useEffect(() => {
-    if (isReady) {
-      const { keyword } = query;
-      fetch(
-        `https://music.qier222.com/api/search?keywords=${keyword}&type=1004&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const { result } = data;
-          setSearchMvsRes(result);
-        });
-    }
-  }, [isReady]);
+  const { searchMVsRes } = useSearchMVs({
+    keywords: query.keyword as string,
+  });
 
   return (
     <Container>
@@ -40,9 +27,9 @@ const SearchKeywordMvs: React.FC<SearchKeywordMvsProps> = () => {
         }
         cols={2}
         mdCols={4}
-        isShowLoadMore={searchMvsResult?.mvCount > searchMvsResult?.mvs?.length}
+        isShowLoadMore={searchMVsRes?.mvCount > searchMVsRes?.mvs?.length}
       >
-        {searchMvsResult?.mvs?.map((mv) => (
+        {searchMVsRes?.mvs?.map((mv) => (
           <MediaCard
             key={mv.id}
             cardType="mv"

@@ -4,45 +4,16 @@ import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { PlaylistItemCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
+import { useSearchSongs } from "../../../hooks";
 
 export interface SearchKeywordTracksProps {}
 
 const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
-  const { query, isReady } = useRouter();
-  const [searchSongsRes, setSearchSongsRes] = useState<{
-    hasMore?: boolean;
-    songCount?: number;
-    songs?: any[];
-  }>(null);
+  const { query } = useRouter();
 
-  useEffect(() => {
-    if (isReady) {
-      const { keyword } = query;
-      fetch(
-        `https://music.qier222.com/api/search?keywords=${keyword}&type=1&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const { result } = data;
-          const songids = [];
-          result.songs.forEach((song) => {
-            songids.push(song.id);
-          });
-
-          fetch(
-            `https://music.qier222.com/api/song/detail?ids=${songids.join(",")}`
-          )
-            .then((res) => res.json())
-            .then((songsData) => {
-              setSearchSongsRes({
-                hasMore: result.hasMore,
-                songCount: result.songCount,
-                songs: songsData.songs,
-              });
-            });
-        });
-    }
-  }, [isReady]);
+  const { searchSongsRes } = useSearchSongs({
+    keywords: query.keyword as string,
+  });
 
   return (
     <Container>

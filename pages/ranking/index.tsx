@@ -1,37 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import tw, { styled, css } from "twin.macro";
 
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
-import { getSpecifiedArrayElements } from "../../lib/array";
+import { useToplist } from "../../hooks";
 
 export interface RankingProps {}
 
 const Ranking: React.FC<RankingProps> = () => {
-  const [globalRankList, setGlobalRankList] = useState([]);
-  const [officialrankList, setOfficialrankList] = useState([]);
-  const handleMorePlaylistClick = () => {};
-
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/toplist?cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { list } = data;
-        const gList = [];
-        const oList = [];
-        list.forEach((item) => {
-          if (item.ToplistType) {
-            oList.push(item);
-          } else {
-            gList.push(item);
-          }
-        });
-        setGlobalRankList(gList);
-        setOfficialrankList(oList);
-      });
-  }, []);
+  const { globalRankList, officialRankList, isLoading, data } = useToplist();
 
   return (
     <Container>
@@ -44,7 +21,7 @@ const Ranking: React.FC<RankingProps> = () => {
       </CaptionBoardContainer>
 
       <PlaylistContainer>
-        {officialrankList?.map((ranklist) => (
+        {officialRankList?.map((ranklist) => (
           <MediaCard
             key={ranklist.id}
             cardType="album"

@@ -2,39 +2,14 @@ import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
+import { usePlaylistDetail } from "../../hooks";
 
 export interface PlaylistIdProps {}
 
 const PlaylistId: React.FC<PlaylistIdProps> = () => {
-  const { query, isReady } = useRouter();
-  const [playlistInfo, setPlaylistInfo] = useState(null);
-  const [playlistSongs, setPlaylistSongs] = useState([]);
+  const { query } = useRouter();
 
-  useEffect(() => {
-    if (isReady) {
-      const { id } = query;
-      fetch(
-        `https://music.qier222.com/api/playlist/detail?id=${id}&timestamp=1615701213657&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const { playlist } = data;
-          setPlaylistInfo(playlist);
-
-          const { trackIds } = playlist;
-          const ids = trackIds?.map((item) => item.id);
-
-          fetch(
-            `https://music.qier222.com/api/song/detail?ids=${ids.join(",")}`
-          )
-            .then((res) => res.json())
-            .then((songsData) => {
-              const { songs } = songsData;
-              setPlaylistSongs(songs);
-            });
-        });
-    }
-  }, [isReady]);
+  const { playlistInfo, playlistSongs } = usePlaylistDetail(query.id as string);
 
   return (
     <Container>

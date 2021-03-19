@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { toast } from "../lib/toast";
 import request from "../lib/request";
-import { QUERY_ALBUM } from "../lib/const";
+import { QUERY_ALBUM, QUERY_ALBUM_NEWEST, QUERY_ALBUM_NEW } from "../lib/const";
 
-interface AlbumByIdResponse {
+interface QueryAlbumResponse {
   code?: number;
   msg?: string;
   resourceState?: boolean;
@@ -12,8 +12,25 @@ interface AlbumByIdResponse {
   songs?: unknown[];
 }
 
+interface QueryAlbumNewestResponse {
+  code?: number;
+  albums?: any[];
+}
+
+interface QueryAlbumNewResponse {
+  code?: number;
+  total?: number;
+  albums?: any[];
+}
+
+interface QueryAlbumNewParams {
+  limit?: number;
+  offset?: number;
+  area?: string;
+}
+
 export const useQueryAlbum = (id?: string) => {
-  return useQuery<AlbumByIdResponse>(
+  return useQuery<QueryAlbumResponse>(
     [QUERY_ALBUM.KEY, { id }],
     () =>
       request.get(QUERY_ALBUM.URL, {
@@ -52,6 +69,80 @@ export const useAlbum = (id?: string) => {
     albumSongs,
     setAlbumInfo,
     setAlbumSongs,
+    errorMsg,
+    data,
+    ...queryProps,
+  };
+};
+
+export const useQueryAlbumNewest = () => {
+  return useQuery<QueryAlbumNewestResponse>(
+    [QUERY_ALBUM_NEWEST.KEY],
+    () => request.get(QUERY_ALBUM_NEWEST.URL),
+    {}
+  );
+};
+
+export const useAlbumNewest = () => {
+  const [newestAlbums, setNewestAlbums] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const { data, ...queryProps } = useQueryAlbumNewest();
+
+  useEffect(() => {
+    if (data) {
+      const { code, albums } = data;
+      if (code === 200) {
+        setNewestAlbums(albums);
+      } else {
+        setErrorMsg(data);
+        toast(`🦄 ${data}`);
+      }
+    }
+  }, [data, setNewestAlbums, setErrorMsg, toast]);
+
+  return {
+    newestAlbums,
+    setNewestAlbums,
+    errorMsg,
+    data,
+    ...queryProps,
+  };
+};
+
+export const useQueryAlbumNew = (params: QueryAlbumNewParams) => {
+  return useQuery<QueryAlbumNewResponse>(
+    [QUERY_ALBUM_NEW.KEY, { params }],
+    () => request.get(QUERY_ALBUM_NEW.URL, { params }),
+    {}
+  );
+};
+
+export const useAlbumNew = (params: QueryAlbumNewParams) => {
+  const [newAlbums, setNewAlbums] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const { data, ...queryProps } = useQueryAlbumNew(params);
+
+  useEffect(() => {
+    if (data) {
+      const { code, albums, total } = data;
+      if (code === 200) {
+        setTotal(total);
+        setNewAlbums(albums);
+      } else {
+        setErrorMsg(data);
+        toast(`🦄 ${data}`);
+      }
+    }
+  }, [data, setTotal, setNewAlbums, setErrorMsg, toast]);
+
+  return {
+    newAlbums,
+    setNewAlbums,
+    total,
+    setTotal,
     errorMsg,
     data,
     ...queryProps,

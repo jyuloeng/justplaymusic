@@ -1,27 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import tw, { styled, css } from "twin.macro";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
-import { useReady } from "../../../hooks";
+import { useSearchAlbums } from "./../../../hooks";
+import { useRouter } from "next/router";
 
 export interface SearchKeywordAlbumsProps {}
 
 const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
-  const [searchAlbumsRes, setSearchAlbumsRes] = useState<{
-    albumCount?: number;
-    albums?: any[];
-  }>(null);
+  const { query } = useRouter();
 
-  const { query } = useReady((router) => {
-    fetch(
-      `https://music.qier222.com/api/search?keywords=${router.query.keyword}&type=10&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        setSearchAlbumsRes(result);
-      });
+  const { searchAlbumsRes } = useSearchAlbums({
+    keywords: query.keyword as string,
   });
 
   return (

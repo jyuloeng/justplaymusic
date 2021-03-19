@@ -4,30 +4,16 @@ import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { AvatarCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
+import { useSearchArtists } from "./../../../hooks";
 
 export interface SearchKeywordArtistsProps {}
 
 const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
-  const { query, isReady } = useRouter();
-  const [searchArtistsRes, setSearchArtistsRes] = useState<{
-    hasMore?: boolean;
-    artistCount?: number;
-    artists?: any[];
-  }>(null);
+  const { query } = useRouter();
 
-  useEffect(() => {
-    if (isReady) {
-      const { keyword } = query;
-      fetch(
-        `https://music.qier222.com/api/search?keywords=${keyword}&type=100&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const { result } = data;
-          setSearchArtistsRes(result);
-        });
-    }
-  }, [isReady]);
+  const { searchArtistsRes } = useSearchArtists({
+    keywords: query.keyword as string,
+  });
 
   return (
     <Container>

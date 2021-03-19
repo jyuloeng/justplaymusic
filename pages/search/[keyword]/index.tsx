@@ -7,113 +7,46 @@ import {
   MediaCard,
   AvatarCard,
 } from "../../../components/cards";
-import { getSpecifiedArrayElements } from "../../../lib/array";
 import { scrollbarHiddenStyles } from "../../index";
+import {
+  useSearchArtists,
+  useSearchAlbums,
+  useSearchMVs,
+  useSearchPlaylists,
+  useSearchSongs,
+} from "../../../hooks";
 
 export interface SearchKeywordProps {}
 
 const SearchKeyword: React.FC<SearchKeywordProps> = () => {
   const { query } = useRouter();
 
-  const [searchArtistsRes, setSearchArtistsRes] = useState<{
-    hasMore?: boolean;
-    artistCount?: number;
-    artists?: any[];
-  }>(null);
-
-  const [searchAlbumsRes, setSearchAlbumsRes] = useState<{
-    albumCount?: number;
-    albums?: any[];
-  }>(null);
-
-  const [searchSongsRes, setSearchSongsRes] = useState<{
-    hasMore?: boolean;
-    songCount?: number;
-    songs?: any[];
-  }>(null);
-
-  const [searchMvsRes, setSearchMvsRes] = useState<{
-    mvCount?: number;
-    mvs?: any[];
-  }>(null);
-
-  const [searchPlaylistsRes, setSearchPlaylistsRes] = useState<{
-    hasMore?: boolean;
-    playlistCount?: number;
-    playlists?: any[];
-  }>(null);
-
   const handleAllMvs = () => {};
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=100&limit=6&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        setSearchArtistsRes(result);
-      });
-  }, []);
+  const { searchArtistsRes } = useSearchArtists({
+    keywords: query.keyword as string,
+    limit: 6,
+  });
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=10&limit=12&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        setSearchAlbumsRes(result);
-      });
-  }, []);
+  const { searchAlbumsRes } = useSearchAlbums({
+    keywords: query.keyword as string,
+    limit: 12,
+  });
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=1&limit=16&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        const songids = [];
-        result.songs.forEach((song) => {
-          songids.push(song.id);
-        });
+  const { searchSongsRes } = useSearchSongs({
+    keywords: query.keyword as string,
+    limit: 16,
+  });
 
-        fetch(
-          `https://music.qier222.com/api/song/detail?ids=${songids.join(",")}`
-        )
-          .then((res) => res.json())
-          .then((songsData) => {
-            setSearchSongsRes({
-              hasMore: result.hasMore,
-              songCount: result.songCount,
-              songs: songsData.songs,
-            });
-          });
-      });
-  }, []);
+  const { searchMVsRes } = useSearchMVs({
+    keywords: query.keyword as string,
+    limit: 4,
+  });
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=1004&limit=4&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        setSearchMvsRes(result);
-      });
-  }, []);
-
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/search?keywords=%E9%82%93%E7%B4%AB%E6%A3%8B&type=1000&limit=12&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { result } = data;
-        setSearchPlaylistsRes(result);
-      });
-  }, []);
+  const { searchPlaylistsRes } = useSearchPlaylists({
+    keywords: query.keyword as string,
+    limit: 12,
+  });
 
   return (
     <Container>
@@ -234,8 +167,8 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         <CaptionBoard
           caption="Music Video"
           moreText={
-            searchMvsRes?.mvCount > 4
-              ? `查看全部 ${searchMvsRes?.mvCount} 个Mvs`
+            searchMVsRes?.mvCount > 4
+              ? `查看全部 ${searchMVsRes?.mvCount} 个Mvs`
               : ""
           }
           onMoreClick={handleAllMvs}
@@ -244,7 +177,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <SearchMvsWrapper>
         <SearchMvsContainer>
-          {searchMvsRes?.mvs?.map((mv) => (
+          {searchMVsRes?.mvs?.map((mv) => (
             <MediaCard
               key={mv.id}
               cardType="mv"

@@ -4,31 +4,16 @@ import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
+import { useSearchPlaylists } from "./../../../hooks";
 
 export interface SearchKeywordPlaylistsProps {}
 
 const SearchKeywordPlaylists: React.FC<SearchKeywordPlaylistsProps> = () => {
-  const { query, isReady } = useRouter();
+  const { query } = useRouter();
 
-  const [searchPlaylistsRes, setSearchPlaylistsRes] = useState<{
-    hasMore?: boolean;
-    playlistCount?: number;
-    playlists?: any[];
-  }>(null);
-
-  useEffect(() => {
-    if (isReady) {
-      const { keyword } = query;
-      fetch(
-        `https://music.qier222.com/api/search?keywords=${keyword}&type=1000&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          const { result } = data;
-          setSearchPlaylistsRes(result);
-        });
-    }
-  }, [isReady]);
+  const { searchPlaylistsRes } = useSearchPlaylists({
+    keywords: query.keyword as string,
+  });
 
   return (
     <Container>

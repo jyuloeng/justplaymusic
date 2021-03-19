@@ -287,5 +287,5 @@ export const useTopArtists = (params?: BaseQueryParams) => {
     }
   }, [data, setTopArtists, setErrorMsg, toast]);
 
-  return { topArtists, errorMsg, data, ...queryProps };
+  return { topArtists, setTopArtists, errorMsg, data, ...queryProps };
 };

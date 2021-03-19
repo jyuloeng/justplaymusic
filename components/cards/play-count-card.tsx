@@ -32,32 +32,28 @@ const PlayCountCard: React.FC<PlayCountCardProps> = ({
           fill={LightModeTextColor}
         />
       )}
-      <SmallText>{count}</SmallText>
+      <Count cardType={cardType}>{count}</Count>
     </Container>
   );
 };
 
 export default PlayCountCard;
 
+const Count = styled(
+  SmallText
+)(({ cardType }: { cardType: PlayCountCardType }) => [
+  tw`ml-1`,
+  cardType === "default" ? tw`text-dark-mode-text` : tw`text-light-mode-text`,
+]);
+
 const Container = styled.div(
   ({ cardType }: { cardType: PlayCountCardType }) => [
     tw`inline-flex rounded-lg items-center`,
-    cardType === "default"
-      ? css`
-          padding: 0 6px;
-          background: rgba(56, 59, 101, 0.3);
-          backdrop-filter: blur(8px);
-
-          & > :not(:first-child) {
-            margin-left: 4px;
-            color: ${DarkModeTextColor};
-          }
-        `
-      : css`
-          & > :not(:first-child) {
-            margin-left: 4px;
-            color: ${LightModeTextColor};
-          }
-        `,
+    cardType === "default" &&
+      css`
+        padding: 0 6px;
+        background: rgba(56, 59, 101, 0.3);
+        backdrop-filter: blur(8px);
+      `,
   ]
 );

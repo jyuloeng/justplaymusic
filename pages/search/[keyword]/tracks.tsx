@@ -43,6 +43,7 @@ const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
               name={song.name}
               artists={song.ar}
               album={song.al.name}
+              albumId={song.al.id}
               duration={song.dt}
               isLike={false}
             />

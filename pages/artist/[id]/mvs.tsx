@@ -33,6 +33,7 @@ const ArtistIdMvs: React.FC<ArtistIdMvsProps> = () => {
         {searchMvsResult?.mvs?.map((mv) => (
           <MediaCard
             key={mv.id}
+            href={`/mv/${mv.id}`}
             cardType="mv"
             coverPath={mv.imgurl16v9 + "?param=464y260"}
             title={mv.name}

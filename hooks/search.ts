@@ -110,8 +110,11 @@ export const useSearchSongs = (params: QuerySearchParams) => {
   }, [data, setSongIds, setSearchSongsRes, setErrorMsg, toast]);
 
   useEffect(() => {
-    setSearchSongsRes({
-      songs: songs,
+    setSearchSongsRes((value) => {
+      return {
+        ...value,
+        songs: songs,
+      };
     });
   }, [songs, setSearchSongsRes]);
 

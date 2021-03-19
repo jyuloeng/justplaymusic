@@ -19,32 +19,30 @@ import {
 export interface SearchKeywordProps {}
 
 const SearchKeyword: React.FC<SearchKeywordProps> = () => {
-  const { query } = useRouter();
-
-  const handleAllMvs = () => {};
+  const router = useRouter();
 
   const { searchArtistsRes } = useSearchArtists({
-    keywords: query.keyword as string,
+    keywords: router.query.keyword as string,
     limit: 6,
   });
 
   const { searchAlbumsRes } = useSearchAlbums({
-    keywords: query.keyword as string,
+    keywords: router.query.keyword as string,
     limit: 12,
   });
 
   const { searchSongsRes } = useSearchSongs({
-    keywords: query.keyword as string,
+    keywords: router.query.keyword as string,
     limit: 16,
   });
 
   const { searchMVsRes } = useSearchMVs({
-    keywords: query.keyword as string,
+    keywords: router.query.keyword as string,
     limit: 4,
   });
 
   const { searchPlaylistsRes } = useSearchPlaylists({
-    keywords: query.keyword as string,
+    keywords: router.query.keyword as string,
     limit: 12,
   });
 
@@ -53,7 +51,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
       <TitleBoardContainer>
         <TitleBoard
           type="search"
-          title={query.keyword}
+          title={router.query.keyword}
           info="看看有没有你想要的~"
         />
       </TitleBoardContainer>
@@ -66,6 +64,9 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               ? `查看全部 ${searchArtistsRes?.artistCount} 位歌手`
               : ""
           }
+          onMoreClick={() =>
+            router.push(`/search/${router.query.keyword}/artists`)
+          }
         />
       </CaptionBoardContainer>
 
@@ -74,6 +75,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
           {searchArtistsRes?.artists?.map((artist) => (
             <AvatarCard
               key={artist.id}
+              id={artist.id}
               src={artist.picUrl + "?param=512y512"}
               caption={artist.name}
             />
@@ -89,6 +91,9 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               ? `查看全部 ${searchAlbumsRes?.albumCount} 张专辑`
               : ""
           }
+          onMoreClick={() =>
+            router.push(`/search/${router.query.keyword}/albums`)
+          }
         />
       </CaptionBoardContainer>
 
@@ -97,6 +102,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
           {searchAlbumsRes?.albums?.map((album) => (
             <MediaCard
               key={album.id}
+              href={`/album/${album.id}`}
               cardType="album"
               coverPath={album.picUrl + "?param=512y512"}
               title={album.name}
@@ -114,6 +120,9 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
             searchSongsRes?.hasMore
               ? `查看全部 ${searchSongsRes?.songCount} 首歌曲`
               : ""
+          }
+          onMoreClick={() =>
+            router.push(`/search/${router.query.keyword}/tracks`)
           }
         />
       </CaptionBoardContainer>
@@ -144,6 +153,9 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               ? `查看全部 ${searchPlaylistsRes?.playlistCount} 张歌单`
               : ""
           }
+          onMoreClick={() =>
+            router.push(`/search/${router.query.keyword}/playlists`)
+          }
         />
       </CaptionBoardContainer>
 
@@ -152,6 +164,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
           {searchPlaylistsRes?.playlists?.map((playlist) => (
             <MediaCard
               key={playlist.id}
+              href={`/playlist/${playlist.id}`}
               cardType="album"
               coverPath={playlist.coverImgUrl + "?param=512y512"}
               title={playlist.name}
@@ -171,7 +184,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               ? `查看全部 ${searchMVsRes?.mvCount} 个Mvs`
               : ""
           }
-          onMoreClick={handleAllMvs}
+          onMoreClick={() => router.push(`/search/${router.query.keyword}/mvs`)}
         />
       </CaptionBoardContainer>
 
@@ -180,6 +193,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
           {searchMVsRes?.mvs?.map((mv) => (
             <MediaCard
               key={mv.id}
+              href={`/mv/${mv.id}`}
               cardType="mv"
               coverPath={mv.cover + "?param=464y260"}
               title={mv.name}

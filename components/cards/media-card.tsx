@@ -12,6 +12,7 @@ const MediaCardTypes = tuple("album", "mv");
 type MediaCardType = typeof MediaCardTypes[number];
 
 export interface MediaCardProps {
+  href: string;
   cardType?: MediaCardType;
   coverPath: string;
   title?: string;
@@ -24,6 +25,7 @@ export interface MediaCardProps {
 }
 
 const MediaCard: React.FC<MediaCardProps> = ({
+  href,
   cardType = "album",
   coverPath,
   title,
@@ -36,7 +38,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
 }) => {
   return (
     <Container>
-      <Link href="/">
+      <Link href={href}>
         <CoverContainer>
           <Cover
             src={coverPath}

@@ -7,6 +7,7 @@ import {
   QUERY_PLAYLIST_DETAIL,
 } from "../lib/const";
 import { useSong } from "./index";
+import { getSpecifiedArrayElements } from "../lib/array";
 
 interface QueryPersonalizedPlaylistResponse {
   code?: number;
@@ -21,6 +22,11 @@ interface QueryPlaylistDetailResponse {
   relatedVideos?: unknown;
   playlist?: any;
   privileges?: any[];
+}
+
+interface PlaylistDetailParams {
+  id?: string;
+  limit?: number;
 }
 
 export const useQueryPersonalizedPlaylist = (limit?: number) => {
@@ -69,33 +75,42 @@ export const useQueryPlaylistDetail = (id?: string) => {
   );
 };
 
-export const usePlaylistDetail = (id?: string) => {
+export const usePlaylistDetail = (params: PlaylistDetailParams) => {
   const [playlistInfo, setPlaylistInfo] = useState(null);
   const [playlistSongs, setPlaylistSongs] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [trackIds, setTrackIds] = useState([]);
+  const [oldLimit, setOldLimit] = useState(0);
   const [songIds, setSongIds] = useState([]);
 
-  const { data, ...queryProps } = useQueryPlaylistDetail(id);
-
-  const { songs } = useSong(songIds);
+  const { data, ...queryProps } = useQueryPlaylistDetail(params?.id);
 
   useEffect(() => {
     if (data) {
       const { code, playlist } = data;
       if (code === 200) {
         setPlaylistInfo(playlist);
-
-        const ids = playlist?.trackIds?.map((item) => item.id);
-        setSongIds(ids);
+        setTrackIds(playlist.trackIds);
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);
       }
     }
-  }, [data, setPlaylistInfo, setSongIds, setErrorMsg, toast]);
+  }, [data, setPlaylistInfo, setTrackIds, setErrorMsg, toast]);
 
   useEffect(() => {
-    setPlaylistSongs(songs);
+    // if(trackIds.length < params.limit)
+    const ids = trackIds?.slice(oldLimit, params.limit)?.map((item) => item.id);
+    if (trackIds.length > 0) {
+      setOldLimit(params.limit);
+      setSongIds(ids);
+    }
+  }, [trackIds.length, params.limit, setSongIds, setOldLimit]);
+
+  const { songs } = useSong(songIds);
+
+  useEffect(() => {
+    setPlaylistSongs((value) => [...value, ...songs]);
   }, [songs]);
 
   return {

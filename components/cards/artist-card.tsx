@@ -17,6 +17,7 @@ export interface ArtistCardProps extends AvatarCardProps {
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({
+  id,
   src,
   title,
   caption,
@@ -39,6 +40,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
     <Container>
       <AvatarContianer>
         <AvatarCard
+          id={id}
           src={src}
           isShowButton={false}
           isShowHover={false}

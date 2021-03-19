@@ -25,6 +25,7 @@ export interface PlaylistItemCardProps {
   name: string;
   artists: any[];
   album: string;
+  albumId: number;
   duration: number;
   isLike?: boolean;
   isShowDuration?: boolean;
@@ -48,6 +49,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   name,
   artists,
   album,
+  albumId,
   duration,
   isLike = false,
   isShowDuration = true,
@@ -73,6 +75,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
         name,
         artists,
         album,
+        albumId,
       });
     }
   };
@@ -95,7 +98,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
         )}
 
         {isShowCover && (
-          <Link href="/">
+          <Link href={`/album/${albumId}`}>
             <Cover>
               <Image src={coverPath} layout="fill" />
             </Cover>
@@ -111,7 +114,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
           <Artists itemType={itemType}>
             {artists.map((artist, index) => (
               <ArtistContainer key={artist.id}>
-                <Link href="/">
+                <Link href={`/artist/${artist.id}`}>
                   <Artist>
                     <SmallText>{artist.name}</SmallText>
                   </Artist>
@@ -124,7 +127,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
           </Artists>
           {!isAlbum && <DetailsSplitLine>-</DetailsSplitLine>}
           {!isAlbum && (
-            <Link href="/">
+            <Link href={`/album/${albumId}`}>
               <DetailsAlbum>
                 <SmallText>{album}</SmallText>
               </DetailsAlbum>
@@ -135,7 +138,7 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
 
       {!isAlbum && (
         <AlbumContainer itemType={itemType}>
-          <Link href="/">
+          <Link href={`/album/${albumId}`}>
             <Album>
               <InfoText>{album}</InfoText>
             </Album>
@@ -264,7 +267,7 @@ const Name = styled(CaptionText)(() => [
 const Info = styled.div(
   ({ isAlbum, itemType }: { isAlbum: boolean; itemType: PlaylistItemType }) => [
     tw`flex flex-col flex-1 md:pl-1 pr-3 md:pr-2`,
-    isAlbum && tw`md:flex-row`,
+    isAlbum && tw`md:flex-row items-center`,
     !isAlbum && tw`md:ml-3`,
     itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
   ]

@@ -32,6 +32,7 @@ const SearchKeywordMvs: React.FC<SearchKeywordMvsProps> = () => {
         {searchMVsRes?.mvs?.map((mv) => (
           <MediaCard
             key={mv.id}
+            href={`/mv/${mv.id}`}
             cardType="mv"
             coverPath={mv.cover + "?param=464y260"}
             title={mv.name}

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import { ArtistCard, AvatarCard } from "../../../components/cards";
 import { CaptionBoard } from "../../../components/boards";
 import { MiniPlaylistItemCard, MediaCard } from "../../../components/cards";
 import { LoadingContainer } from "../../../components/containers";
 import { scrollbarHiddenStyles } from "../../index";
 import { getSpecifiedArrayElements } from "../../../lib/array";
+import { formatDate } from "../../../lib/format";
 import {
   useArtist,
   useArtistAlbum,
@@ -17,7 +18,7 @@ import {
 export interface ArtistIdProps {}
 
 const ArtistId: React.FC<ArtistIdProps> = () => {
-  const { query } = useRouter();
+  const router = useRouter();
 
   const [isShowingMoreHotSons, setIsShowingMoreHotSons] = useState<boolean>(
     false
@@ -58,7 +59,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
   };
 
   const { artist, hotSongs, isLoading: isArtistLoading } = useArtist(
-    query.id as string
+    router.query.id as string
   );
 
   const {
@@ -66,17 +67,17 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
     defaultAlbums,
     isLoading: isArtistAlbumLoading,
   } = useArtistAlbum({
-    id: query.id as string,
+    id: router.query.id as string,
     limit: 200,
   });
 
   const { mvs, isLoading: isMVLoading } = useArtistMV({
-    id: query.id as string,
+    id: router.query.id as string,
     limit: 8,
   });
 
   const { similarArtists, isLoading: isSimiArtistLoading } = useSimiArtist(
-    query.id as string
+    router.query.id as string
   );
 
   return (
@@ -87,6 +88,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         ) : (
           artist && (
             <ArtistCard
+              id={artist.id}
               src={artist.picUrl + "?param=512y512"}
               title={artist.name}
               caption={artist.alias?.join(", ")}
@@ -148,12 +150,14 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
           )?.map((album) => (
             <MediaCard
               key={album.id}
+              href={`/album/${album.id}`}
               cardType="album"
               coverPath={album.picUrl + "?param=512y512"}
               title={album.name}
-              caption={album.type + " - " + album.publishTime}
+              caption={album.type + " - " + formatDate(album.publishTime)}
               isShowPlayCount={false}
               isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/album/${album.id}`)}
             />
           ))}
         </PlaylistContainer>
@@ -172,6 +176,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
           {mvs?.map((mv) => (
             <MediaCard
               key={mv.id}
+              href={`/mv/${mv.id}`}
               cardType="mv"
               coverPath={mv.imgurl16v9 + "?param=464y260"}
               title={mv.name}
@@ -198,12 +203,14 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
           )?.map((album) => (
             <MediaCard
               key={album.id}
+              href={`/album/${album.id}`}
               cardType="album"
               coverPath={album.picUrl + "?param=512y512"}
               title={album.name}
-              caption={album.type + " - " + album.publishTime}
+              caption={album.type + " - " + formatDate(album.publishTime)}
               isShowPlayCount={false}
               isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/album/${album.id}`)}
             />
           ))}
         </PlaylistContainer>
@@ -225,6 +232,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
           )?.map((artist) => (
             <AvatarCard
               key={artist.id}
+              id={artist.id}
               src={artist.picUrl + "?param=512y512"}
               caption={artist.name}
             />

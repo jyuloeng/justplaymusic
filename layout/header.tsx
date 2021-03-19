@@ -11,7 +11,7 @@ const Header: React.FC<HeaderProps> = () => {
   const [slideMenuVisible, setSlideMenuVisible] = useState<boolean>(false);
 
   const handleSearch = (value) => {
-    router.push("/search/" + value);
+    router.push(`/search/${value}`);
   };
 
   return (

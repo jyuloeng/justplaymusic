@@ -30,6 +30,7 @@ const SearchKeywordPlaylists: React.FC<SearchKeywordPlaylistsProps> = () => {
         {searchPlaylistsRes?.playlists?.map((playlist) => (
           <MediaCard
             key={playlist.id}
+            href={`/playlist/${playlist.id}`}
             cardType="album"
             coverPath={playlist.coverImgUrl + "?param=512y512"}
             title={playlist.name}

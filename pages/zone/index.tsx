@@ -120,6 +120,7 @@ const Zone: React.FC<ZoneProps> = () => {
 
           <MobileInfo>
             <ArtistCard
+              id={userProfile?.id}
               src={userProfile?.avatarUrl + "?param=256y256"}
               title={userProfile?.nickname}
               isShowCollect={false}
@@ -168,6 +169,7 @@ const Zone: React.FC<ZoneProps> = () => {
                 name={song.name}
                 artists={song.ar}
                 album={song.al.name}
+                albumId={song.al.id}
                 duration={song.dt}
                 isLike={false}
                 onDblClick={(e, id) => console.log(e, id)}
@@ -222,6 +224,7 @@ const Zone: React.FC<ZoneProps> = () => {
               index !== 0 && (
                 <MediaCard
                   key={playlist.id}
+                  href={`/playlist/${playlist.id}`}
                   cardType="album"
                   coverPath={playlist.coverImgUrl + "?param=512y512"}
                   title={playlist.name}
@@ -241,6 +244,7 @@ const Zone: React.FC<ZoneProps> = () => {
             return (
               <MediaCard
                 key={album.id}
+                href={`/album/${album.id}`}
                 cardType="album"
                 coverPath={album.picUrl + "?param=512y512"}
                 title={album.name}
@@ -258,6 +262,7 @@ const Zone: React.FC<ZoneProps> = () => {
           {likedArtistsRes?.data?.map((artist) => (
             <AvatarCard
               key={artist.id}
+              id={artist.id}
               src={artist.picUrl + "?param=512y512"}
               caption={artist.name}
             />
@@ -270,6 +275,7 @@ const Zone: React.FC<ZoneProps> = () => {
           {likedMvsRes?.data?.map((mv) => (
             <MediaCard
               key={mv.id}
+              href={`/mv/${mv.id}`}
               cardType="mv"
               coverPath={mv.coverUrl + "?param=464y260"}
               title={mv.title}

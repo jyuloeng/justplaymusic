@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import { useRouter } from "next/router";
 import TitleBoard from "../components/boards/title-board";
 import CaptionBoard from "../components/boards/caption-board";
 import {
@@ -21,6 +22,8 @@ import {
 } from "./../hooks";
 
 const Home = () => {
+  const router = useRouter();
+
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
     visible: false,
     name: "",
@@ -57,10 +60,6 @@ const Home = () => {
     });
   };
 
-  const handleMorePlaylistClick = () => {};
-
-  const handleMoreHotArtistClick = () => {};
-
   const handleMoreNewAlbumClick = () => {};
 
   const {
@@ -70,18 +69,46 @@ const Home = () => {
     error,
   } = usePersonalizedPlaylist(10);
 
-  const { topArtists, isLoading: isTopArtistsLoading } = useTopArtists({
+  const {
+    topArtists,
+    setTopArtists,
+    isLoading: isTopArtistsLoading,
+  } = useTopArtists({
     limit: 50,
   });
 
-  const { newestAlbums } = useAlbumNewest();
+  useEffect(() => {
+    if (!isTopArtistsLoading) {
+      setTopArtists((value) => getRandomArrayElements(value, 6));
+    }
+  }, [isTopArtistsLoading]);
 
-  const { personalizedMV } = usePersonalizedMV();
+  const {
+    newestAlbums,
+    setNewestAlbums,
+    isLoading: isAlbumNewestLoding,
+  } = useAlbumNewest();
+
+  useEffect(() => {
+    if (!isAlbumNewestLoding) {
+      setNewestAlbums((value) => getRandomArrayElements(value, 10));
+    }
+  }, [isAlbumNewestLoding]);
+
+  const {
+    personalizedMV,
+    setPersonalizedMV,
+    isLoading: isPersonalizedMVLoading,
+  } = usePersonalizedMV();
+
+  useEffect(() => {
+    setPersonalizedMV((value) => getRandomArrayElements(value, 2));
+  }, [!isPersonalizedMVLoading]);
 
   const { personalizedSongs } = usePersonalizedSong(10);
 
   return (
-    <Container onClick={() => setContextMenuInfo({ visible: false })}>
+    <Container>
       <TitleBoardContainer>
         <TitleBoard title="For you" info="三月八日，星期一" />
       </TitleBoardContainer>
@@ -90,7 +117,7 @@ const Home = () => {
         <CaptionBoard
           caption="推荐歌单"
           moreText="更多"
-          onMoreClick={handleMorePlaylistClick}
+          onMoreClick={() => router.push("/playlist")}
         />
       </CaptionBoardContainer>
 
@@ -99,12 +126,14 @@ const Home = () => {
           {personalizedPlaylist?.map((playlist) => (
             <MediaCard
               key={playlist.id}
+              href={`/playlist/${playlist.id}`}
               cardType="album"
               coverPath={playlist.picUrl + "?param=512y512"}
               title={playlist.name}
               caption={playlist.copywriter}
               playCount={playlist.playCount}
               isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/playlist/${playlist.id}`)}
             />
           ))}
         </PlaylistContainer>
@@ -116,7 +145,7 @@ const Home = () => {
             <CaptionBoard
               caption="推荐视频"
               moreText="更多"
-              onMoreClick={handleMoreHotArtistClick}
+              onMoreClick={() => {}}
             />
           </CaptionBoardContainer>
 
@@ -125,11 +154,14 @@ const Home = () => {
               {getRandomArrayElements(personalizedMV, 2)?.map((mv) => (
                 <MediaCard
                   key={mv.id}
+                  href={`/mv/${mv.id}`}
                   cardType="mv"
                   coverPath={mv.picUrl + "?param=464y260"}
                   title={mv.name}
                   caption={mv.artistName}
                   playCount={mv.playCount}
+                  onTitleClick={() => router.push(`/mv/${mv.id}`)}
+                  onCaptionClick={() => router.push(`/artist/${mv.artistId}`)}
                 />
               ))}
             </RecommendMvContainer>
@@ -141,7 +173,7 @@ const Home = () => {
             <CaptionBoard
               caption="新歌送达"
               moreText="更多"
-              onMoreClick={handleMoreHotArtistClick}
+              onMoreClick={() => {}}
             />
           </CaptionBoardContainer>
 
@@ -157,6 +189,7 @@ const Home = () => {
                 name={song.name}
                 artists={song.song.artists}
                 album={song.song.album.name}
+                albumId={song.song.album.id}
                 duration={song.song.duration}
                 isLike={false}
                 onDblClick={(e, id) => console.log(e, id)}
@@ -190,11 +223,7 @@ const Home = () => {
       </FlexModalContainer>
 
       <CaptionBoardContainer>
-        <CaptionBoard
-          caption="热门歌手"
-          moreText="更多"
-          onMoreClick={handleMoreHotArtistClick}
-        />
+        <CaptionBoard caption="热门歌手" />
       </CaptionBoardContainer>
 
       <ArtistsWrapper>
@@ -202,6 +231,7 @@ const Home = () => {
           {getRandomArrayElements(topArtists, 6)?.map((artist) => (
             <AvatarCard
               key={artist.id}
+              id={artist.id}
               src={artist.picUrl + "?param=512y512"}
               caption={artist.name}
             />
@@ -219,14 +249,17 @@ const Home = () => {
 
       <PlaylistWrapper>
         <PlaylistContainer>
-          {getRandomArrayElements(newestAlbums, 10)?.map((album) => (
+          {newestAlbums?.map((album) => (
             <MediaCard
               key={album.id}
+              href={`/album/${album.id}`}
               cardType="album"
               coverPath={album.picUrl + "?param=512y512"}
               title={album.name}
               caption={album.artist.name}
               isShowPlayCount={false}
+              onTitleClick={() => router.push(`/album/${album.id}`)}
+              onCaptionClick={() => router.push(`/artist/${album.artist.id}`)}
             />
           ))}
         </PlaylistContainer>

@@ -48,7 +48,7 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
 }) => {
   return (
     <>
-      <Container>
+      <PlaylistIntroContainer>
         <CoverWrapper>
           <CoverContainer>
             <Cover src={coverPath} layout="responsive" width={0} height={0} />
@@ -114,7 +114,7 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
             </Button>
           </Buttons>
         </InfoContainer>
-      </Container>
+      </PlaylistIntroContainer>
 
       <MobileButtons>
         <Button
@@ -241,10 +241,11 @@ const CoverContainer = styled.div(() => [
 
 const CoverWrapper = styled.div(() => [tw``]);
 
-const Container = styled.div(() => [
-  tw`inline-grid gap-3 md:gap-6 xl:gap-10 items-center lg:items-stretch`,
+const PlaylistIntroContainer = styled.div(() => [
+  tw`grid gap-3 md:gap-10 xl:gap-12 items-center lg:items-stretch`,
   css`
     grid-template-columns: 38.2% auto;
+
     @media (min-width: 768px) {
       grid-template-columns: 28% auto;
     }

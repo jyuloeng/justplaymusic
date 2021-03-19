@@ -85,12 +85,14 @@ const Playlist: React.FC<PlaylistProps> = () => {
           {personalizedPlaylist?.map((playlist) => (
             <MediaCard
               key={playlist.id}
+              href={`/playlist/${playlist.id}`}
               cardType="album"
               coverPath={playlist.picUrl + "?param=512y512"}
               title={playlist.name}
               caption={playlist.copywriter}
               playCount={playlist.playCount}
               isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/playlist/${playlist.id}`)}
             />
           ))}
         </PlaylistContainer>

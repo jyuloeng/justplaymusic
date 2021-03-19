@@ -7,6 +7,7 @@ import { DarkModeTextColor } from "../../styles/colors";
 import { CaptionText } from "../../styles/typography";
 
 export interface AvatarCardProps extends AvatarProps {
+  id: number;
   caption?: string;
   isShowButton?: boolean;
   isShowHover?: boolean;
@@ -14,6 +15,7 @@ export interface AvatarCardProps extends AvatarProps {
 }
 
 const AvatarCard: React.FC<AvatarCardProps> = ({
+  id,
   src,
   caption,
   isShowButton = true,
@@ -22,7 +24,7 @@ const AvatarCard: React.FC<AvatarCardProps> = ({
 }) => {
   return (
     <Container>
-      <Link href="/1">
+      <Link href={`/artist/${id}`}>
         <CoverContainer isShowHover={isShowHover} isShowShadow={isShowShadow}>
           <Cover>
             <Avatar src={src} />
@@ -39,7 +41,7 @@ const AvatarCard: React.FC<AvatarCardProps> = ({
       </Link>
 
       {caption && (
-        <Link href="/2">
+        <Link href={`/artist/${id}`}>
           <CaptionContainer>
             <Caption>{caption}</Caption>
           </CaptionContainer>

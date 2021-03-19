@@ -48,6 +48,7 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
                 name={song.name}
                 artists={song.ar}
                 album={song.al.name}
+                albumId={song.al.id}
                 duration={song.dt}
               />
             ))}

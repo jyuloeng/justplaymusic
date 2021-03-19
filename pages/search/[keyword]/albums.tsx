@@ -32,6 +32,7 @@ const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
         {searchAlbumsRes?.albums?.map((album) => (
           <MediaCard
             key={album.id}
+            href={`/album/${album.id}`}
             cardType="album"
             coverPath={album.picUrl + "?param=512y512"}
             title={album.name}

@@ -43,7 +43,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
   onClick,
 }) => {
   return (
-    <Container
+    <ButtonContainer
       onClick={onClick}
       btnType={btnType}
       backgroundColor={backgroundColor}
@@ -52,7 +52,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
     >
       {icon && <Icon>{icon}</Icon>}
       {children}
-    </Container>
+    </ButtonContainer>
   );
 };
 
@@ -60,7 +60,7 @@ export default DefaultButton;
 
 const Icon = styled.span(() => [tw`inline-block`]);
 
-const Container = styled.button<ButtonProps>(
+const ButtonContainer = styled.button<ButtonProps>(
   ({
     btnType = "default",
     backgroundColor = "default",

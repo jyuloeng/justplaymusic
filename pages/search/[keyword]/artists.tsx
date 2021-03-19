@@ -30,6 +30,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
         {searchArtistsRes?.artists?.map((artist) => (
           <AvatarCard
             key={artist.id}
+            id={artist.id}
             src={artist.picUrl + "?param=512y512"}
             caption={artist.name}
           />

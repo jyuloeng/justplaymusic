@@ -1,6 +1,6 @@
 import React from "react";
 import tw, { styled, css } from "twin.macro";
-
+import { useRouter } from "next/router";
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
 import { useToplist } from "../../hooks";
@@ -8,6 +8,7 @@ import { useToplist } from "../../hooks";
 export interface RankingProps {}
 
 const Ranking: React.FC<RankingProps> = () => {
+  const router = useRouter();
   const { globalRankList, officialRankList, isLoading, data } = useToplist();
 
   return (
@@ -24,12 +25,14 @@ const Ranking: React.FC<RankingProps> = () => {
         {officialRankList?.map((ranklist) => (
           <MediaCard
             key={ranklist.id}
+            href={`/playlist/${ranklist.id}`}
             cardType="album"
             coverPath={ranklist.coverImgUrl + "?param=512y512"}
             title={ranklist.name}
             caption={ranklist.updateFrequency}
             playCount={ranklist.playCount}
             isCanCaptionClick={false}
+            onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
           />
         ))}
       </PlaylistContainer>
@@ -42,12 +45,14 @@ const Ranking: React.FC<RankingProps> = () => {
         {globalRankList?.map((ranklist) => (
           <MediaCard
             key={ranklist.id}
+            href={`/playlist/${ranklist.id}`}
             cardType="album"
             coverPath={ranklist.coverImgUrl + "?param=512y512"}
             title={ranklist.name}
             caption={ranklist.updateFrequency}
             playCount={ranklist.playCount}
             isCanCaptionClick={false}
+            onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
           />
         ))}
       </PlaylistContainer>

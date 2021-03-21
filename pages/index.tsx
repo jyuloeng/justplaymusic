@@ -18,7 +18,7 @@ import {
   useTopArtists,
   usePersonalizedSong,
   usePersonalizedMV,
-  useAlbumNewest,
+  useNewestAlbum,
 } from "./../hooks";
 
 const Home = () => {
@@ -60,8 +60,6 @@ const Home = () => {
     });
   };
 
-  const handleMoreNewAlbumClick = () => {};
-
   const {
     personalizedPlaylist,
     setPersonalizedPlaylist,
@@ -87,7 +85,7 @@ const Home = () => {
     newestAlbums,
     setNewestAlbums,
     isLoading: isAlbumNewestLoding,
-  } = useAlbumNewest();
+  } = useNewestAlbum();
 
   useEffect(() => {
     if (!isAlbumNewestLoding) {
@@ -243,7 +241,7 @@ const Home = () => {
         <CaptionBoard
           caption="新碟上架"
           moreText="更多"
-          onMoreClick={handleMoreNewAlbumClick}
+          onMoreClick={() => router.push('/album/new')}
         />
       </CaptionBoardContainer>
 

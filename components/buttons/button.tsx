@@ -27,6 +27,8 @@ const ButtonBackgroundColors = {
 export interface ButtonProps {
   icon?: React.ReactNode;
   btnType?: ButtonType;
+  paddingX?: number;
+  paddingY?: number;
   backgroundColor?: ButtonType;
   isShowBackground?: boolean;
   isShowHover?: boolean;
@@ -37,6 +39,8 @@ const DefaultButton: React.FC<ButtonProps> = ({
   icon,
   children,
   btnType,
+  paddingX,
+  paddingY,
   backgroundColor,
   isShowBackground,
   isShowHover,
@@ -46,6 +50,8 @@ const DefaultButton: React.FC<ButtonProps> = ({
     <ButtonContainer
       onClick={onClick}
       btnType={btnType}
+      paddingX={paddingX}
+      paddingY={paddingY}
       backgroundColor={backgroundColor}
       isShowBackground={isShowBackground}
       isShowHover={isShowHover}
@@ -63,6 +69,8 @@ const Icon = styled.span(() => [tw`inline-block`]);
 const ButtonContainer = styled.button<ButtonProps>(
   ({
     btnType = "default",
+    paddingX,
+    paddingY,
     backgroundColor = "default",
     isShowBackground,
     isShowHover = true,
@@ -83,6 +91,16 @@ const ButtonContainer = styled.button<ButtonProps>(
         outline: none;
       }
     `,
+    paddingX &&
+      css`
+        padding-left: ${paddingX * 0.25}rem;
+        padding-right: ${paddingX * 0.25}rem;
+      `,
+    paddingY &&
+      css`
+        padding-top: ${paddingY * 0.25}rem;
+        padding-bottom: ${paddingY * 0.25}rem;
+      `,
     isShowBackground &&
       css`
         background-color: ${ButtonBackgroundColors[backgroundColor]};

@@ -3,11 +3,13 @@ export { useReady } from "./router";
 export {
   useQueryAlbum,
   useAlbum,
-  useQueryAlbumNewest,
-  useAlbumNewest,
-  useQueryAlbumNew,
-  useAlbumNew,
+  useQueryNewestAlbum,
+  useNewestAlbum,
+  useQueryNewAlbum,
+  useNewAlbum,
 } from "./album";
+
+export type { AlbumNewArea } from "./album";
 
 export {
   useQueryArtist,

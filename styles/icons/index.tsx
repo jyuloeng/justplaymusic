@@ -15,7 +15,7 @@ export { default as IconTopArrow } from "./top-arrow";
 export { default as IconRightArrow } from "./right-arrow";
 export { default as IconBottomArrow } from "./bottom-arrow";
 export { default as IconLeftArrow } from "./left-arrow";
-export { default as IconRepeat } from './repeat'
+export { default as IconRepeat } from "./repeat";
 export { default as IconShuffle } from "./shuffle";
 export { default as IconMoreHorizontal } from "./more-horizontal";
 export { default as IconMoreVertical } from "./more-vertical";
@@ -35,3 +35,8 @@ export { default as IconGlobal } from "./global";
 export { default as IconSmile } from "./smile";
 export { default as IconPlayThread } from "./play-thread";
 export { default as IconHeartThread } from "./heart-thread";
+export { default as IconEmail } from "./email";
+export { default as IconLock } from "./lock";
+export { default as IconGithub } from "./github";
+export { default as IconNCloudLogo } from "./ncloud-logo";
+export { default as IconPhone } from "./phone";

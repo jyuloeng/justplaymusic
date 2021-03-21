@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { toast } from "../lib/toast";
 import request from "../lib/request";
 import { QUERY_ALBUM, QUERY_ALBUM_NEWEST, QUERY_ALBUM_NEW } from "../lib/const";
+import { tuple } from "./../lib/type";
 
 interface QueryAlbumResponse {
   code?: number;
@@ -23,10 +24,13 @@ interface QueryAlbumNewResponse {
   albums?: any[];
 }
 
+const AlbumNewAreas = tuple("ALL", "ZH", "EA", "KR", "JP");
+export type AlbumNewArea = typeof AlbumNewAreas[number];
+
 interface QueryAlbumNewParams {
   limit?: number;
   offset?: number;
-  area?: string;
+  area?: AlbumNewArea;
 }
 
 export const useQueryAlbum = (id?: string) => {
@@ -75,7 +79,7 @@ export const useAlbum = (id?: string) => {
   };
 };
 
-export const useQueryAlbumNewest = () => {
+export const useQueryNewestAlbum = () => {
   return useQuery<QueryAlbumNewestResponse>(
     [QUERY_ALBUM_NEWEST.KEY],
     () => request.get(QUERY_ALBUM_NEWEST.URL),
@@ -83,11 +87,11 @@ export const useQueryAlbumNewest = () => {
   );
 };
 
-export const useAlbumNewest = () => {
+export const useNewestAlbum = () => {
   const [newestAlbums, setNewestAlbums] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const { data, ...queryProps } = useQueryAlbumNewest();
+  const { data, ...queryProps } = useQueryNewestAlbum();
 
   useEffect(() => {
     if (data) {
@@ -110,7 +114,7 @@ export const useAlbumNewest = () => {
   };
 };
 
-export const useQueryAlbumNew = (params: QueryAlbumNewParams) => {
+export const useQueryNewAlbum = (params: QueryAlbumNewParams) => {
   return useQuery<QueryAlbumNewResponse>(
     [QUERY_ALBUM_NEW.KEY, { params }],
     () => request.get(QUERY_ALBUM_NEW.URL, { params }),
@@ -118,12 +122,12 @@ export const useQueryAlbumNew = (params: QueryAlbumNewParams) => {
   );
 };
 
-export const useAlbumNew = (params: QueryAlbumNewParams) => {
+export const useNewAlbum = (params: QueryAlbumNewParams) => {
   const [newAlbums, setNewAlbums] = useState([]);
   const [total, setTotal] = useState(0);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const { data, ...queryProps } = useQueryAlbumNew(params);
+  const { data, ...queryProps } = useQueryNewAlbum(params);
 
   useEffect(() => {
     if (data) {

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { increment, decrement, selectCount } from "../store/slice/counterSlice";
+import {
+  incrementByAmount,
+  decrement,
+  selectCount,
+} from "../store/slice/counterSlice";
 
 export interface CounterProps {}
 
@@ -13,7 +17,7 @@ const Counter: React.FC<CounterProps> = () => {
       <div>
         <button
           aria-label="Increment value"
-          onClick={() => dispatch(increment())}
+          onClick={() => dispatch(incrementByAmount(3))}
         >
           Increment
         </button>

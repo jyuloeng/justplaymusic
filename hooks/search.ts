@@ -58,6 +58,13 @@ interface QuerySearchMVsResponse
     mvs?: any[];
   }> {}
 
+interface QuerySearchUsersResponse
+  extends BaseQuerySearchResponse<{
+    hasMore?: boolean;
+    userprofileCount?: number;
+    userprofiles?: any[];
+  }> {}
+
 interface QuerySearchParams {
   keywords: string;
   type?: SearchType;
@@ -255,6 +262,40 @@ export const useSearchMVs = (params: QuerySearchParams) => {
   return {
     searchMVsRes,
     setSearchMVsRes,
+    errorMsg,
+    data,
+    ...queryProps,
+  };
+};
+
+export const useSearchUsers = (params: QuerySearchParams) => {
+  const [searchUsersRes, setSearchUsersRes] = useState<{
+    hasMore?: boolean;
+    userprofileCount?: number;
+    userprofiles?: any[];
+  }>(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const { data, ...queryProps } = useQuerySearch<QuerySearchUsersResponse>({
+    ...params,
+    type: 1002,
+  });
+
+  useEffect(() => {
+    if (data) {
+      const { code, result } = data;
+      if (code === 200) {
+        setSearchUsersRes(result);
+      } else {
+        setErrorMsg(data);
+        toast(`🦄 ${data}`);
+      }
+    }
+  }, [data, setSearchUsersRes, setErrorMsg, toast]);
+
+  return {
+    searchUsersRes,
+    setSearchUsersRes,
     errorMsg,
     data,
     ...queryProps,

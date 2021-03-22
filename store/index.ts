@@ -2,9 +2,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import thunk from "redux-thunk";
 import counterReducer from "./slice/counterSlice";
+import userReducer from "./slice/user.slice";
 
 export const store = configureStore({
-  reducer: { counter: counterReducer },
+  reducer: { counter: counterReducer, userReducer },
   middleware: [thunk],
 });
 

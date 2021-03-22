@@ -42,6 +42,7 @@ export {
   useSearchMVs,
   useSearchPlaylists,
   useSearchSongs,
+  useSearchUsers,
 } from "./search";
 
 export {

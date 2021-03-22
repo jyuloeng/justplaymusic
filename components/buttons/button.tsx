@@ -32,6 +32,7 @@ export interface ButtonProps {
   backgroundColor?: ButtonType;
   isShowBackground?: boolean;
   isShowHover?: boolean;
+  isJustifyStart?: boolean;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
@@ -44,6 +45,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
   backgroundColor,
   isShowBackground,
   isShowHover,
+  isJustifyStart,
   onClick,
 }) => {
   return (
@@ -55,6 +57,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
       backgroundColor={backgroundColor}
       isShowBackground={isShowBackground}
       isShowHover={isShowHover}
+      isJustifyStart={isJustifyStart}
     >
       {icon && <Icon>{icon}</Icon>}
       {children}
@@ -74,8 +77,10 @@ const ButtonContainer = styled.button<ButtonProps>(
     backgroundColor = "default",
     isShowBackground,
     isShowHover = true,
+    isJustifyStart,
   }) => [
     tw`flex justify-center items-center p-3 rounded-lg transition`,
+    isJustifyStart && tw`justify-start`,
     css`
       ${Icon} + span {
         margin-left: 12px;

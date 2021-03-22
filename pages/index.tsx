@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
+import useTranslation from "next-translate/useTranslation";
 import TitleBoard from "../components/boards/title-board";
 import CaptionBoard from "../components/boards/caption-board";
 import {
@@ -22,6 +23,7 @@ import {
 } from "./../hooks";
 
 const Home = () => {
+  const { t } = useTranslation("home");
   const router = useRouter();
 
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
@@ -113,8 +115,8 @@ const Home = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="推荐歌单"
-          moreText="更多"
+          caption={t("recommended-playlists")}
+          moreText={t("more")}
           onMoreClick={() => router.push("/playlist")}
         />
       </CaptionBoardContainer>
@@ -141,8 +143,8 @@ const Home = () => {
         <RecommendMvWrapper>
           <CaptionBoardContainer tw="lg:mx-0">
             <CaptionBoard
-              caption="推荐视频"
-              moreText="更多"
+              caption={t("recommended-videos")}
+              moreText={t("more")}
               onMoreClick={() => {}}
             />
           </CaptionBoardContainer>
@@ -169,8 +171,8 @@ const Home = () => {
         <RecommendSongsWrapper>
           <CaptionBoardContainer>
             <CaptionBoard
-              caption="新歌送达"
-              moreText="更多"
+              caption={t("new-songs")}
+              moreText={t("more")}
               onMoreClick={() => {}}
             />
           </CaptionBoardContainer>
@@ -221,7 +223,7 @@ const Home = () => {
       </FlexModalContainer>
 
       <CaptionBoardContainer>
-        <CaptionBoard caption="热门歌手" />
+        <CaptionBoard caption={t("hot-artists")} />
       </CaptionBoardContainer>
 
       <ArtistsWrapper>
@@ -239,9 +241,9 @@ const Home = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="新碟上架"
-          moreText="更多"
-          onMoreClick={() => router.push('/album/new')}
+          caption={t("new-albums")}
+          moreText={t("more")}
+          onMoreClick={() => router.push("/album/new")}
         />
       </CaptionBoardContainer>
 

@@ -2,6 +2,7 @@ import React from "react";
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { MenuItem } from "./index";
 import { Button } from "../buttons";
 import Avatar from "../commons/avatar";
 import SearchInput from "../commons/search-input";
@@ -14,6 +15,8 @@ import {
 import { MediumText, CaptionText } from "../../styles/typography";
 
 export interface TopMenuProps {
+  menu?: MenuItem[];
+  searchPlaceholder?: string;
   onMobileNavClick?: React.MouseEventHandler<HTMLElement>;
   onNicknameClick?: React.MouseEventHandler<HTMLElement>;
   onSearch?: (value: string) => void;
@@ -22,29 +25,9 @@ export interface TopMenuProps {
 const imagePath =
   "https://p2.music.126.net/NP5ShmXQiOcqLe5xjrpjMA==/3297435383057591.jpg?param=512y512";
 
-const menu: Array<{
-  path: string;
-  name: string;
-}> = [
-  {
-    path: "/",
-    name: "个性推荐",
-  },
-  {
-    path: "/playlist",
-    name: "歌单",
-  },
-  {
-    path: "/ranking",
-    name: "排行榜",
-  },
-  {
-    path: "/artistlist",
-    name: "歌手",
-  },
-];
-
 const TopMenu: React.FC<TopMenuProps> = ({
+  menu,
+  searchPlaceholder,
   onMobileNavClick,
   onNicknameClick,
   onSearch,
@@ -71,15 +54,16 @@ const TopMenu: React.FC<TopMenuProps> = ({
         <SearchContainer>
           <Button icon={<IconLeftArrow />} onClick={handleGoBack} />
           <Button icon={<IconRightArrow />} onClick={handleGoNext} />
-          <SearchInput onSearch={onSearch} />
+          <SearchInput onSearch={onSearch} placeholder={searchPlaceholder} />
         </SearchContainer>
 
         <ButtonGrops>
-          {menu.map(({ path, name }) => (
+          {menu?.map(({ path, name }) => (
             <Link href={path} key={path}>
               <a>
                 <Button
                   btnType={router.pathname === path ? "primary" : "default"}
+                  backgroundColor={router.pathname === path ? "primary" : "default"}
                 >
                   <MediumText bold>{name}</MediumText>
                 </Button>

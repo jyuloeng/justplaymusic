@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../components/boards";
 import { MiniAvatarCard, AvatarCard } from "../../components/cards";
@@ -16,58 +17,6 @@ import { useArtistList } from "../../hooks";
 
 export interface ArtistList {}
 
-const areaList = [
-  {
-    key: -1,
-    name: "全部",
-  },
-  {
-    key: 7,
-    name: "华语",
-  },
-  {
-    key: 96,
-    name: "欧美",
-  },
-  {
-    key: 8,
-    name: "日本",
-  },
-  {
-    key: 16,
-    name: "韩国",
-  },
-  {
-    key: 0,
-    name: "其他",
-  },
-];
-
-const typeList = [
-  {
-    key: -1,
-    name: "全部",
-  },
-  {
-    key: 1,
-    name: "男歌手",
-  },
-  {
-    key: 2,
-    name: "男歌手",
-  },
-  {
-    key: 3,
-    name: "乐队",
-  },
-];
-
-const initialList = [
-  { key: -1, name: "热门" },
-  ...generateLowerChar(),
-  { key: 0, name: "#" },
-];
-
 interface ArtistListSearchKey {
   area?: number;
   type?: number;
@@ -75,6 +24,60 @@ interface ArtistListSearchKey {
 }
 
 const ArtistList: React.FC<ArtistList> = () => {
+  const { t } = useTranslation("artist");
+
+  const areaList = [
+    {
+      key: -1,
+      name: t("all"),
+    },
+    {
+      key: 7,
+      name: t("chinese"),
+    },
+    {
+      key: 96,
+      name: t("occident"),
+    },
+    {
+      key: 8,
+      name: t("japanese"),
+    },
+    {
+      key: 16,
+      name: t("korea"),
+    },
+    {
+      key: 0,
+      name: t("other"),
+    },
+  ];
+
+  const typeList = [
+    {
+      key: -1,
+      name: t("all"),
+    },
+    {
+      key: 1,
+      name: t("male"),
+    },
+    {
+      key: 2,
+      name: t("female"),
+    },
+    {
+      key: 3,
+      name: t("band"),
+    },
+  ];
+
+  const initialList = [
+    { key: -1, name: "热门" },
+    ...generateLowerChar(),
+    { key: 0, name: "#" },
+  ];
+
   const router = useRouter();
 
   const [searchKey, setSearchKey] = useState<ArtistListSearchKey>({
@@ -151,14 +154,12 @@ const ArtistList: React.FC<ArtistList> = () => {
   return (
     <Container>
       <ViewMoreCommonContainer
-        titleBoard={
-          <TitleBoard title="歌手" info="你还是那么喜欢听ta的歌呢~" />
-        }
+        titleBoard={<TitleBoard title={t("title")} info={t("subtitle")} />}
         header={
           <>
             <TabsMenuContainer>
               <TabsMenu
-                title="地区"
+                title={t("area")}
                 titleIcon={<IconGlobal />}
                 tabList={areaList}
                 activeKey={searchKey.area}
@@ -168,7 +169,7 @@ const ArtistList: React.FC<ArtistList> = () => {
 
             <TabsMenuContainer>
               <TabsMenu
-                title="分类"
+                title={t("type")}
                 titleIcon={<IconStyle />}
                 tabList={typeList}
                 activeKey={searchKey.type}
@@ -178,7 +179,7 @@ const ArtistList: React.FC<ArtistList> = () => {
 
             <InitialTabsMenuContainer>
               <TabsMenu
-                title="筛选"
+                title={t("initial")}
                 titleIcon={<IconLibrary />}
                 tabList={initialList}
                 activeKey={searchKey.initial}
@@ -209,7 +210,7 @@ const ArtistList: React.FC<ArtistList> = () => {
                   coverPath={artist.picUrl + "?param=256y256"}
                   caption={artist.name}
                   buttonIcon={<IconHeartThread />}
-                  buttonText={"关注"}
+                  buttonText={t("focus")}
                 />
               ))}
             </MobileArtistsContainer>

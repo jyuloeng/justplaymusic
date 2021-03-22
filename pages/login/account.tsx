@@ -1,5 +1,6 @@
 import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { TitleBoard } from "../../components/boards";
 import { Input } from "../../components/forms";
 import {
@@ -13,6 +14,8 @@ import { MediumText, SmallText } from "../../styles/typography";
 export interface LoginAccountProps {}
 
 const LoginAccount: React.FC<LoginAccountProps> = () => {
+  const { t } = useTranslation("login");
+
   const [isEmailLogin, setIsEmailLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -26,12 +29,15 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
   return (
     <Container>
       <TitleBoardContainer>
-        <TitleBoard title="登录网易云账号" info="可使用邮箱或手机号登录哦~" />
+        <TitleBoard
+          title={t("login-ncloud-music-title")}
+          info={t("login-ncloud-music-caption")}
+        />
       </TitleBoardContainer>
 
       <FormContainer>
         <IconNCloudLogo />
-        <Title bold>网易云音乐</Title>
+        <Title bold>{t("ncloud-music")}</Title>
 
         {isEmailLogin ? (
           <Input
@@ -61,11 +67,11 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
         />
 
         <LoginButton>
-          <LoginButtonText bold>登录</LoginButtonText>
+          <LoginButtonText bold>{t("title")}</LoginButtonText>
         </LoginButton>
 
         <ChangeLoginType onClick={handleLoginTypeChange}>
-          {isEmailLogin ? "使用手机号登录" : "使用邮箱登录"}
+          {isEmailLogin ? t("login-by-phone") : t("login-by-email")}
         </ChangeLoginType>
 
         <Divider />

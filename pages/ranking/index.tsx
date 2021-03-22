@@ -1,5 +1,6 @@
 import React from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
@@ -8,17 +9,18 @@ import { useToplist } from "../../hooks";
 export interface RankingProps {}
 
 const Ranking: React.FC<RankingProps> = () => {
+  const { t } = useTranslation("ranking");
   const router = useRouter();
   const { globalRankList, officialRankList, isLoading, data } = useToplist();
 
   return (
     <Container>
       <TitleBoardContainer>
-        <TitleBoard title="排行榜" info="有你喜欢的ta在榜上吗~" />
+        <TitleBoard title={t("title")} info={t("subtitle")} />
       </TitleBoardContainer>
 
       <CaptionBoardContainer>
-        <CaptionBoard caption="官方榜" />
+        <CaptionBoard caption={t("official-list")} />
       </CaptionBoardContainer>
 
       <PlaylistContainer>
@@ -38,7 +40,7 @@ const Ranking: React.FC<RankingProps> = () => {
       </PlaylistContainer>
 
       <CaptionBoardContainer>
-        <CaptionBoard caption="全球榜" />
+        <CaptionBoard caption={t("global-list")} />
       </CaptionBoardContainer>
 
       <PlaylistContainer>

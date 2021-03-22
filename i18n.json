@@ -1,0 +1,63 @@
+{
+    "defaultLocale": "zh",
+    "locales": [
+        "zh",
+        "en"
+    ],
+    "pages": {
+        "*": [
+            "common"
+        ],
+        "/": [
+            "home"
+        ],
+        "/playlist": [
+            "playlist"
+        ],
+        "/ranking": [
+            "ranking"
+        ],
+        "/artist/[id]": [
+            "artist"
+        ],
+        "/artistlist": [
+            "artist"
+        ],
+        "/album/new": [
+            "album"
+        ],
+        "/search/[keyword]": [
+            "search"
+        ],
+        "/search/[keyword]/albums": [
+            "search"
+        ],
+        "/search/[keyword]/artists": [
+            "search"
+        ],
+        "/search/[keyword]/mvs": [
+            "search"
+        ],
+        "/search/[keyword]/playlists": [
+            "search"
+        ],
+        "/search/[keyword]/tracks": [
+            "search"
+        ],
+        "/zone": [
+            "zone"
+        ],
+        "/settings": [
+            "settings"
+        ],
+        "/login": [
+            "login"
+        ],
+        "/login/account": [
+            "login"
+        ],
+        "/login/search": [
+            "login"
+        ]
+    }
+}

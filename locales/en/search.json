@@ -1,0 +1,18 @@
+{
+    "title": "Search",
+    "subtitle": "See if there's anything you want~",
+    "artists": "Artists",
+    "see-all-count-artists": "See all {{count}} artists",
+    "albums": "Albums",
+    "see-all-count-albums": "See all {{count}} albums",
+    "songs": "Songs",
+    "see-all-count-songs": "See all {{count}} songs",
+    "playlists": "Playlists",
+    "see-all-count-playlists": "See all {{count}} playlists",
+    "see-all-count-mvs": "See all {{count}} MVs",
+    "search-type-album": "Search Album",
+    "search-type-artist": "Search Artist",
+    "search-type-mv": "Search MV",
+    "search-type-playlist": "Search Playlist",
+    "search-type-track": "Search Track"
+}

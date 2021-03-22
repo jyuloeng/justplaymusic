@@ -1,0 +1,15 @@
+{
+    "title": "歌单",
+    "subtitle": "看看今天有什么新的歌单吧~",
+    "all": "全部歌单",
+    "recommended": "推荐歌单",
+    "boutique": "精品歌单",
+    "official": "官方歌单",
+    "chinese": "华语",
+    "popular": "流行",
+    "rock": "摇滚",
+    "ballad": "民谣",
+    "electronic": "电子",
+    "more": "更多",
+    "load-more": "加载更多"
+}

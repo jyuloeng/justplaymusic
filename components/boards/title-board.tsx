@@ -15,7 +15,7 @@ export interface TitleBoardProps {
 const TitleBoard: React.FC<TitleBoardProps> = ({
   title,
   info,
-  searchPrevText: searchText = "搜索",
+  searchPrevText,
   type,
 }) => {
   return (
@@ -24,11 +24,11 @@ const TitleBoard: React.FC<TitleBoardProps> = ({
         <H3>
           {typeof title === "string" ? (
             <>
-              <SearchText>{searchText}</SearchText> “{title}”
+              <SearchText>{searchPrevText}</SearchText> “{title}”
             </>
           ) : (
             <>
-              <SearchText>{searchText}</SearchText> “{title?.join(", ")}”
+              <SearchText>{searchPrevText}</SearchText> “{title?.join(", ")}”
             </>
           )}
         </H3>

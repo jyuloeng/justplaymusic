@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { AvatarCard } from "../../../components/cards";
@@ -9,6 +10,7 @@ import { useSearchArtists } from "./../../../hooks";
 export interface SearchKeywordArtistsProps {}
 
 const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
+  const { t } = useTranslation("search");
   const { query } = useRouter();
 
   const { searchArtistsRes } = useSearchArtists({
@@ -22,7 +24,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
           <TitleBoard
             type="search"
             title={query.keyword}
-            searchPrevText="搜索歌手"
+            searchPrevText={t("search-type-artist")}
           />
         }
         isShowLoadMore={searchArtistsRes?.hasMore}

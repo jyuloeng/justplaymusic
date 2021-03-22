@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
 import { usePlaylistDetail } from "../../hooks";
@@ -8,6 +9,7 @@ import { LoadingContainer } from "../../components/containers";
 export interface PlaylistIdProps {}
 
 const PlaylistId: React.FC<PlaylistIdProps> = () => {
+  const { t } = useTranslation("playlist");
   const { query } = useRouter();
   const [songLimit, setSongLimit] = useState(30);
 
@@ -57,7 +59,9 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
           ))}
       </PlaylistSongs>
 
-      <div onClick={() => setSongLimit((value) => value + 30)}>加载更多</div>
+      <div onClick={() => setSongLimit((value) => value + 30)}>
+        {t("load-more")}
+      </div>
     </Container>
   );
 };

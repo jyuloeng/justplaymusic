@@ -1,57 +1,37 @@
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { MenuItem } from "./index";
 import { Button } from "../buttons";
 import SearchInput from "../commons/search-input";
 import { MediumText } from "../../styles/typography";
 
 export interface SlideMenuProps {
-  visible: boolean;
+  menu?: MenuItem[];
+  visible?: boolean;
+  searchPlaceholder?: string;
   onClose?: React.MouseEventHandler<HTMLElement>;
+  onSearch?: (value: string) => void;
 }
 
-const menu: Array<{
-  path: string;
-  name: string;
-}> = [
-  {
-    path: "/",
-    name: "个性推荐",
-  },
-  {
-    path: "/playlist",
-    name: "歌单",
-  },
-  {
-    path: "/ranking",
-    name: "排行榜",
-  },
-  {
-    path: "/artistlist",
-    name: "歌手",
-  },
-  {
-    path: "/zone",
-    name: "个人空间",
-  },
-  {
-    path: "/settings",
-    name: "设置",
-  },
-];
-
-const SlideMenu: React.FC<SlideMenuProps> = ({ visible, onClose }) => {
+const SlideMenu: React.FC<SlideMenuProps> = ({
+  menu,
+  visible,
+  searchPlaceholder,
+  onClose,
+  onSearch,
+}) => {
   const router = useRouter();
 
   const handleSearch = (value) => {
-    console.log(value);
+    onSearch(value);
   };
 
   return (
     <Container visible={visible}>
       <MenuContainer>
-        <SearchInput onSearch={handleSearch} />
-        {menu.map(({ path, name }) => (
+        <SearchInput onSearch={handleSearch} placeholder={searchPlaceholder} />
+        {menu?.map(({ path, name }) => (
           <Link href={path} key={path}>
             <a>
               <Button

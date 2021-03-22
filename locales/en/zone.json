@@ -1,0 +1,9 @@
+{
+    "playlist": "Playlist",
+    "album": "Album",
+    "artist": "Artist",
+    "mv": "MV",
+    "user-zone": "'s Personal Zone",
+    "my-favourite-music": "My Favourite Music",
+    "songs-count": "{{count}} songs"
+}

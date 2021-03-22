@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { Router, useRouter } from "next/router";
 import { ArtistCard, AvatarCard } from "../../../components/cards";
 import { CaptionBoard } from "../../../components/boards";
@@ -18,6 +19,7 @@ import {
 export interface ArtistIdProps {}
 
 const ArtistId: React.FC<ArtistIdProps> = () => {
+  const { t } = useTranslation("artist");
   const router = useRouter();
 
   const [isShowingMoreHotSons, setIsShowingMoreHotSons] = useState<boolean>(
@@ -102,8 +104,8 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="热门歌曲"
-          moreText={isShowingMoreHotSons ? "收起" : "更多"}
+          caption={t("hot-songs")}
+          moreText={isShowingMoreHotSons ? t("collapse") : t("more")}
           onMoreClick={handleMoreHotSongs}
         />
       </CaptionBoardContainer>
@@ -136,8 +138,8 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="EP与单曲"
-          moreText={isShowingMoreSingleAlbums ? "收起" : "更多"}
+          caption={t("ep-single")}
+          moreText={isShowingMoreSingleAlbums ? t("collapse") : t("more")}
           onMoreClick={handleMoreSingleAlbums}
         />
       </CaptionBoardContainer>
@@ -166,7 +168,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
       <CaptionBoardContainer>
         <CaptionBoard
           caption="Music Video"
-          moreText="查看全部"
+          moreText={t("all")}
           onMoreClick={handleAllMoives}
         />
       </CaptionBoardContainer>
@@ -189,8 +191,8 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="专辑"
-          moreText={isShowingMoreDefaultalbums ? "收起" : "更多"}
+          caption={t("album")}
+          moreText={isShowingMoreDefaultalbums ? t("collapse") : t("more")}
           onMoreClick={handleMoreDefaultalbums}
         />
       </CaptionBoardContainer>
@@ -218,8 +220,8 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="相似歌手"
-          moreText={isShowingMoreSimilarArtists ? "收起" : "更多"}
+          caption={t("similar-singer")}
+          moreText={isShowingMoreSimilarArtists ? t("collapse") : t("more")}
           onMoreClick={handleMoreMoreSimilarArtists}
         />
       </CaptionBoardContainer>

@@ -1,0 +1,18 @@
+{
+    "title": "搜索",
+    "subtitle": "看看有没有你想要的~",
+    "artists": "歌手",
+    "see-all-count-artists": "查看全部 {{count}} 位歌手",
+    "albums": "专辑",
+    "see-all-count-albums": "查看全部 {{count}} 张专辑",
+    "songs": "歌曲",
+    "see-all-count-songs": "查看全部 {{count}} 首歌曲",
+    "playlists": "歌单",
+    "see-all-count-playlists": "查看全部 {{count}} 张歌单",
+    "see-all-count-mvs": "查看全部 {{count}} 部MVs",
+    "search-type-album": "搜索专辑",
+    "search-type-artist": "搜索歌手",
+    "search-type-mv": "搜索 MV",
+    "search-type-playlist": "搜索歌单",
+    "search-type-track": "搜索歌曲"
+}

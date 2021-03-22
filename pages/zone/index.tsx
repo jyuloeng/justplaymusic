@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import Image from "next/image";
 import Avatar from "../../components/commons/avatar";
 import {
@@ -26,28 +27,30 @@ type commonLikedRes = {
   paidCount?: number;
 };
 
-const tabsMenu = [
-  {
-    key: "playlist",
-    name: "歌单",
-  },
-  {
-    key: "album",
-    name: "专辑",
-  },
-  {
-    key: "artist",
-    name: "歌手",
-  },
-  {
-    key: "mv",
-    name: "视频",
-  },
-];
-
 const cookie = `MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`;
 
 const Zone: React.FC<ZoneProps> = () => {
+  const { t } = useTranslation("zone");
+
+  const tabsMenu = [
+    {
+      key: "playlist",
+      name: t("playlist"),
+    },
+    {
+      key: "album",
+      name: t("album"),
+    },
+    {
+      key: "artist",
+      name: t("artist"),
+    },
+    {
+      key: "mv",
+      name: t("mv"),
+    },
+  ];
+
   const [myFavoriteMusic, setMyFavoriteMusic] = useState([]);
   const [activeTab, setActiveTab] = useState(tabsMenu[0].key);
 
@@ -114,7 +117,7 @@ const Zone: React.FC<ZoneProps> = () => {
             </AvatarContainer>
             <InfoText>
               <H3>{userProfile?.nickname}</H3>
-              <IntroText bold>的个人空间</IntroText>
+              <IntroText bold>{t("user-zone")}</IntroText>
             </InfoText>
           </Info>
 
@@ -147,7 +150,7 @@ const Zone: React.FC<ZoneProps> = () => {
 
             <GlassTitleContainer>
               <IconHeart fill={DarkModeTextColor} />
-              <CaptionText bold>我喜欢的音乐</CaptionText>
+              <CaptionText bold>{t("my-favourite-music")}</CaptionText>
             </GlassTitleContainer>
 
             <PlayCountContainer>
@@ -196,8 +199,8 @@ const Zone: React.FC<ZoneProps> = () => {
         )}
 
         <MobileFavoriteMusicInfo>
-          <InfoText>我喜欢的音乐</InfoText>
-          <SmallText>249 首</SmallText>
+          <InfoText>{t("my-favourite-music")}</InfoText>
+          <SmallText>{t("songs-count", { count: 249 })}</SmallText>
         </MobileFavoriteMusicInfo>
 
         <MobileFavoriteMusicCount>

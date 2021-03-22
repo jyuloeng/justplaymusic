@@ -1,5 +1,7 @@
 import { AppProps } from "next/app";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { Provider } from "react-redux";
+import { store } from "../store";
 import { GlobalStyles } from "twin.macro";
 import Layout from "../layout";
 import { ToastContainer } from "react-toastify";
@@ -15,13 +17,15 @@ const queryClient = new QueryClient({
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Layout>
-        <GlobalStyles />
-        <Component {...pageProps} />
-      </Layout>
-      <ToastContainer />
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <Layout>
+          <GlobalStyles />
+          <Component {...pageProps} />
+        </Layout>
+        <ToastContainer />
+      </QueryClientProvider>
+    </Provider>
   );
 };
 

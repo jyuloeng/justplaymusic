@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
@@ -9,6 +10,7 @@ import { useSearchMVs } from "../../../hooks";
 export interface SearchKeywordMvsProps {}
 
 const SearchKeywordMvs: React.FC<SearchKeywordMvsProps> = () => {
+  const { t } = useTranslation("search");
   const { query } = useRouter();
 
   const { searchMVsRes } = useSearchMVs({
@@ -22,7 +24,7 @@ const SearchKeywordMvs: React.FC<SearchKeywordMvsProps> = () => {
           <TitleBoard
             type="search"
             title={query.keyword}
-            searchPrevText="搜索MV"
+            searchPrevText={t("search-type-mv")}
           />
         }
         cols={2}

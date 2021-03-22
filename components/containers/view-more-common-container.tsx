@@ -1,4 +1,5 @@
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { Button } from "../buttons";
 import { IconLoading } from "../../styles/icons";
 import { CaptionText } from "../../styles/typography";
@@ -29,6 +30,7 @@ const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
   isShowLoadMore = true,
   onLoadMoreClick,
 }) => {
+  const { t } = useTranslation("common");
   return (
     <Container>
       {titleBoard && <TitleBoardContainer>{titleBoard}</TitleBoardContainer>}
@@ -46,7 +48,7 @@ const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
       {isShowLoadMore && (
         <LoadMoreContainer>
           <Button icon={<IconLoading />} onClick={onLoadMoreClick}>
-            <CaptionText bold>加载更多</CaptionText>
+            <CaptionText bold>{t("load-more")}</CaptionText>
           </Button>
         </LoadMoreContainer>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { PlaylistItemCard } from "../../../components/cards";
@@ -9,6 +10,7 @@ import { useSearchSongs } from "../../../hooks";
 export interface SearchKeywordTracksProps {}
 
 const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
+  const { t } = useTranslation("search");
   const { query } = useRouter();
 
   const { searchSongsRes } = useSearchSongs({
@@ -22,7 +24,7 @@ const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
           <TitleBoard
             type="search"
             title={query.keyword}
-            searchPrevText="搜索歌曲"
+            searchPrevText={t("search-type-track")}
           />
         }
         cols={1}

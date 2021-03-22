@@ -14,7 +14,7 @@ const MiniAvatarCard: React.FC<MiniAvatarCardProps> = ({
   coverPath,
   caption,
   buttonIcon,
-  buttonText = "关注",
+  buttonText,
 }) => {
   return (
     <Container>

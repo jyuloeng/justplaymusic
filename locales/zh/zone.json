@@ -1,0 +1,9 @@
+{
+    "playlist": "歌单",
+    "album": "专辑",
+    "artist": "歌手",
+    "mv": "视频",
+    "user-zone": "的个人空间",
+    "my-favourite-music": "我喜欢的音乐",
+    "songs-count": "{{count}} 首"
+}

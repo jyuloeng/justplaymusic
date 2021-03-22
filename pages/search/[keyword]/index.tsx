@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard, CaptionBoard } from "../../../components/boards";
 import {
@@ -19,6 +20,7 @@ import {
 export interface SearchKeywordProps {}
 
 const SearchKeyword: React.FC<SearchKeywordProps> = () => {
+  const { t } = useTranslation("search");
   const router = useRouter();
 
   const { searchArtistsRes } = useSearchArtists({
@@ -52,16 +54,19 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         <TitleBoard
           type="search"
           title={router.query.keyword}
-          info="看看有没有你想要的~"
+          searchPrevText={t("title")}
+          info={t("subtitle")}
         />
       </TitleBoardContainer>
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="歌手"
+          caption={t("artists")}
           moreText={
             searchArtistsRes?.hasMore
-              ? `查看全部 ${searchArtistsRes?.artistCount} 位歌手`
+              ? t("see-all-count-artists", {
+                  count: searchArtistsRes?.artistCount,
+                })
               : ""
           }
           onMoreClick={() =>
@@ -85,10 +90,12 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="专辑"
+          caption={t("albums")}
           moreText={
             searchAlbumsRes?.albumCount > 6
-              ? `查看全部 ${searchAlbumsRes?.albumCount} 张专辑`
+              ? t("see-all-count-albums", {
+                  count: searchAlbumsRes?.albumCount,
+                })
               : ""
           }
           onMoreClick={() =>
@@ -115,10 +122,10 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="歌曲"
+          caption={t("songs")}
           moreText={
             searchSongsRes?.hasMore
-              ? `查看全部 ${searchSongsRes?.songCount} 首歌曲`
+              ? t("see-all-count-songs", { count: searchSongsRes?.songCount })
               : ""
           }
           onMoreClick={() =>
@@ -147,10 +154,12 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="歌单"
+          caption={t("playlists")}
           moreText={
             searchPlaylistsRes?.hasMore
-              ? `查看全部 ${searchPlaylistsRes?.playlistCount} 张歌单`
+              ? t("see-all-count-playlists", {
+                  count: searchPlaylistsRes?.playlistCount,
+                })
               : ""
           }
           onMoreClick={() =>
@@ -178,10 +187,10 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
 
       <CaptionBoardContainer>
         <CaptionBoard
-          caption="Music Video"
+          caption="Music Videos"
           moreText={
             searchMVsRes?.mvCount > 4
-              ? `查看全部 ${searchMVsRes?.mvCount} 个Mvs`
+              ? t("see-all-count-mvs", { count: searchMVsRes?.mvCount })
               : ""
           }
           onMoreClick={() => router.push(`/search/${router.query.keyword}/mvs`)}

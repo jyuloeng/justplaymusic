@@ -1,0 +1,16 @@
+{
+    "ncloud-music": "NetEase Cloud Music",
+    "title": "Login",
+    "subtitle": "You can try logging in using the following methods~",
+    "login-ncloud-music-title": "By Account",
+    "login-ncloud-music-subtitle": "Access to all data~",
+    "login-ncloud-music-caption": "You can use your email or phone to login~",
+    "login-by-phone": "Login with your phone",
+    "login-by-email": "Login with your email",
+    "search-ncloud-music-title": "By Search",
+    "search-ncloud-music-subtitle": "Only the public data~",
+    "search-ncloud-music-caption": "You can select your account from the search list~",
+    "search-placeholder": "Please enter your username~",
+    "search-placeholder-subtitle": "Press Enter to search~",
+    "confirm": "Confirm"
+}

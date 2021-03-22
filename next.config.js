@@ -1,4 +1,6 @@
-module.exports = {
+const nextTranslate = require("next-translate");
+
+module.exports = nextTranslate({
   webpack: (config, { isServer }) => {
     // Fixes packages that depend on fs/module module
     if (!isServer) {
@@ -15,4 +17,4 @@ module.exports = {
       "p4.music.126.net",
     ],
   },
-};
+});

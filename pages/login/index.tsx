@@ -1,4 +1,5 @@
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../components/boards";
 import { IntroText, SmallText } from "../../styles/typography";
@@ -13,26 +14,28 @@ const iconProps = {
   fill: Primary2Color,
 };
 
-const cardList = [
-  {
-    title: "登录网易云账号",
-    subtitle: "可访问全部数据哦~",
-    path: "/login/account",
-  },
-  {
-    title: "搜索网易云账号",
-    subtitle: "只能读取账号的公开信息诶~",
-    path: "/login/search",
-  },
-];
-
 const Login: React.FC<LoginProps> = () => {
+  const { t } = useTranslation("login");
+
   const router = useRouter();
+
+  const cardList = [
+    {
+      title: t("login-ncloud-music-title"),
+      subtitle: t("login-ncloud-music-subtitle"),
+      path: "/login/account",
+    },
+    {
+      title: t("search-ncloud-music-title"),
+      subtitle: t("search-ncloud-music-subtitle"),
+      path: "/login/search",
+    },
+  ];
 
   return (
     <Container>
       <TitleBoardContainer>
-        <TitleBoard title="登录" info="可以尝试用以下方式登录哦~" />
+        <TitleBoard title={t("title")} info={t("subtitle")} />
       </TitleBoardContainer>
 
       <LoginTypeCardContainer>
@@ -120,7 +123,9 @@ const LoginTypeCard = styled.div(() => [
   `,
 ]);
 
-const LoginTypeCardContainer = styled.div(() => [tw`flex flex-col items-center`]);
+const LoginTypeCardContainer = styled.div(() => [
+  tw`flex flex-col items-center`,
+]);
 
 const TitleBoardContainer = styled.div(() => [tw`mx-5 lg:mx-10 mt-4 lg:mt-6`]);
 

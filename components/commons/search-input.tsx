@@ -36,7 +36,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder, onSearch }) => {
         <IconSearch fill={isActive ? Primary2Color : null} />
       </Icon>
       <Input
-        placeholder={isActive ? "" : placeholder || "搜索"}
+        placeholder={isActive ? "" : placeholder}
         ref={inputRef}
         onKeyDown={handleInputKeyDown}
       />

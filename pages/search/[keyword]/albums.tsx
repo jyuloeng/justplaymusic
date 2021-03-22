@@ -1,5 +1,6 @@
 import React from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
 import { ViewMoreCommonContainer } from "../../../components/containers";
@@ -9,6 +10,7 @@ import { useRouter } from "next/router";
 export interface SearchKeywordAlbumsProps {}
 
 const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
+  const { t } = useTranslation("search");
   const { query } = useRouter();
 
   const { searchAlbumsRes } = useSearchAlbums({
@@ -22,7 +24,7 @@ const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
           <TitleBoard
             type="search"
             title={query.keyword}
-            searchPrevText="搜索专辑"
+            searchPrevText={t("search-type-album")}
           />
         }
         isShowLoadMore={

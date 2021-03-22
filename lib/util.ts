@@ -1,3 +1,5 @@
+import Router from "next/router";
+
 export const generateLowerChar = () => {
   const arr = [];
   for (let i = 97; i < 123; i++) {
@@ -7,4 +9,10 @@ export const generateLowerChar = () => {
     });
   }
   return arr;
+};
+
+export const setLanguage = async (locale) => {
+  return await Router.push(Router.pathname, Router.asPath, {
+    locale,
+  });
 };

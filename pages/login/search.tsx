@@ -1,4 +1,5 @@
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { TitleBoard } from "../../components/boards";
 import { Button } from "../../components/buttons";
 import { Avatar } from "../../components/commons";
@@ -9,12 +10,14 @@ import { SmallText, MediumText, CaptionText } from "../../styles/typography";
 export interface LoginSearchProps {}
 
 const LoginSearch: React.FC<LoginSearchProps> = () => {
+  const { t } = useTranslation("login");
+
   return (
     <Container>
       <TitleBoardContainer>
         <TitleBoard
-          title="搜索用户名登录"
-          info="可以在搜索列表中选择你的账号哦~"
+          title={t("search-ncloud-music-title")}
+          info={t("search-ncloud-music-caption")}
         />
       </TitleBoardContainer>
 
@@ -22,9 +25,9 @@ const LoginSearch: React.FC<LoginSearchProps> = () => {
         <Input
           width={270}
           icon={<IconSearch />}
-          placeholder={"请输入网易云用户名~"}
+          placeholder={t("search-placeholder")}
         />
-        <SmallText>按 Enter 搜索哦~</SmallText>
+        <SmallText>{t("search-placeholder-subtitle")}</SmallText>
       </SearchInputContianer>
 
       <SearchUserContainer>
@@ -51,7 +54,7 @@ const LoginSearch: React.FC<LoginSearchProps> = () => {
 
       <ButtonContainer>
         <Button isShowBackground btnType="primary" backgroundColor="primary">
-          <MediumText bold>确定</MediumText>
+          <MediumText bold>{t("confirm")}</MediumText>
         </Button>
       </ButtonContainer>
     </Container>

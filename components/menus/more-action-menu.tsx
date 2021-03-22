@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import useTranslation from "next-translate/useTranslation";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
 import { InfoText, SmallText } from "../../styles/typography";
@@ -23,6 +24,8 @@ const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
   name,
   artists,
 }) => {
+  const { t } = useTranslation("common");
+
   return (
     <Container visible={visible} position={position}>
       {visible && (
@@ -49,10 +52,10 @@ const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
           </InfoContainer>
 
           <Controls>
-            <ControlItem bold>播放</ControlItem>
-            <ControlItem bold>下一首播放</ControlItem>
-            <ControlItem bold>收藏到歌单</ControlItem>
-            <ControlItem bold>移除歌曲</ControlItem>
+            <ControlItem bold>{t("play")}</ControlItem>
+            <ControlItem bold>{t("next-play")}</ControlItem>
+            <ControlItem bold>{t("collect-to-playlist")}</ControlItem>
+            <ControlItem bold>{t("remove-song")}</ControlItem>
           </Controls>
         </>
       )}

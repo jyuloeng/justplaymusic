@@ -1,44 +1,46 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
+import useTranslation from "next-translate/useTranslation";
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
 import { Button } from "../../components/buttons";
 import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
 import { usePersonalizedPlaylist } from "../../hooks";
-import { LoadingContainer } from "../../components/containers";
 
 export interface PlaylistProps {}
 
-const hotPlaylistMenu = [
-  {
-    name: "推荐歌单",
-  },
-  {
-    name: "精品歌单",
-  },
-  {
-    name: "官方歌单",
-  },
-  {
-    name: "华语",
-  },
-  {
-    name: "流行",
-  },
-  {
-    name: "摇滚",
-  },
-  {
-    name: "民谣",
-  },
-  {
-    name: "电子",
-  },
-];
-
 const Playlist: React.FC<PlaylistProps> = () => {
+  const { t } = useTranslation('playlist');
+
+  const hotPlaylistMenu = [
+    {
+      name: t("recommended"),
+    },
+    {
+      name: t("boutique"),
+    },
+    {
+      name: t("official"),
+    },
+    {
+      name: t("chinese"),
+    },
+    {
+      name: t("popular"),
+    },
+    {
+      name: t("rock"),
+    },
+    {
+      name: t("ballad"),
+    },
+    {
+      name: t("electronic"),
+    },
+  ];
+
   const router = useRouter();
 
   const [limit, setLimit] = useState(10);
@@ -57,12 +59,12 @@ const Playlist: React.FC<PlaylistProps> = () => {
     <Container>
       <>
         <TitleBoardContainer>
-          <TitleBoard title="歌单" info="看看今天有什么新的歌单吧~" />
+          <TitleBoard title={t("title")} info={t("subtitle")} />
         </TitleBoardContainer>
 
         <CaptionBoardContainer>
           <Button isShowHover={false}>
-            <MainText bold>全部歌单</MainText>
+            <MainText bold>{t("all")}</MainText>
           </Button>
           <Buttons>
             {hotPlaylistMenu.map((menu) => (
@@ -75,8 +77,8 @@ const Playlist: React.FC<PlaylistProps> = () => {
 
         <MobileCaptionBoardContainer>
           <CaptionBoard
-            caption="全部歌单"
-            moreText="更多"
+            caption={t("all")}
+            moreText={t("more")}
             onMoreClick={handleMorePlaylistClick}
           />
         </MobileCaptionBoardContainer>
@@ -99,7 +101,7 @@ const Playlist: React.FC<PlaylistProps> = () => {
 
         <LoadMoreContainer>
           <Button icon={<IconLoading />} onClick={handleMorePlaylistClick}>
-            <CaptionText bold>加载更多</CaptionText>
+            <CaptionText bold>{t("load-more")}</CaptionText>
           </Button>
         </LoadMoreContainer>
       </>

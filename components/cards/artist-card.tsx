@@ -1,7 +1,8 @@
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { AvatarCard, AvatarCardProps } from "./index";
 import { Button } from "../buttons";
-import { IconCollect } from "../../styles/icons";
+import { IconCollect, IconHeartThread } from "../../styles/icons";
 import { H2, MainText, MediumText, InfoText } from "../../styles/typography";
 
 export interface ArtistCardProps extends AvatarCardProps {
@@ -30,10 +31,12 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
   onMvsClick,
   onCollectClick,
 }) => {
+  const { t } = useTranslation("common");
+
   const displayDataList = [
-    { text: "单曲数：", num: songs, onClick: onSongsClick },
-    { text: "专辑数：", num: albums, onClick: onAlbumsClick },
-    { text: "MV数：", num: mvs, onClick: onMvsClick },
+    { text: t("songs-number"), num: songs, onClick: onSongsClick },
+    { text: t("albums-number"), num: albums, onClick: onAlbumsClick },
+    { text: t("mvs-number"), num: mvs, onClick: onMvsClick },
   ];
 
   return (
@@ -66,8 +69,8 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
 
         {isShowCollect && (
           <Collect>
-            <Button icon={<IconCollect />} isShowBackground={true}>
-              <MediumText bold>收藏</MediumText>
+            <Button icon={<IconHeartThread />} isShowBackground={true}>
+              <MediumText bold>{t("focus")}</MediumText>
             </Button>
           </Collect>
         )}

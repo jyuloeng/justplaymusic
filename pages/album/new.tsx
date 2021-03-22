@@ -1,5 +1,6 @@
 import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { ViewMoreCommonContainer } from "../../components/containers";
 import { TitleBoard } from "../../components/boards";
@@ -37,6 +38,7 @@ const areaList: Array<{
 ];
 
 const AlbumNew: React.FC<AlbumNewProps> = () => {
+  const { t } = useTranslation("album");
   const router = useRouter();
 
   const [newAlbumLimit, setNewAlbumLimit] = useState(30);
@@ -49,7 +51,7 @@ const AlbumNew: React.FC<AlbumNewProps> = () => {
 
   const handleAreaTabClick = (key: AlbumNewArea) => {
     setSearchKey(key);
-    setNewAlbumLimit(30)
+    setNewAlbumLimit(30);
 
     router.push(
       {
@@ -69,12 +71,12 @@ const AlbumNew: React.FC<AlbumNewProps> = () => {
     <Container>
       <ViewMoreCommonContainer
         titleBoard={
-          <TitleBoard title="全部新碟" info="看看有没有什么你喜欢的新碟呢~" />
+          <TitleBoard title={t("all-new-albums")} info={t("subtitle")} />
         }
         header={
           <TabsMenuContainer>
             <TabsMenu
-              title="地区"
+              title={t("area")}
               titleIcon={<IconGlobal />}
               tabList={areaList}
               activeKey={searchKey}

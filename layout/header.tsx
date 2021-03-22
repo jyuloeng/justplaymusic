@@ -1,12 +1,33 @@
 import React, { useState } from "react";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
-import TopMenu from "../components/menus/top-menu";
-import SlideMenu from "../components/menus/slide-menu";
+import { MenuItem, TopMenu, SlideMenu } from "../components/menus";
 
 export interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
+  const { t } = useTranslation("common");
+
+  const menu: MenuItem[] = [
+    {
+      path: "/",
+      name: t("recommened"),
+    },
+    {
+      path: "/playlist",
+      name: t("playlist"),
+    },
+    {
+      path: "/ranking",
+      name: t("leaderboard"),
+    },
+    {
+      path: "/artistlist",
+      name: t("artist"),
+    },
+  ];
+
   const router = useRouter();
   const [slideMenuVisible, setSlideMenuVisible] = useState<boolean>(false);
 
@@ -18,6 +39,8 @@ const Header: React.FC<HeaderProps> = () => {
     <>
       <Container>
         <TopMenu
+          menu={menu}
+          searchPlaceholder={t("search")}
           onNicknameClick={() => router.push("/zone")}
           onMobileNavClick={() => setSlideMenuVisible((visible) => !visible)}
           onSearch={handleSearch}
@@ -26,7 +49,9 @@ const Header: React.FC<HeaderProps> = () => {
 
       <SlideMenu
         visible={slideMenuVisible}
+        searchPlaceholder={t("search")}
         onClose={() => setSlideMenuVisible(false)}
+        onSearch={handleSearch}
       />
     </>
   );

@@ -1,13 +1,13 @@
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
 import Image from "next/image";
 import Link from "next/link";
 import Avatar from "../commons/avatar";
 import { Button } from "../buttons";
 import { IconPlay, IconCollect } from "../../styles/icons";
-import { PrimaryBackgroundColor, PrimaryColor } from "../../styles/colors";
+import { PrimaryColor } from "../../styles/colors";
 import {
   H3,
-  H4,
   MainText,
   InfoText,
   CaptionText,
@@ -46,6 +46,8 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
   onPlayAllClick,
   onCollectClick,
 }) => {
+  const { t } = useTranslation("common");
+
   return (
     <>
       <PlaylistIntroContainer>
@@ -80,13 +82,14 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
                 </ArtistContainer>
 
                 <PublishTime>
-                  {formatDate(publishTime)}{" "}
-                  {introType === "playlist" ? "创建" : "发行"}
+                  {formatDate(publishTime)}
+                  {introType === "playlist" ? t("created") : t("published")}
                 </PublishTime>
               </ArtistWrapper>
 
               <Songs>
-                歌曲：<span>{songs}</span>
+                {t("songs-number")}
+                <span>{songs}</span>
               </Songs>
             </Details>
 
@@ -103,14 +106,14 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
               backgroundColor="primary"
               onClick={onPlayAllClick}
             >
-              <CaptionText bold>播放全部</CaptionText>
+              <CaptionText bold>{t("play-all")}</CaptionText>
             </Button>
             <Button
               icon={<IconCollect />}
               isShowBackground={true}
               onClick={onCollectClick}
             >
-              <CaptionText bold>收藏</CaptionText>
+              <CaptionText bold>{t("collect")}</CaptionText>
             </Button>
           </Buttons>
         </InfoContainer>
@@ -123,10 +126,10 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
           isShowBackground={true}
           backgroundColor="primary"
         >
-          <CaptionText bold>播放全部</CaptionText>
+          <CaptionText bold>{t("play-all")}</CaptionText>
         </Button>
         <Button icon={<IconCollect />} isShowBackground={true}>
-          <CaptionText bold>收藏</CaptionText>
+          <CaptionText bold>{t("collect")}</CaptionText>
         </Button>
       </MobileButtons>
     </>

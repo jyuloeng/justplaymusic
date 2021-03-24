@@ -12,5 +12,11 @@
     "search-ncloud-music-caption": "You can select your account from the search list~",
     "search-placeholder": "Please enter your username~",
     "search-placeholder-subtitle": "Press Enter to search~",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "validation-none-password": "Please enter your password!",
+    "validation-incorrect-email": "Please enter the correct email!",
+    "validation-none-countrycode": "Please enter the country code!",
+    "validation-incorrect-phone": "Please enter the correct phone number!",
+    "account-password-incorrect": "Wrong account or password",
+    "unbound-account": "This mailbox is not bound to NetEase Cloud account, please go to NetEase Cloud official website for binding!"
 }

@@ -40,3 +40,4 @@ export { default as IconLock } from "./lock";
 export { default as IconGithub } from "./github";
 export { default as IconNCloudLogo } from "./ncloud-logo";
 export { default as IconPhone } from "./phone";
+export { default as IconEarth } from "./earth";

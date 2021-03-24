@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AUTH_COOKIE_KEY, getAuthCookie } from "./auth";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const TIME_OUT = 5000;
@@ -10,8 +11,10 @@ const request = axios.create({
 
 request.interceptors.request.use(
   (config) => {
-    if (config.method === "get") {
-      config.data = true;
+    if (!config.params) config.params = {};
+    const authCookie = getAuthCookie();
+    if (authCookie) {
+      config.params.cookie = `${AUTH_COOKIE_KEY}=${authCookie};`;
     }
     return config;
   },

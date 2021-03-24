@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../index";
+import { tuple } from "./../../lib/type";
 
 export interface User {
   userId?: number;
@@ -9,12 +10,21 @@ export interface User {
   avatarUrl?: string;
 }
 
+const LoginModeTypes = tuple("account", "search", "");
+type LoginModeType = typeof LoginModeTypes[number];
+
 interface UserState {
-  user: User | null;
+  user?: User | null;
+  token?: string;
+  cookie?: string;
+  loginMode?: LoginModeType;
 }
 
 const initialState: UserState = {
   user: null,
+  token: "",
+  cookie: "",
+  loginMode: "",
 };
 
 export const userSlice = createSlice({
@@ -27,11 +37,33 @@ export const userSlice = createSlice({
         user: action.payload,
       };
     },
+    setToken: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        token: action.payload,
+      };
+    },
+    setCookie: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        cookie: action.payload,
+      };
+    },
+    setLoginMode: (state, action: PayloadAction<LoginModeType>) => {
+      return {
+        ...state,
+        loginMode: action.payload,
+      };
+    },
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, setToken, setCookie, setLoginMode } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.userReducer.user;
+export const selectToken = (state: RootState) => state.userReducer.token;
+export const selectCookie = (state: RootState) => state.userReducer.cookie;
+export const selectLoginMode = (state: RootState) =>
+  state.userReducer.loginMode;
 
 export default userSlice.reducer;

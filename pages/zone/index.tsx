@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import { useRouter } from "next/router";
 import useTranslation from "next-translate/useTranslation";
 import Image from "next/image";
 import Avatar from "../../components/commons/avatar";
@@ -10,13 +11,21 @@ import {
   PlayCountCard,
   AvatarCard,
 } from "../../components/cards";
-import { CaptionBoard } from "../../components/boards";
 import { GlassButton, Button } from "../../components/buttons";
 import { CaptionText, H3, IntroText, SmallText } from "../../styles/typography";
 import { DarkModeTextColor } from "../../styles/colors";
 import { IconHeart, IconPlay } from "../../styles/icons";
 import { getSpecifiedArrayElements } from "../../lib/array";
-import { useUserPlaylist, useUserProfile } from "../../hooks";
+import { isLogin } from "../../lib/auth";
+import {
+  useUserPlaylist,
+  useUserProfile,
+  useUserSublist,
+  usePlaylistDetail,
+} from "../../hooks";
+import { toast } from "./../../lib/toast";
+import { useAppSelector } from "./../../store";
+import { selectUser } from "../../store/slice/user.slice";
 
 export interface ZoneProps {}
 type commonLikedRes = {
@@ -31,6 +40,14 @@ const cookie = `MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b9
 
 const Zone: React.FC<ZoneProps> = () => {
   const { t } = useTranslation("zone");
+  const router = useRouter();
+  const user = useAppSelector(selectUser);
+
+  // if (!isLogin()) {
+  //   toast("请先登录");
+  //   router.replace("/login");
+  //   return null;
+  // }
 
   const tabsMenu = [
     {
@@ -51,61 +68,26 @@ const Zone: React.FC<ZoneProps> = () => {
     },
   ];
 
-  const [myFavoriteMusic, setMyFavoriteMusic] = useState([]);
-  const [activeTab, setActiveTab] = useState(tabsMenu[0].key);
-
-  const [likedAlbumsRes, setLikedAlbumsRes] = useState<commonLikedRes>(null);
-  const [likedArtistsRes, setLikedArtistsRes] = useState<commonLikedRes>(null);
-  const [likedMvsRes, setLikedMvsRes] = useState<commonLikedRes>(null);
-
-  const handleTabClick = (key) => {
-    setActiveTab(() => key);
-    if (key === "playlist") return;
-
-    fetch(
-      `https://music.qier222.com/api/${key}/sublist?timestamp=1615620385018&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (key === "album") {
-          setLikedAlbumsRes(data);
-        } else if (key === "artist") {
-          setLikedArtistsRes(data);
-        } else if (key === "mv") {
-          setLikedMvsRes(data);
-        }
-      });
-  };
+  const [activeTabKey, setActiveTabKey] = useState(tabsMenu[0].key);
 
   const { userProfile } = useUserProfile(cookie);
 
-  useEffect(() => {
-    fetch(
-      "https://music.qier222.com/api/playlist/detail?id=130220621&timestamp=1615605691245&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const myFavoriteMusicIds = [];
-        getSpecifiedArrayElements(data.playlist.trackIds, 16).forEach((item) =>
-          myFavoriteMusicIds.push(item.id)
-        );
-
-        fetch(
-          `https://music.qier222.com/api/song/detail?ids=${myFavoriteMusicIds.join(
-            ","
-          )}&cookie=MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            const { songs } = data;
-            setMyFavoriteMusic(songs);
-          });
-      });
-  }, []);
+  const { likedAlbumsRes, likedArtistsRes, likedMvsRes } = useUserSublist({
+    key: activeTabKey !== "playlist" ? activeTabKey : "",
+  });
 
   const { userPlaylistRes } = useUserPlaylist({
-    uid: 107112048,
+    uid: user?.userId,
   });
+
+  const { playlistSongs } = usePlaylistDetail({
+    id: userPlaylistRes?.playlist[0]?.id,
+    limit: 16,
+  });
+
+  const handleTabClick = (key) => {
+    setActiveTabKey(key);
+  };
 
   return (
     <Container>
@@ -133,10 +115,10 @@ const Zone: React.FC<ZoneProps> = () => {
       )}
 
       <FavoriteMusicWrapper>
-        {myFavoriteMusic[0] && (
+        {playlistSongs[0] && (
           <FavoriteMusicCoverContainer>
             <FavoriteMusicCover
-              src={myFavoriteMusic[0].al.picUrl + "?param=560y420"}
+              src={playlistSongs[0].al.picUrl + "?param=560y420"}
               layout="responsive"
               width={280}
               height={210}
@@ -161,7 +143,7 @@ const Zone: React.FC<ZoneProps> = () => {
 
         <FavoriteMusicContainer>
           <FavoriteMusic>
-            {myFavoriteMusic?.map((song, index) => (
+            {playlistSongs?.map((song, index) => (
               <PlaylistItemCard
                 key={song.id}
                 itemType={
@@ -183,10 +165,10 @@ const Zone: React.FC<ZoneProps> = () => {
       </FavoriteMusicWrapper>
 
       <MobileFavoriteMusicWrapper>
-        {myFavoriteMusic[0] && (
+        {playlistSongs[0] && (
           <MobileFavoriteMusicCoverContainer>
             <MobileFavoriteMusicCover
-              src={myFavoriteMusic[0].al.picUrl + "?param=100y100"}
+              src={playlistSongs[0].al.picUrl + "?param=100y100"}
               layout="responsive"
               width={60}
               height={60}
@@ -212,7 +194,7 @@ const Zone: React.FC<ZoneProps> = () => {
         {tabsMenu.map((tab) => (
           <Button
             key={tab.key}
-            btnType={activeTab === tab.key ? "primary" : "default"}
+            btnType={activeTabKey === tab.key ? "primary" : "default"}
             onClick={() => handleTabClick(tab.key)}
           >
             <CaptionText bold>{tab.name}</CaptionText>
@@ -220,7 +202,7 @@ const Zone: React.FC<ZoneProps> = () => {
         ))}
       </CaptionBoardContainer>
 
-      {activeTab === "playlist" && (
+      {activeTabKey === "playlist" && (
         <PlaylistContainer>
           {userPlaylistRes?.playlist?.map((playlist, index) => {
             return (
@@ -241,7 +223,7 @@ const Zone: React.FC<ZoneProps> = () => {
         </PlaylistContainer>
       )}
 
-      {activeTab === "album" && (
+      {activeTabKey === "album" && (
         <PlaylistContainer>
           {likedAlbumsRes?.data?.map((album) => {
             return (
@@ -260,7 +242,7 @@ const Zone: React.FC<ZoneProps> = () => {
         </PlaylistContainer>
       )}
 
-      {activeTab === "artist" && (
+      {activeTabKey === "artist" && (
         <ArtistsConntainer>
           {likedArtistsRes?.data?.map((artist) => (
             <AvatarCard
@@ -273,7 +255,7 @@ const Zone: React.FC<ZoneProps> = () => {
         </ArtistsConntainer>
       )}
 
-      {activeTab === "mv" && (
+      {activeTabKey === "mv" && (
         <MvsContainer>
           {likedMvsRes?.data?.map((mv) => (
             <MediaCard

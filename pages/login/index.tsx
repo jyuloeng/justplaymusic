@@ -5,6 +5,7 @@ import { TitleBoard } from "../../components/boards";
 import { IntroText, SmallText } from "../../styles/typography";
 import { IconRightArrow } from "../../styles/icons";
 import { Primary2Color } from "../../styles/colors";
+import { isLogin } from "../../lib/auth";
 
 export interface LoginProps {}
 
@@ -18,6 +19,10 @@ const Login: React.FC<LoginProps> = () => {
   const { t } = useTranslation("login");
 
   const router = useRouter();
+  // if (isLogin()) {
+  //   router.replace("/zone");
+  //   return null;
+  // }
 
   const cardList = [
     {

@@ -15,7 +15,12 @@ import {
   CaptionText,
 } from "../../styles/typography";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { setUser, selectUser } from "../../store/slice/user.slice";
+import {
+  setUser,
+  selectUser,
+  setLoginMode,
+} from "../../store/slice/user.slice";
+import { isLogin } from "../../lib/auth";
 
 export interface LoginSearchProps {}
 
@@ -24,6 +29,11 @@ const limit = 24;
 const LoginSearch: React.FC<LoginSearchProps> = () => {
   const { t } = useTranslation("login");
   const router = useRouter();
+  // if (isLogin()) {
+  //   router.replace("/zone");
+  //   return null;
+  // }
+
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
 
@@ -54,6 +64,7 @@ const LoginSearch: React.FC<LoginSearchProps> = () => {
       (user) => user.userId === activeUserId
     );
     dispatch(setUser(user));
+    dispatch(setLoginMode("search"));
   };
 
   useEffect(() => {

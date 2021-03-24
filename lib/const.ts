@@ -92,3 +92,18 @@ export const QUERY_USER_SUBLIST = {
   KEY: "QUERY_USER_SUBLIST",
   URL: "/:key/sublist",
 };
+
+export const QUERY_USER_DETAIL = {
+  KEY: "QUERY_USRR_DETAIL",
+  URL: "/user/detail",
+};
+
+export const MUTATE_USER_LOGIN_BY_PHONE = {
+  KEY: "MUTATE_USER_LOGIN_BY_PHONE",
+  URL: "/login/cellphone",
+};
+
+export const MUTATE_USER_LOGIN_BY_EMAIL = {
+  KEY: "MUTATE_USER_LOGIN_BY_EMAIL",
+  URL: "/login",
+};

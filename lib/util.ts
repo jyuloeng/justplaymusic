@@ -16,3 +16,7 @@ export const setLanguage = async (locale) => {
     locale,
   });
 };
+
+export const clearSpace = (str: string) => {
+  return str.replace(/\s/g, "");
+};

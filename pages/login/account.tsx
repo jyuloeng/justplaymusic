@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
+import { useRouter } from "next/router";
+import { toast } from "../../lib/toast";
 import useTranslation from "next-translate/useTranslation";
 import { TitleBoard } from "../../components/boards";
 import { Input } from "../../components/forms";
@@ -8,16 +10,43 @@ import {
   IconEmail,
   IconLock,
   IconPhone,
+  IconEarth,
 } from "../../styles/icons";
 import { MediumText, SmallText } from "../../styles/typography";
+import {
+  useMutateUserLoginByPhone,
+  useMutateUserLoginByEmail,
+  useUserProfile,
+  MutateUserLoginResponse,
+} from "../../hooks";
+import { useAppDispatch } from "../../store";
+import { setToken, setUser, setLoginMode } from "../../store/slice/user.slice";
+import {
+  setCookies,
+  getAuthCookie,
+  isLogin,
+  getMd5Password,
+} from "../../lib/auth";
+import { clearSpace } from "../../lib/util";
 
 export interface LoginAccountProps {}
 
+const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const LoginAccount: React.FC<LoginAccountProps> = () => {
   const { t } = useTranslation("login");
+  const router = useRouter();
+  // if (isLogin()) {
+  //   router.replace("/zone");
+  //   return null;
+  // }
 
+  const dispatch = useAppDispatch();
+
+  const [authCookie, setAuthCookie] = useState("");
   const [isEmailLogin, setIsEmailLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,6 +54,78 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
     setIsEmailLogin((value) => !value);
     isEmailLogin ? setPhone("") : setEmail("");
   };
+
+  const {
+    mutateAsync: mutateUserLoginByPhoneAsync,
+  } = useMutateUserLoginByPhone();
+  const {
+    mutateAsync: mutateUserLoginByEmailAsync,
+  } = useMutateUserLoginByEmail();
+
+  const handleLogin = () => {
+    if (password === "") {
+      return toast(t("validation-none-password"));
+    }
+
+    if (isEmailLogin) {
+      if (!emailPattern.test(email) || clearSpace(email) === "") {
+        return toast(t("validation-incorrect-email"));
+      }
+
+      mutateUserLoginByEmailAsync({
+        email: clearSpace(email),
+        password: "fakePassword",
+        md5_password: getMd5Password(password),
+      }).then((data) => {
+        handleLoginResponse(data);
+      });
+    } else {
+      if (clearSpace(countryCode) === "") {
+        return toast(t("validation-none-countrycode"));
+      }
+
+      if (!Number(clearSpace(phone))) {
+        return toast(t("validation-incorrect-phone"));
+      }
+
+      mutateUserLoginByPhoneAsync({
+        countrycode: +clearSpace(countryCode) || 86,
+        phone: clearSpace(phone),
+        password: "fakePassword",
+        md5_password: getMd5Password(password),
+      }).then((data) => {
+        handleLoginResponse(data);
+      });
+    }
+  };
+
+  const handleLoginResponse = (data: MutateUserLoginResponse) => {
+    const { code, msg, token, cookie } = data;
+    if (code !== 200) {
+      toast(msg || t("account-password-incorrect"));
+      dispatch(setUser(null));
+      dispatch(setToken(""));
+      dispatch(setLoginMode(""));
+    } else {
+      setCookies(cookie);
+      setAuthCookie(getAuthCookie());
+      dispatch(setToken(token));
+    }
+  };
+
+  const { data } = useUserProfile(authCookie);
+
+  useEffect(() => {
+    if (data?.code === 200 && !data?.profile) {
+      toast(t("unbound-account"));
+      return;
+    } else if (data?.profile) {
+      dispatch(setUser(data.profile));
+      dispatch(setLoginMode("account"));
+
+      router.replace("/zone");
+    }
+  }, [data]);
 
   return (
     <Container>
@@ -48,13 +149,23 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
             placeholder={"Email"}
           />
         ) : (
-          <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            width={270}
-            icon={<IconPhone />}
-            placeholder={"Phone"}
-          />
+          <>
+            <Input
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+              width={270}
+              icon={<IconEarth />}
+              placeholder={"Country Code"}
+            />
+            <div style={{ marginBottom: 12 }}></div>
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              width={270}
+              icon={<IconPhone />}
+              placeholder={"Phone"}
+            />
+          </>
         )}
         <div style={{ marginBottom: 12 }}></div>
         <Input
@@ -66,7 +177,7 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
           placeholder={"Password"}
         />
 
-        <LoginButton>
+        <LoginButton onClick={handleLogin}>
           <LoginButtonText bold>{t("title")}</LoginButtonText>
         </LoginButton>
 

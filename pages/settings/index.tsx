@@ -6,7 +6,29 @@ import { Select, Switch } from "../../components/forms";
 import { Button } from "../../components/buttons";
 import { MediumText, CaptionText, SmallText } from "../../styles/typography";
 import { IconGithub } from "../../styles/icons";
-import { setLanguage } from "../../lib/util";
+import { setLanguageByUtil } from "../../lib/util";
+import { useAppDispatch, useAppSelector } from "../../store";
+import {
+  LanguageType,
+  StyleType,
+  QualityType,
+  LyricsBackgroundType,
+  LyricsSizeType,
+  setLanguage,
+  setAutoCacheSong,
+  setLyricsBackground,
+  setLyricsSize,
+  setLyricsTranslation,
+  setQuality,
+  setStyle,
+  selectLanguage,
+  selectAutoCacheSong,
+  selectLyricsBackground,
+  selectLyricsSize,
+  selectLyricsTranslation,
+  selectQuality,
+  selectStyle,
+} from "../../store/slice/settings.slice";
 
 export interface SettingsProps {}
 
@@ -14,8 +36,19 @@ const version = process.env.NEXT_PUBLIC_VERSION;
 
 const Settings: React.FC<SettingsProps> = () => {
   const { t, lang } = useTranslation("settings");
+  const dispatch = useAppDispatch();
+  const language = useAppSelector(selectLanguage);
+  const style = useAppSelector(selectStyle);
+  const quality = useAppSelector(selectQuality);
+  const lyricsTranslation = useAppSelector(selectLyricsTranslation);
+  const lyricsBackground = useAppSelector(selectLyricsBackground);
+  const lyricsSize = useAppSelector(selectLyricsSize);
+  const autoCacheSong = useAppSelector(selectAutoCacheSong);
 
-  const langOptions = [
+  const langOptions: Array<{
+    value: LanguageType;
+    title: string;
+  }> = [
     {
       value: "zh",
       title: "简体中文",
@@ -26,7 +59,10 @@ const Settings: React.FC<SettingsProps> = () => {
     },
   ];
 
-  const styleOptions = [
+  const styleOptions: Array<{
+    value: StyleType;
+    title: string;
+  }> = [
     {
       value: "auto",
       title: t("style-option-auto"),
@@ -41,7 +77,10 @@ const Settings: React.FC<SettingsProps> = () => {
     },
   ];
 
-  const qualityOptions = [
+  const qualityOptions: Array<{
+    value: QualityType;
+    title: string;
+  }> = [
     {
       value: "128",
       title: t("quality-option-128"),
@@ -60,7 +99,10 @@ const Settings: React.FC<SettingsProps> = () => {
     },
   ];
 
-  const lyricsBgOptions = [
+  const lyricsBgOptions: Array<{
+    value: LyricsBackgroundType;
+    title: string;
+  }> = [
     {
       value: "auto",
       title: t("lyrics-bg-option-auto"),
@@ -71,7 +113,10 @@ const Settings: React.FC<SettingsProps> = () => {
     },
   ];
 
-  const lyricsSizeOptions = [
+  const lyricsSizeOptions: Array<{
+    value: LyricsSizeType;
+    title: string;
+  }> = [
     {
       value: 17,
       title: t("lyrics-size-option-small"),
@@ -90,11 +135,9 @@ const Settings: React.FC<SettingsProps> = () => {
     },
   ];
 
-  const [checked, setChecked] = useState(false);
-
-  const handleChangeLang = async () => {
-    console.log(lang);
-    await setLanguage(lang === "en" ? "zh" : "en");
+  const handleChangeLang = async (value: LanguageType) => {
+    dispatch(setLanguage(value));
+    await setLanguageByUtil(value);
   };
 
   return (
@@ -106,42 +149,62 @@ const Settings: React.FC<SettingsProps> = () => {
       <SettingItems>
         <SettingItem>
           <MediumText bold>{t("language")}</MediumText>
-          <Select options={langOptions} />
+          <Select<LanguageType>
+            options={langOptions}
+            defaultValue={language}
+            onChange={(option) => handleChangeLang(option.value)}
+          />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("style")}</MediumText>
-          <Select options={styleOptions} />
+          <Select<StyleType>
+            options={styleOptions}
+            defaultValue={style}
+            onChange={(option) => dispatch(setStyle(option.value))}
+          />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("quality")}</MediumText>
-          <Select options={qualityOptions} />
+          <Select<QualityType>
+            options={qualityOptions}
+            defaultValue={quality}
+            onChange={(option) => dispatch(setQuality(option.value))}
+          />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("lyrics-translation")}</MediumText>
           <Switch
-            checked={checked}
-            onChange={() => setChecked((value) => !value)}
+            checked={lyricsTranslation}
+            onChange={() => dispatch(setLyricsTranslation(!lyricsTranslation))}
           />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("lyrics-background")}</MediumText>
-          <Select options={lyricsBgOptions} />
+          <Select<LyricsBackgroundType>
+            options={lyricsBgOptions}
+            defaultValue={lyricsBackground}
+            onChange={(option) => dispatch(setLyricsBackground(option.value))}
+          />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("lyrics-size")}</MediumText>
-          <Select options={lyricsSizeOptions} />
+          <Select<LyricsSizeType>
+            options={lyricsSizeOptions}
+            defaultValue={lyricsSize}
+            onChange={(option) => dispatch(setLyricsSize(option.value))}
+          />
         </SettingItem>
 
         <SettingItem>
           <MediumText bold>{t("auto-cache")}</MediumText>
           <Switch
-            checked={checked}
-            onChange={() => setChecked((value) => !value)}
+            checked={autoCacheSong}
+            onChange={() => dispatch(setAutoCacheSong(!autoCacheSong))}
           />
         </SettingItem>
 
@@ -149,11 +212,7 @@ const Settings: React.FC<SettingsProps> = () => {
           <MediumText bold>
             {t("songs-cached", { songs: 0, bytes: 0 })}
           </MediumText>
-          <Button
-            isShowBackground
-            paddingY={2}
-            onClick={() => handleChangeLang()}
-          >
+          <Button isShowBackground paddingY={2}>
             <SmallText>{t("clear-cache")}</SmallText>
           </Button>
         </SettingItem>

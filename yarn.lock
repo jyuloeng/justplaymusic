@@ -373,6 +373,13 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
+"@types/redux-persist@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.npm.taobao.org/@types/redux-persist/download/@types/redux-persist-4.3.1.tgz#aa4c876859e0bea5155e5f7980e5b8c4699dc2e6"
+  integrity sha1-qkyHaFngvqUVXl95gOW4xGmdwuY=
+  dependencies:
+    redux-persist "*"
+
 "@types/redux@^3.6.0":
   version "3.6.0"
   resolved "https://registry.npm.taobao.org/@types/redux/download/@types/redux-3.6.0.tgz#f1ebe1e5411518072e4fdfca5c76e16e74c1399a"
@@ -2330,6 +2337,11 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-content-loader@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.npm.taobao.org/react-content-loader/download/react-content-loader-6.0.2.tgz#7c72e5b133136c31c2f27036d1d7b39dab804026"
+  integrity sha1-fHLlsTMTbDHC8nA20deznauAQCY=
+
 react-dom@17.0.1:
   version "17.0.1"
   resolved "https://registry.npm.taobao.org/react-dom/download/react-dom-17.0.1.tgz?cache=0&sync_timestamp=1614788350642&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Freact-dom%2Fdownload%2Freact-dom-17.0.1.tgz#1de2560474ec9f0e334285662ede52dbc5426fc6"
@@ -2430,6 +2442,11 @@ reduce-css-calc@^2.1.8:
   dependencies:
     css-unit-converter "^1.1.1"
     postcss-value-parser "^3.3.0"
+
+redux-persist@*, redux-persist@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npm.taobao.org/redux-persist/download/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
+  integrity sha1-tNKXL5hZWXwTDUDUsUb+zatRs6g=
 
 redux-thunk@^2.3.0:
   version "2.3.0"

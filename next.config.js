@@ -15,6 +15,10 @@ module.exports = nextTranslate({
       "p2.music.126.net",
       "p3.music.126.net",
       "p4.music.126.net",
+      "s1.music.126.net",
+      "s2.music.126.net",
+      "s3.music.126.net",
+      "s4.music.126.net",
     ],
   },
 });

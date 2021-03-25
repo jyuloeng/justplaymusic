@@ -11,7 +11,7 @@ export const generateLowerChar = () => {
   return arr;
 };
 
-export const setLanguage = async (locale) => {
+export const setLanguageByUtil = async (locale) => {
   return await Router.push(Router.pathname, Router.asPath, {
     locale,
   });

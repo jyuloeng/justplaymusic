@@ -20,7 +20,7 @@ import {
   selectUser,
   setLoginMode,
 } from "../../store/slice/user.slice";
-import { isLogin } from "../../lib/auth";
+import { isLogin, setLocalUser } from "../../lib/auth";
 
 export interface LoginSearchProps {}
 
@@ -65,6 +65,7 @@ const LoginSearch: React.FC<LoginSearchProps> = () => {
     );
     dispatch(setUser(user));
     dispatch(setLoginMode("search"));
+    setLocalUser({ user, loginMode: "search" });
   };
 
   useEffect(() => {

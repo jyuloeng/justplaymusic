@@ -7,13 +7,12 @@ import {
   QUERY_PLAYLIST_DETAIL,
 } from "../lib/const";
 import { useSong } from "./index";
-import { getSpecifiedArrayElements } from "../lib/array";
 
 interface QueryPersonalizedPlaylistResponse {
   code?: number;
   category?: number;
   hasTaste?: boolean;
-  result?: unknown[];
+  result?: any[];
 }
 
 interface QueryPlaylistDetailResponse {
@@ -23,27 +22,31 @@ interface QueryPlaylistDetailResponse {
   playlist?: any;
   privileges?: any[];
 }
-
-interface PlaylistDetailParams {
+interface QueryPlaylistDetailParams {
   id?: string;
   limit?: number;
 }
 
-export const useQueryPersonalizedPlaylist = (limit?: number) => {
+interface BaseQueryParams {
+  limit?: number;
+  offset?: number;
+}
+
+export const useQueryPersonalizedPlaylist = (params?: BaseQueryParams) => {
   return useQuery<QueryPersonalizedPlaylistResponse>(
-    [QUERY_PERSONALIZED_PLAYLIST.KEY, { limit }],
+    [QUERY_PERSONALIZED_PLAYLIST.KEY, { params }],
     () =>
       request.get(QUERY_PERSONALIZED_PLAYLIST.URL, {
-        params: { limit },
+        params,
       }),
     {}
   );
 };
 
-export const usePersonalizedPlaylist = (limit?: number) => {
+export const usePersonalizedPlaylist = (params?: BaseQueryParams) => {
   const [personalizedPlaylist, setPersonalizedPlaylist] = useState([]);
 
-  const { data, ...queryProps } = useQueryPersonalizedPlaylist(limit);
+  const { data, ...queryProps } = useQueryPersonalizedPlaylist(params);
 
   useEffect(() => {
     if (data) {
@@ -75,7 +78,7 @@ export const useQueryPlaylistDetail = (id?: string) => {
   );
 };
 
-export const usePlaylistDetail = (params: PlaylistDetailParams) => {
+export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
   const [playlistInfo, setPlaylistInfo] = useState(null);
   const [playlistSongs, setPlaylistSongs] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);

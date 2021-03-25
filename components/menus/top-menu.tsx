@@ -16,20 +16,24 @@ import { MediumText, CaptionText } from "../../styles/typography";
 
 export interface TopMenuProps {
   menu?: MenuItem[];
+  nickname?: string;
+  userAvatarPath?: string;
   searchPlaceholder?: string;
   onMobileNavClick?: React.MouseEventHandler<HTMLElement>;
-  onNicknameClick?: React.MouseEventHandler<HTMLElement>;
+  onAvatarClick?: React.MouseEventHandler<HTMLElement>;
   onSearch?: (value: string) => void;
 }
 
-const imagePath =
-  "https://p2.music.126.net/NP5ShmXQiOcqLe5xjrpjMA==/3297435383057591.jpg?param=512y512";
+const defaultAvatar =
+  "http://s4.music.126.net/style/web2/img/default/default_avatar.jpg";
 
 const TopMenu: React.FC<TopMenuProps> = ({
   menu,
+  nickname = "未登录游客",
+  userAvatarPath = defaultAvatar,
   searchPlaceholder,
   onMobileNavClick,
-  onNicknameClick,
+  onAvatarClick,
   onSearch,
 }) => {
   const router = useRouter();
@@ -63,7 +67,9 @@ const TopMenu: React.FC<TopMenuProps> = ({
               <a>
                 <Button
                   btnType={router.pathname === path ? "primary" : "default"}
-                  backgroundColor={router.pathname === path ? "primary" : "default"}
+                  backgroundColor={
+                    router.pathname === path ? "primary" : "default"
+                  }
                 >
                   <MediumText bold>{name}</MediumText>
                 </Button>
@@ -72,26 +78,30 @@ const TopMenu: React.FC<TopMenuProps> = ({
           ))}
         </ButtonGrops>
 
-        <SettingContainer>
-          <Button
-            icon={
-              <AvatarContainer>
-                <Avatar src={imagePath} />
-              </AvatarContainer>
-            }
-            isShowHover={false}
-            onClick={onNicknameClick}
-          >
-            <MediumText bold>送温暖的大红帽丶</MediumText>
-          </Button>
-          <Button icon={<IconSetting />} />
-        </SettingContainer>
+        <Button
+          icon={
+            <AvatarContainer>
+              <Avatar src={userAvatarPath + "?param=60y60"} />
+            </AvatarContainer>
+          }
+          isShowHover={false}
+          onClick={onAvatarClick}
+        >
+          <Nickname bold>{nickname}</Nickname>
+        </Button>
       </ScreenNavContainer>
     </Container>
   );
 };
 
 export default TopMenu;
+
+const Nickname = styled(MediumText)(() => [
+  tw`truncate`,
+  css`
+    max-width: 128px;
+  `,
+]);
 
 const Container = styled.nav<TopMenuProps>(() => [
   tw`flex justify-between items-center w-full py-2 shadow-sm md:shadow-none`,
@@ -115,7 +125,7 @@ const SearchContainer = styled.div(() => [
     }
 
     & > :last-child {
-      @media (max-width: 880px) {
+      @media (max-width: 932px) {
         display: none;
       }
     }
@@ -131,8 +141,6 @@ const ButtonGrops = styled.div(() => [
   `,
   tw`flex`,
 ]);
-
-const SettingContainer = styled.div(() => [tw`flex items-center`]);
 
 const AvatarContainer = styled.div(() => [
   tw`relative`,

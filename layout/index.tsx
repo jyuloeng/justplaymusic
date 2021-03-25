@@ -1,7 +1,11 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import Head from "next/head";
 import tw, { styled, css } from "twin.macro";
 import Header from "./header";
+import { getAuthCookie, getLocalUser, setLocalUser } from "../lib/auth";
+import { useAppSelector, useAppDispatch } from "../store";
+import { setUser, setCookie, setLoginMode } from "../store/slice/user.slice";
+import { useUserProfile } from "../hooks/user";
 
 export interface LayoutProps {
   children?: ReactNode;
@@ -12,6 +16,42 @@ const Layout: React.FC<LayoutProps> = ({
   children,
   title = "JustPlayMusic",
 }) => {
+  // useAppSelector()
+
+  const dispatch = useAppDispatch();
+
+  const { userProfile } = useUserProfile(getAuthCookie());
+
+  useEffect(() => {
+    const localUser = getLocalUser();
+
+    if (userProfile) {
+      dispatch(setUser(userProfile));
+      dispatch(setCookie(getAuthCookie()));
+      dispatch(setLoginMode("account"));
+      setLocalUser({
+        user: userProfile,
+        loginMode: "account",
+      });
+      console.log("account");
+    } else if (localUser && !getAuthCookie()) {
+      dispatch(setUser(localUser.user));
+      dispatch(setLoginMode("search"));
+      setLocalUser({ user: localUser.user, loginMode: "search" });
+      console.log("search");
+    } else {
+      console.log("else");
+    }
+  }, [
+    userProfile,
+    dispatch,
+    setUser,
+    setCookie,
+    setLoginMode,
+    getAuthCookie,
+    getLocalUser,
+  ]);
+
   return (
     <Wrapper>
       <Head>

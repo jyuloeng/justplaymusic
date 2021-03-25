@@ -14,14 +14,16 @@ const CaptionBoard: React.FC<CaptionBoardProps> = ({
   onMoreClick,
 }) => {
   return (
-    <Container moreText={moreText}>
+    <Container>
       <Button isShowHover={false}>
         <MainText bold>{caption}</MainText>
       </Button>
-      {moreText && (
+      {moreText ? (
         <Button onClick={onMoreClick}>
           <SmallText bold>{moreText}</SmallText>
         </Button>
+      ) : (
+        <div></div>
       )}
     </Container>
   );
@@ -29,7 +31,6 @@ const CaptionBoard: React.FC<CaptionBoardProps> = ({
 
 export default CaptionBoard;
 
-const Container = styled.div(({ moreText }: { moreText: string }) => [
-  tw`flex items-center w-full`,
-  moreText && tw`justify-between`,
+const Container = styled.div(() => [
+  tw`flex justify-between items-center w-full`,
 ]);

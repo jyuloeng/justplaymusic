@@ -3,15 +3,16 @@ import tw, { styled, css } from "twin.macro";
 import { IconBottomArrow } from "../../styles/icons";
 import { SmallText } from "../../styles/typography";
 
-interface Option {
-  value?: string | number;
+interface Option<T> {
+  value?: T;
   title?: string;
 }
 
-export interface DefaultSelectProps {
+export interface DefaultSelectProps<T> {
   width?: number;
-  options?: Option[];
-  onChange?: (option: Option) => void;
+  defaultValue?: T;
+  options?: Option<T>[];
+  onChange?: (option: Option<T>) => void;
 }
 
 const iconSize = {
@@ -19,13 +20,16 @@ const iconSize = {
   height: 16,
 };
 
-const DefaultSelect: React.FC<DefaultSelectProps> = ({
+function DefaultSelect<T>({
   width = 160,
+  defaultValue,
   options,
   onChange,
-}) => {
+}: DefaultSelectProps<T>) {
   const ref = useRef<HTMLDivElement>(null);
-  const [selectedOption, setSelectedOption] = useState<Option>(options[0]);
+  const [selectedOption, setSelectedOption] = useState<Option<T>>(
+    options?.find((option) => option.value === defaultValue) || options[0]
+  );
   const [showOptions, setShowOptions] = useState(false);
 
   const handleHideOptions = useCallback(() => {
@@ -39,7 +43,7 @@ const DefaultSelect: React.FC<DefaultSelectProps> = ({
     }
   };
 
-  const handleOptionClick = (option: Option) => {
+  const handleOptionClick = (option: Option<T>) => {
     setSelectedOption(option);
     onChange && onChange(option);
   };
@@ -61,14 +65,15 @@ const DefaultSelect: React.FC<DefaultSelectProps> = ({
       width={width}
       onClick={() => setShowOptions((value) => !value)}
     >
-      <Label>{selectedOption.title}</Label>
+      <Label>
+        {options.find((option) => option.value === selectedOption.value)?.title}
+      </Label>
       <Icon {...iconSize} />
 
       <Options width={width} show={showOptions}>
         {options.map((option) => (
           <Option
-            key={option.value}
-            value={option.value}
+            key={(option.value as unknown) as string}
             onClick={() => handleOptionClick(option)}
           >
             <SmallText>{option.title}</SmallText>
@@ -77,7 +82,7 @@ const DefaultSelect: React.FC<DefaultSelectProps> = ({
       </Options>
     </Container>
   );
-};
+}
 
 export default DefaultSelect;
 

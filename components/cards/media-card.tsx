@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlayCountCard } from "./index";
 import { GlassButton } from "../buttons";
-import { CaptionText, SmallText } from "../../styles/typography";
+import { CaptionText, InfoText, SmallText } from "../../styles/typography";
 import { IconPlay } from "../../styles/icons";
 import { DarkModeTextColor } from "../../styles/colors";
 import { tuple } from "../../lib/type";
@@ -67,7 +67,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
         <Info>
           {title && (
             <TitleContainer>
-              <Title onClick={onTitleClick}>{title}</Title>
+              <Title bold onClick={onTitleClick}>{title}</Title>
             </TitleContainer>
           )}
           {caption && (
@@ -95,11 +95,11 @@ const GlassButtonContainer = styled.div(() => [
 ]);
 
 const Cover = styled(Image)(() => [
-  tw`md:rounded-xl rounded-lg overflow-hidden transition`,
+  tw`md:rounded-lg rounded-lg overflow-hidden transition`,
 ]);
 
 const CoverContainer = styled.a(() => [
-  tw`relative block md:rounded-xl rounded-lg hover:shadow-xl cursor-pointer transition`,
+  tw`relative block md:rounded-lg rounded-lg hover:shadow-xl cursor-pointer transition`,
   css`
     &:hover {
       transform: translateY(-6%);
@@ -127,7 +127,7 @@ const TitleContainer = styled(CaptionText)(() => [BaseTextStyles]);
 
 const CaptionContainer = styled(SmallText)(() => [BaseTextStyles]);
 
-const Title = styled(CaptionText)(() => [tw`cursor-pointer hover:underline`]);
+const Title = styled(InfoText)(() => [tw`cursor-pointer hover:underline`]);
 
 const Caption = styled(
   SmallText

@@ -8,11 +8,12 @@ import { Button } from "../../components/buttons";
 import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
 import { usePersonalizedPlaylist } from "../../hooks";
+import { PlaylistLoadingContainer } from "../../components/containers";
 
 export interface PlaylistProps {}
 
 const Playlist: React.FC<PlaylistProps> = () => {
-  const { t } = useTranslation('playlist');
+  const { t } = useTranslation("playlist");
 
   const hotPlaylistMenu = [
     {
@@ -43,9 +44,9 @@ const Playlist: React.FC<PlaylistProps> = () => {
 
   const router = useRouter();
 
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const handleMorePlaylistClick = () => {
-    setLimit((value) => (value += 10));
+    setLimit((value) => (value += 20));
   };
 
   const {
@@ -53,7 +54,7 @@ const Playlist: React.FC<PlaylistProps> = () => {
     setPersonalizedPlaylist,
     isLoading,
     error,
-  } = usePersonalizedPlaylist(limit);
+  } = usePersonalizedPlaylist({ limit });
 
   return (
     <Container>
@@ -99,6 +100,8 @@ const Playlist: React.FC<PlaylistProps> = () => {
           ))}
         </PlaylistContainer>
 
+        {isLoading && <PlaylistLoadingContainer row={4} />}
+
         <LoadMoreContainer>
           <Button icon={<IconLoading />} onClick={handleMorePlaylistClick}>
             <CaptionText bold>{t("load-more")}</CaptionText>
@@ -116,7 +119,8 @@ const LoadMoreContainer = styled.div(() => [
 ]);
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-3 md:grid-cols-5 gap-2 lg:gap-6 mx-3 lg:mx-7`,
+  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 mx-3 lg:mx-7 
+  mb-2 md:mb-3 lg:mb-4 xl:mb-6`,
 ]);
 
 const MobileCaptionBoardContainer = styled.div(() => [

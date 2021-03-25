@@ -1,23 +1,20 @@
-import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { MD5 } from "crypto-js";
-import { useAppSelector } from "../store";
-import { selectUser, selectLoginMode } from "../store/slice/user.slice";
 
 export const AUTH_COOKIE_KEY = "MUSIC_U";
 
 export const isLoginByAccount = () => {
-  const user = useAppSelector(selectUser);
-  const loginMode = useAppSelector(selectLoginMode);
-
-  return Boolean(user && loginMode === "account" && getAuthCookie());
+  const localUser = getLocalUser();
+  console.log(localUser);
+  return Boolean(
+    localUser?.user && localUser?.loginMode === "account" && getAuthCookie()
+  );
 };
 
 export const isLoginBySearch = () => {
-  const user = useAppSelector(selectUser);
-  const loginMode = useAppSelector(selectLoginMode);
+  const localUser = getLocalUser();
 
-  return Boolean(user && loginMode === "search");
+  return Boolean(localUser?.user && localUser?.loginMode === "search");
 };
 
 export const isLogin = () => {
@@ -25,7 +22,7 @@ export const isLogin = () => {
 };
 
 export const getAuthCookie = () => {
-  return Cookies.get(AUTH_COOKIE_KEY);
+  return Cookies.get(AUTH_COOKIE_KEY) || "";
 };
 
 export const setCookies = (cookieString: string) => {
@@ -35,4 +32,21 @@ export const setCookies = (cookieString: string) => {
 
 export const getMd5Password = (password: string) => {
   return MD5(password).toString();
+};
+
+const localUserKey = "_u";
+export const getLocalUser = () => {
+  try {
+    return JSON.parse(window.localStorage.getItem(localUserKey));
+  } catch (error) {
+    return null;
+  }
+};
+
+export const setLocalUser = (obj: object) => {
+  window.localStorage.setItem(localUserKey, JSON.stringify(obj));
+};
+
+export const removeLocalUser = () => {
+  window.localStorage.removeItem(localUserKey);
 };

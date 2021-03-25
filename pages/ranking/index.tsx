@@ -65,7 +65,7 @@ const Ranking: React.FC<RankingProps> = () => {
 export default Ranking;
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-3 md:grid-cols-5 gap-2 lg:gap-6 mx-3 lg:mx-7`,
+  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 mx-3 lg:mx-7`,
 ]);
 
 const CaptionBoardContainer = styled.div(() => [

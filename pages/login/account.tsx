@@ -26,6 +26,7 @@ import {
   getAuthCookie,
   isLogin,
   getMd5Password,
+  setLocalUser,
 } from "../../lib/auth";
 import { clearSpace } from "../../lib/util";
 
@@ -122,6 +123,7 @@ const LoginAccount: React.FC<LoginAccountProps> = () => {
     } else if (data?.profile) {
       dispatch(setUser(data.profile));
       dispatch(setLoginMode("account"));
+      setLocalUser({ user: data.profile, loginMode: "account" });
 
       router.replace("/zone");
     }

@@ -50,6 +50,8 @@ export {
   useSong,
   useQueryPersonalizedSong,
   usePersonalizedSong,
+  useQueryRecommendSong,
+  useRecommendSong,
 } from "./song";
 
 export { useQueryPersonalizedMV, usePersonalizedMV } from "./mv";

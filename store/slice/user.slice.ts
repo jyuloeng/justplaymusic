@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../index";
-import { tuple } from "./../../lib/type";
+import { RootState } from "..";
+import { tuple } from "../../lib/type";
 
 export interface User {
   userId?: number;

@@ -107,3 +107,8 @@ export const MUTATE_USER_LOGIN_BY_EMAIL = {
   KEY: "MUTATE_USER_LOGIN_BY_EMAIL",
   URL: "/login",
 };
+
+export const QUERY_RECOMMEND_SONGS = {
+  KEY: "QUERY_RECOMMEND_SONGS",
+  URL: "/recommend/songs",
+};

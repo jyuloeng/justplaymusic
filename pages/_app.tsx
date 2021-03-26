@@ -9,6 +9,8 @@ import { GlobalStyles } from "twin.macro";
 import Layout from "../layout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../styles/css/rc-drawer.css";
+import "rc-dialog/assets/index.css"
 
 const queryClient = new QueryClient({
   defaultOptions: {

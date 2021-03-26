@@ -78,17 +78,19 @@ const TopMenu: React.FC<TopMenuProps> = ({
           ))}
         </ButtonGrops>
 
-        <Button
-          icon={
-            <AvatarContainer>
-              <Avatar src={userAvatarPath + "?param=60y60"} />
-            </AvatarContainer>
-          }
-          isShowHover={false}
-          onClick={onAvatarClick}
-        >
-          <Nickname bold>{nickname}</Nickname>
-        </Button>
+        <AvatarWrapper>
+          <Button
+            icon={
+              <AvatarContainer>
+                <Avatar src={userAvatarPath + "?param=60y60"} />
+              </AvatarContainer>
+            }
+            isShowHover={false}
+            onClick={onAvatarClick}
+          >
+            <Nickname bold>{nickname}</Nickname>
+          </Button>
+        </AvatarWrapper>
       </ScreenNavContainer>
     </Container>
   );
@@ -111,7 +113,7 @@ const BaseNavContainer = tw.div`flex justify-between items-center w-full`;
 
 const MobileNavContainer = styled(BaseNavContainer)(() => [tw`md:hidden px-2`]);
 
-const ScreenNavContainer = styled(BaseNavContainer)(() => [tw`md:flex hidden`]);
+const ScreenNavContainer = styled(BaseNavContainer)(() => [tw`relative md:flex hidden h-16 justify-center`]);
 
 const PlaceHolder = styled.div`
   width: 48px;
@@ -130,7 +132,7 @@ const SearchContainer = styled.div(() => [
       }
     }
   `,
-  tw`flex items-center`,
+  tw`flex items-center absolute left-0 top-2`,
 ]);
 
 const ButtonGrops = styled.div(() => [
@@ -149,3 +151,5 @@ const AvatarContainer = styled.div(() => [
     height: 40px;
   `,
 ]);
+
+const AvatarWrapper = styled.div(() => [tw`absolute right-0 top-0`]);

@@ -33,11 +33,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   useEffect(() => {
     document.addEventListener("mousedown", handleMouseOut);
     document.addEventListener("touchstart", handleMouseOut);
-    document.addEventListener("scroll", handleMouseOut);
+    // document.addEventListener("scroll", handleMouseOut);
     return () => {
       document.removeEventListener("mousedown", handleMouseOut);
       document.removeEventListener("touchstart", handleMouseOut);
-      document.addEventListener("scroll", handleMouseOut);
+      // document.addEventListener("scroll", handleMouseOut);
     };
   }, []);
 
@@ -46,7 +46,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       {children && <ChildrenContainer>{children}</ChildrenContainer>}
 
       <Controls>
-        {menu.map(
+        {menu?.map(
           (item) =>
             item && (
               <ControlItem key={item.key}>
@@ -81,7 +81,7 @@ const Controls = styled.div(() => [tw``]);
 const ChildrenContainer = styled.div(() => [tw`mb-2`]);
 
 const Container = styled.div<ContextMenuProps>(({ visible, position }) => [
-  tw`absolute flex-col p-2 bg-neutral-light rounded-lg border shadow-`,
+  tw`absolute flex-col p-2 rounded-lg border shadow-lg`,
   visible ? tw`inline-flex` : tw`hidden`,
   position &&
     css`
@@ -90,5 +90,7 @@ const Container = styled.div<ContextMenuProps>(({ visible, position }) => [
     `,
   css`
     z-index: 9999;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
   `,
 ]);

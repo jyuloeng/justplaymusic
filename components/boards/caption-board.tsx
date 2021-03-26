@@ -4,7 +4,7 @@ import { MainText, SmallText } from "../../styles/typography";
 
 export interface CaptionBoardProps {
   caption: string;
-  moreText?: string;
+  moreText?: string | React.ReactNode;
   onMoreClick?: React.MouseEventHandler<HTMLElement>;
 }
 

@@ -8,7 +8,7 @@ import { Button } from "../../components/buttons";
 import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
 import { usePersonalizedPlaylist } from "../../hooks";
-import { PlaylistLoadingContainer } from "../../components/containers";
+import { PlaylistsLoadingContainer } from "../../components/containers";
 
 export interface PlaylistProps {}
 
@@ -100,7 +100,7 @@ const Playlist: React.FC<PlaylistProps> = () => {
           ))}
         </PlaylistContainer>
 
-        {isLoading && <PlaylistLoadingContainer row={4} />}
+        {isLoading && <PlaylistsLoadingContainer rows={4} isOverflow={false} />}
 
         <LoadMoreContainer>
           <Button icon={<IconLoading />} onClick={handleMorePlaylistClick}>
@@ -119,8 +119,10 @@ const LoadMoreContainer = styled.div(() => [
 ]);
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 mx-3 lg:mx-7 
-  mb-2 md:mb-3 lg:mb-4 xl:mb-6`,
+  tw`grid grid-cols-3 md:grid-cols-5 
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+  mx-3 lg:mx-7 mb-2 md:mb-3 lg:mb-4 xl:mb-6`,
 ]);
 
 const MobileCaptionBoardContainer = styled.div(() => [

@@ -19,7 +19,7 @@ export type PlaylistItemType = typeof PlaylistItemTypes[number];
 
 export interface PlaylistItemCardProps {
   itemType: PlaylistItemType;
-  index: number;
+  index?: number;
   coverPath?: string;
   coverSize?: { width: number; height: number };
   name: string;

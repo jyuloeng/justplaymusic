@@ -24,11 +24,13 @@ export interface PlaylistIntroCardProps {
   coverPath?: string;
   title?: string;
   alias?: string;
+  artistId?: number;
   artist?: string;
   avatarPath?: string;
   publishTime?: number;
   songs?: number;
   description?: string;
+  onDescriptionClick?: React.MouseEventHandler<HTMLDivElement>;
   onPlayAllClick?: React.MouseEventHandler<HTMLDivElement>;
   onCollectClick?: React.MouseEventHandler<HTMLDivElement>;
 }
@@ -38,11 +40,13 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
   coverPath,
   title,
   alias,
+  artistId,
   artist,
   avatarPath,
   publishTime,
   songs,
   description,
+  onDescriptionClick,
   onPlayAllClick,
   onCollectClick,
 }) => {
@@ -73,7 +77,7 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
                     </AvatarContainer>
                   )}
                   {introType === "album" ? (
-                    <Link href="/">
+                    <Link href={`/artist/${artistId}`}>
                       <Artist introType={introType}>{artist}</Artist>
                     </Link>
                   ) : (
@@ -82,7 +86,7 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
                 </ArtistContainer>
 
                 <PublishTime>
-                  {formatDate(publishTime)}
+                  {formatDate(publishTime)}{" "}
                   {introType === "playlist" ? t("created") : t("published")}
                 </PublishTime>
               </ArtistWrapper>
@@ -94,7 +98,9 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
             </Details>
 
             <DescriptionContainer>
-              <Description>{`${description}`}</Description>
+              <Description
+                onClick={onDescriptionClick}
+              >{`${description}`}</Description>
             </DescriptionContainer>
           </Info>
 
@@ -195,7 +201,7 @@ const Artist = styled(CaptionText)(
   ]
 );
 
-const AvatarContainer = styled.div(() => [tw`w-6 md:w-8`]);
+const AvatarContainer = styled.div(() => [tw`w-6 md:w-7`]);
 
 const ArtistContainer = styled.div(
   ({ introType }: { introType?: PlaylistIntroType }) => [

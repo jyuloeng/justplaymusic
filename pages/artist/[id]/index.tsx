@@ -5,7 +5,11 @@ import { Router, useRouter } from "next/router";
 import { ArtistCard, AvatarCard } from "../../../components/cards";
 import { CaptionBoard } from "../../../components/boards";
 import { MiniPlaylistItemCard, MediaCard } from "../../../components/cards";
-import { LoadingContainer } from "../../../components/containers";
+import {
+  ArtistsLoadingContainer,
+  LoadingContainer,
+  PlaylistsLoadingContainer,
+} from "../../../components/containers";
 import { scrollbarHiddenStyles } from "../../index";
 import { getSpecifiedArrayElements } from "../../../lib/array";
 import { formatDate } from "../../../lib/format";
@@ -144,26 +148,30 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <PlaylistWrapper>
-        <PlaylistContainer>
-          {getSpecifiedArrayElements(
-            singleAlbums,
-            isShowingMoreSingleAlbums ? singleAlbums.length : 10
-          )?.map((album) => (
-            <MediaCard
-              key={album.id}
-              href={`/album/${album.id}`}
-              cardType="album"
-              coverPath={album.picUrl + "?param=512y512"}
-              title={album.name}
-              caption={album.type + " - " + formatDate(album.publishTime)}
-              isShowPlayCount={false}
-              isCanCaptionClick={false}
-              onTitleClick={() => router.push(`/album/${album.id}`)}
-            />
-          ))}
-        </PlaylistContainer>
-      </PlaylistWrapper>
+      {isArtistAlbumLoading ? (
+        <PlaylistsLoadingContainer />
+      ) : (
+        <PlaylistWrapper>
+          <PlaylistContainer>
+            {getSpecifiedArrayElements(
+              singleAlbums,
+              isShowingMoreSingleAlbums ? singleAlbums.length : 10
+            )?.map((album) => (
+              <MediaCard
+                key={album.id}
+                href={`/album/${album.id}`}
+                cardType="album"
+                coverPath={album.picUrl + "?param=512y512"}
+                title={album.name}
+                caption={album.type + " - " + formatDate(album.publishTime)}
+                isShowPlayCount={false}
+                isCanCaptionClick={false}
+                onTitleClick={() => router.push(`/album/${album.id}`)}
+              />
+            ))}
+          </PlaylistContainer>
+        </PlaylistWrapper>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -197,26 +205,30 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <PlaylistWrapper>
-        <PlaylistContainer>
-          {getSpecifiedArrayElements(
-            defaultAlbums,
-            isShowingMoreDefaultalbums ? defaultAlbums.length : 10
-          )?.map((album) => (
-            <MediaCard
-              key={album.id}
-              href={`/album/${album.id}`}
-              cardType="album"
-              coverPath={album.picUrl + "?param=512y512"}
-              title={album.name}
-              caption={album.type + " - " + formatDate(album.publishTime)}
-              isShowPlayCount={false}
-              isCanCaptionClick={false}
-              onTitleClick={() => router.push(`/album/${album.id}`)}
-            />
-          ))}
-        </PlaylistContainer>
-      </PlaylistWrapper>
+      {isArtistAlbumLoading ? (
+        <PlaylistsLoadingContainer />
+      ) : (
+        <PlaylistWrapper>
+          <PlaylistContainer>
+            {getSpecifiedArrayElements(
+              defaultAlbums,
+              isShowingMoreDefaultalbums ? defaultAlbums.length : 10
+            )?.map((album) => (
+              <MediaCard
+                key={album.id}
+                href={`/album/${album.id}`}
+                cardType="album"
+                coverPath={album.picUrl + "?param=512y512"}
+                title={album.name}
+                caption={album.type + " - " + formatDate(album.publishTime)}
+                isShowPlayCount={false}
+                isCanCaptionClick={false}
+                onTitleClick={() => router.push(`/album/${album.id}`)}
+              />
+            ))}
+          </PlaylistContainer>
+        </PlaylistWrapper>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -226,21 +238,25 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <ArtistsWrapper>
-        <ArtistsConntainer>
-          {getSpecifiedArrayElements(
-            similarArtists,
-            isShowingMoreSimilarArtists ? similarArtists.length : 12
-          )?.map((artist) => (
-            <AvatarCard
-              key={artist.id}
-              id={artist.id}
-              src={artist.picUrl + "?param=512y512"}
-              caption={artist.name}
-            />
-          ))}
-        </ArtistsConntainer>
-      </ArtistsWrapper>
+      {isSimiArtistLoading ? (
+        <ArtistsLoadingContainer />
+      ) : (
+        <ArtistsWrapper>
+          <ArtistsConntainer>
+            {getSpecifiedArrayElements(
+              similarArtists,
+              isShowingMoreSimilarArtists ? similarArtists.length : 12
+            )?.map((artist) => (
+              <AvatarCard
+                key={artist.id}
+                id={artist.id}
+                src={artist.picUrl + "?param=512y512"}
+                caption={artist.name}
+              />
+            ))}
+          </ArtistsConntainer>
+        </ArtistsWrapper>
+      )}
     </Container>
   );
 };
@@ -262,7 +278,10 @@ const RecommendMvsWrapper = styled.div(() => [
 ]);
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-10 md:grid-cols-5 gap-2 lg:gap-6 md:w-full pr-3 lg:pr-0`,
+  tw`grid grid-cols-10 md:grid-cols-5 
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+  md:w-full pr-3 lg:pr-0`,
   css`
     width: 1280px;
   `,
@@ -300,4 +319,4 @@ const CaptionBoardContainer = styled.div(() => [
 
 const ArtistCardContainer = styled.div(() => [tw`p-5 md:p-10`]);
 
-const Container = styled.div(() => [tw``]);
+const Container = styled.div(() => [tw`pb-4 md:pb-12`]);

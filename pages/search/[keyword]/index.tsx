@@ -16,6 +16,10 @@ import {
   useSearchPlaylists,
   useSearchSongs,
 } from "../../../hooks";
+import {
+  ArtistsLoadingContainer,
+  PlaylistsLoadingContainer,
+} from "../../../components/containers";
 
 export interface SearchKeywordProps {}
 
@@ -23,27 +27,35 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
   const { t } = useTranslation("search");
   const router = useRouter();
 
-  const { searchArtistsRes } = useSearchArtists({
+  const {
+    searchArtistsRes,
+    isLoading: isSearchArtistsLoading,
+  } = useSearchArtists({
     keywords: router.query.keyword as string,
     limit: 6,
   });
 
-  const { searchAlbumsRes } = useSearchAlbums({
-    keywords: router.query.keyword as string,
-    limit: 12,
-  });
+  const { searchAlbumsRes, isLoading: isSearchAlbumsLoading } = useSearchAlbums(
+    {
+      keywords: router.query.keyword as string,
+      limit: 12,
+    }
+  );
 
-  const { searchSongsRes } = useSearchSongs({
+  const { searchSongsRes, isLoading: isSearchSongsLoading } = useSearchSongs({
     keywords: router.query.keyword as string,
     limit: 16,
   });
 
-  const { searchMVsRes } = useSearchMVs({
+  const { searchMVsRes, isLoading: isSearchMVsLoading } = useSearchMVs({
     keywords: router.query.keyword as string,
     limit: 4,
   });
 
-  const { searchPlaylistsRes } = useSearchPlaylists({
+  const {
+    searchPlaylistsRes,
+    isLoading: isSearchPlaylistsLoading,
+  } = useSearchPlaylists({
     keywords: router.query.keyword as string,
     limit: 12,
   });
@@ -76,16 +88,20 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
       </CaptionBoardContainer>
 
       <SearchSimilarArtistsWrapper>
-        <SearchSimilarArtistsContainer>
-          {searchArtistsRes?.artists?.map((artist) => (
-            <AvatarCard
-              key={artist.id}
-              id={artist.id}
-              src={artist.picUrl + "?param=512y512"}
-              caption={artist.name}
-            />
-          ))}
-        </SearchSimilarArtistsContainer>
+        {isSearchArtistsLoading ? (
+          <ArtistsLoadingContainer rows={1} />
+        ) : (
+          <SearchSimilarArtistsContainer>
+            {searchArtistsRes?.artists?.map((artist) => (
+              <AvatarCard
+                key={artist.id}
+                id={artist.id}
+                src={artist.picUrl + "?param=512y512"}
+                caption={artist.name}
+              />
+            ))}
+          </SearchSimilarArtistsContainer>
+        )}
       </SearchSimilarArtistsWrapper>
 
       <CaptionBoardContainer>
@@ -104,21 +120,25 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <SearchPlaylistsWrapper>
-        <SearchPlaylistsContainer>
-          {searchAlbumsRes?.albums?.map((album) => (
-            <MediaCard
-              key={album.id}
-              href={`/album/${album.id}`}
-              cardType="album"
-              coverPath={album.picUrl + "?param=512y512"}
-              title={album.name}
-              caption={album.artist.name}
-              isShowPlayCount={false}
-            />
-          ))}
-        </SearchPlaylistsContainer>
-      </SearchPlaylistsWrapper>
+      {isSearchAlbumsLoading ? (
+        <PlaylistsLoadingContainer cols={6} />
+      ) : (
+        <SearchPlaylistsWrapper>
+          <SearchPlaylistsContainer>
+            {searchAlbumsRes?.albums?.map((album) => (
+              <MediaCard
+                key={album.id}
+                href={`/album/${album.id}`}
+                cardType="album"
+                coverPath={album.picUrl + "?param=512y512"}
+                title={album.name}
+                caption={album.artist.name}
+                isShowPlayCount={false}
+              />
+            ))}
+          </SearchPlaylistsContainer>
+        </SearchPlaylistsWrapper>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -168,22 +188,26 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <SearchPlaylistsWrapper>
-        <SearchPlaylistsContainer>
-          {searchPlaylistsRes?.playlists?.map((playlist) => (
-            <MediaCard
-              key={playlist.id}
-              href={`/playlist/${playlist.id}`}
-              cardType="album"
-              coverPath={playlist.coverImgUrl + "?param=512y512"}
-              title={playlist.name}
-              caption={playlist.description}
-              isShowPlayCount={false}
-              isCanCaptionClick={false}
-            />
-          ))}
-        </SearchPlaylistsContainer>
-      </SearchPlaylistsWrapper>
+      {isSearchPlaylistsLoading ? (
+        <PlaylistsLoadingContainer cols={6} />
+      ) : (
+        <SearchPlaylistsWrapper>
+          <SearchPlaylistsContainer>
+            {searchPlaylistsRes?.playlists?.map((playlist) => (
+              <MediaCard
+                key={playlist.id}
+                href={`/playlist/${playlist.id}`}
+                cardType="album"
+                coverPath={playlist.coverImgUrl + "?param=512y512"}
+                title={playlist.name}
+                caption={playlist.description}
+                isShowPlayCount={false}
+                isCanCaptionClick={false}
+              />
+            ))}
+          </SearchPlaylistsContainer>
+        </SearchPlaylistsWrapper>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -233,7 +257,10 @@ const SearchMvsWrapper = styled.div(() => [
 ]);
 
 const SearchPlaylistsContainer = styled.div(() => [
-  tw`grid grid-cols-10 md:grid-cols-6 gap-2 xl:gap-6 md:w-full pr-3 lg:pr-0`,
+  tw`grid grid-cols-10 md:grid-cols-6 
+    gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+    gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+    md:w-full pr-3 lg:pr-0`,
   css`
     width: 1280px;
   `,
@@ -274,4 +301,4 @@ const CaptionBoardContainer = styled.div(() => [
 
 const TitleBoardContainer = styled.div(() => [tw`mx-5 lg:mx-10 mt-4 lg:mt-6`]);
 
-const Container = styled.div(() => []);
+const Container = styled.div(() => [tw`pb-4 md:pb-12`]);

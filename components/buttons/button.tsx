@@ -83,7 +83,13 @@ const ButtonContainer = styled.button<ButtonProps>(
     isJustifyStart && tw`justify-start`,
     css`
       ${Icon} + span {
-        margin-left: 12px;
+        margin-left: 8px;
+      }
+
+      @media (min-width: 768px) {
+        ${Icon} + span {
+          margin-left: 12px;
+        }
       }
 
       color: ${ButtonTypeColors[btnType]};

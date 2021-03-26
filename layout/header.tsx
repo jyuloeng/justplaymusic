@@ -121,7 +121,8 @@ const Header: React.FC<HeaderProps> = () => {
       </Container>
 
       <SlideMenu
-        visible={slideMenuVisible}
+        menu={menu}
+        open={slideMenuVisible}
         searchPlaceholder={t("search")}
         onClose={() => setSlideMenuVisible(false)}
         onSearch={handleSearch}
@@ -140,7 +141,7 @@ const Header: React.FC<HeaderProps> = () => {
 export default Header;
 
 const Container = styled.header(() => [
-  tw`fixed w-full xl:px-16 lg:px-4 md:px-0 bg-neutral-light dark:bg-neutral-dark`,
+  tw`fixed w-full lg:px-16 md:px-2 px-0 bg-neutral-light dark:bg-neutral-dark`,
   css`
     z-index: 999;
   `,

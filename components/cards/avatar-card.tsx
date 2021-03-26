@@ -1,15 +1,11 @@
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import { Avatar, AvatarProps } from "../commons";
-import { GlassButton } from "../buttons";
-import { IconPlay } from "../../styles/icons";
-import { DarkModeTextColor } from "../../styles/colors";
 import { CaptionText } from "../../styles/typography";
 
 export interface AvatarCardProps extends AvatarProps {
   id: number;
   caption?: string;
-  isShowButton?: boolean;
   isShowHover?: boolean;
   isShowShadow?: boolean;
 }
@@ -18,7 +14,6 @@ const AvatarCard: React.FC<AvatarCardProps> = ({
   id,
   src,
   caption,
-  isShowButton = true,
   isShowHover = true,
   isShowShadow = false,
 }) => {
@@ -29,14 +24,6 @@ const AvatarCard: React.FC<AvatarCardProps> = ({
           <Cover>
             <Avatar src={src} />
           </Cover>
-
-          {isShowButton && (
-            <GlassButtonContainer>
-              <GlassButton>
-                <IconPlay fill={DarkModeTextColor} />
-              </GlassButton>
-            </GlassButtonContainer>
-          )}
         </CoverContainer>
       </Link>
 
@@ -53,13 +40,6 @@ const AvatarCard: React.FC<AvatarCardProps> = ({
 
 export default AvatarCard;
 
-const GlassButtonContainer = styled.div(() => [
-  tw`absolute w-full h-full top-0 left-0 flex justify-center items-center transition invisible`,
-  css`
-    transform: scale(1.02);
-  `,
-]);
-
 const Cover = styled.div(() => [tw`relative rounded-full`, css``]);
 
 const CoverContainer = styled.div(
@@ -74,12 +54,8 @@ const CoverContainer = styled.div(
     isShowShadow && tw`shadow-xl`,
     isShowHover && [
       css`
-        &:hover ${GlassButtonContainer} {
-          ${tw`visible`}
-        }
-
         &:hover {
-          transform: scale(1.02);
+          transform: scale(1.04);
         }
       `,
       tw`cursor-pointer hover:shadow-xl`,

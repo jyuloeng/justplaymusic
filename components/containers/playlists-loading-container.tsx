@@ -1,19 +1,23 @@
-import Image from "next/image";
 import tw, { styled, css } from "twin.macro";
+import Image from "next/image";
 import { scrollbarHiddenStyles } from "../../pages";
 
-export interface PlaylistLoadingContainerProps {
-  row?: number;
+export interface PlaylistsLoadingContainerProps {
+  rows?: number;
+  cols?: number;
+  isOverflow?: boolean;
 }
 
-const PlaylistLoadingContainer: React.FC<PlaylistLoadingContainerProps> = ({
-  row = 2,
+const PlaylistsLoadingContainer: React.FC<PlaylistsLoadingContainerProps> = ({
+  rows = 2,
+  cols = 5,
+  isOverflow = true,
 }) => {
-  const arr = new Array(row * 5).fill("");
+  const arr = new Array(rows * cols).fill("");
 
   return (
     <Wrapper>
-      <Container>
+      <Container cols={cols} isOverflow={isOverflow}>
         {arr.map((item, index) => (
           <PlaylistItem key={index}>
             <CoverContainer>
@@ -33,7 +37,7 @@ const PlaylistLoadingContainer: React.FC<PlaylistLoadingContainerProps> = ({
   );
 };
 
-export default PlaylistLoadingContainer;
+export default PlaylistsLoadingContainer;
 
 const Caption = styled.div(
   () => tw`w-12 h-3 md:h-4 mt-2 mb-12 bg-background rounded-md`
@@ -52,13 +56,25 @@ const CoverContainer = styled.div(() => [tw`w-full bg-background rounded-lg`]);
 
 const PlaylistItem = styled.div(() => [tw`animate-pulse`]);
 
-const Container = styled.div(() => [
-  tw`grid grid-cols-10 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 md:w-full pr-3 lg:pr-0`,
-  css`
-    width: 1280px;
-    grid-template-rows: auto;
-  `,
-]);
+const Container = styled.div(
+  ({ cols, isOverflow }: { cols: number; isOverflow: boolean }) => [
+    isOverflow ? tw`grid-cols-10` : tw`grid-cols-3`,
+    tw`grid 
+        gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+        gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+        md:w-full pr-3 lg:pr-0`,
+    isOverflow &&
+      css`
+        width: 1280px;
+        grid-template-rows: auto;
+      `,
+    css`
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(${cols}, minmax(0, 1fr));
+      }
+    `,
+  ]
+);
 
 const Wrapper = styled.div(() => [
   scrollbarHiddenStyles,

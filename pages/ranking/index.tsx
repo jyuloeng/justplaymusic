@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { MediaCard } from "../../components/cards";
 import { TitleBoard, CaptionBoard } from "../../components/boards";
+import { PlaylistsLoadingContainer } from "../../components/containers";
 import { useToplist } from "../../hooks";
 
 export interface RankingProps {}
@@ -23,41 +24,49 @@ const Ranking: React.FC<RankingProps> = () => {
         <CaptionBoard caption={t("official-list")} />
       </CaptionBoardContainer>
 
-      <PlaylistContainer>
-        {officialRankList?.map((ranklist) => (
-          <MediaCard
-            key={ranklist.id}
-            href={`/playlist/${ranklist.id}`}
-            cardType="album"
-            coverPath={ranklist.coverImgUrl + "?param=512y512"}
-            title={ranklist.name}
-            caption={ranklist.updateFrequency}
-            playCount={ranklist.playCount}
-            isCanCaptionClick={false}
-            onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
-          />
-        ))}
-      </PlaylistContainer>
+      {isLoading ? (
+        <PlaylistsLoadingContainer rows={1} isOverflow={false} />
+      ) : (
+        <PlaylistContainer>
+          {officialRankList?.map((ranklist) => (
+            <MediaCard
+              key={ranklist.id}
+              href={`/playlist/${ranklist.id}`}
+              cardType="album"
+              coverPath={ranklist.coverImgUrl + "?param=512y512"}
+              title={ranklist.name}
+              caption={ranklist.updateFrequency}
+              playCount={ranklist.playCount}
+              isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
+            />
+          ))}
+        </PlaylistContainer>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard caption={t("global-list")} />
       </CaptionBoardContainer>
 
-      <PlaylistContainer>
-        {globalRankList?.map((ranklist) => (
-          <MediaCard
-            key={ranklist.id}
-            href={`/playlist/${ranklist.id}`}
-            cardType="album"
-            coverPath={ranklist.coverImgUrl + "?param=512y512"}
-            title={ranklist.name}
-            caption={ranklist.updateFrequency}
-            playCount={ranklist.playCount}
-            isCanCaptionClick={false}
-            onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
-          />
-        ))}
-      </PlaylistContainer>
+      {isLoading ? (
+        <PlaylistsLoadingContainer rows={4} isOverflow={false} />
+      ) : (
+        <PlaylistContainer>
+          {globalRankList?.map((ranklist) => (
+            <MediaCard
+              key={ranklist.id}
+              href={`/playlist/${ranklist.id}`}
+              cardType="album"
+              coverPath={ranklist.coverImgUrl + "?param=512y512"}
+              title={ranklist.name}
+              caption={ranklist.updateFrequency}
+              playCount={ranklist.playCount}
+              isCanCaptionClick={false}
+              onTitleClick={() => router.push(`/playlist/${ranklist.id}`)}
+            />
+          ))}
+        </PlaylistContainer>
+      )}
     </Container>
   );
 };
@@ -65,7 +74,10 @@ const Ranking: React.FC<RankingProps> = () => {
 export default Ranking;
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 mx-3 lg:mx-7`,
+  tw`grid grid-cols-3 md:grid-cols-5  
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+  mx-3 lg:mx-7`,
 ]);
 
 const CaptionBoardContainer = styled.div(() => [

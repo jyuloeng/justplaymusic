@@ -11,7 +11,11 @@ import {
   MiniPlaylistItemCard,
   PlaylistItemCardProps,
 } from "../components/cards";
-import { MoreActionMenu, MoreActionMenuProps } from "../components/menus";
+import {
+  MoreActionMenu,
+  MoreActionMenuProps,
+  PlaylistDrawerMenu,
+} from "../components/menus";
 import { getRandomArrayElements } from "../lib/array";
 import "nprogress/nprogress.css";
 import {
@@ -22,7 +26,7 @@ import {
   useNewestAlbum,
   useRecommendSong,
 } from "./../hooks";
-import { PlaylistLoadingContainer } from "../components/containers";
+import { PlaylistsLoadingContainer } from "../components/containers";
 import { isLoginByAccount } from "../lib/auth";
 
 const loginByAccount = isLoginByAccount();
@@ -31,6 +35,7 @@ const Home = () => {
   const { t } = useTranslation("home");
   const router = useRouter();
 
+  const [playlistDrawerMenuOpen, setPlaylistDrawerMenuOpen] = useState(false);
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
     visible: false,
     name: "",
@@ -43,12 +48,10 @@ const Home = () => {
   });
   const [disPlaySongs, setDisplaySongs] = useState([]);
 
-  const handleOnContextMenuClick = (
+  const handleContextMenuClick = (
     e: React.MouseEvent<HTMLDivElement>,
     item: PlaylistItemCardProps
   ) => {
-    console.log(e, item);
-
     let { pageX, pageY } = e;
     const { name, artists, coverPath } = item;
 
@@ -66,6 +69,13 @@ const Home = () => {
         top: pageY,
       },
     });
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenuInfo((value) => ({
+      ...value,
+      visible: false,
+    }));
   };
 
   const {
@@ -124,102 +134,81 @@ const Home = () => {
   }, [personalizedSongs, recommendSongs, setDisplaySongs]);
 
   return (
-    <Container>
-      <TitleBoardContainer>
-        <TitleBoard title="For you" info="三月八日，星期一" />
-      </TitleBoardContainer>
+    <>
+      <Container>
+        <TitleBoardContainer>
+          <TitleBoard title="For you" info="三月八日，星期一" />
+        </TitleBoardContainer>
 
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("recommended-playlists")}
-          moreText={t("more")}
-          onMoreClick={() => router.push("/playlist")}
-        />
-      </CaptionBoardContainer>
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("recommended-playlists")}
+            moreText={t("more")}
+            onMoreClick={() => router.push("/playlist")}
+          />
+        </CaptionBoardContainer>
 
-      {isPersonalizedPlaylistLoading ? (
-        <PlaylistLoadingContainer />
-      ) : (
-        <PlaylistWrapper>
-          <PlaylistContainer>
-            {personalizedPlaylist?.map((playlist) => (
-              <MediaCard
-                key={playlist.id}
-                href={`/playlist/${playlist.id}`}
-                cardType="album"
-                coverPath={playlist.picUrl + "?param=512y512"}
-                title={playlist.name}
-                caption={playlist.copywriter}
-                playCount={playlist.playCount}
-                isCanCaptionClick={false}
-                onTitleClick={() => router.push(`/playlist/${playlist.id}`)}
-              />
-            ))}
-          </PlaylistContainer>
-        </PlaylistWrapper>
-      )}
-
-      <FlexModalContainer>
-        <RecommendMvWrapper>
-          <CaptionBoardContainer tw="lg:mx-0">
-            <CaptionBoard caption={t("recommended-videos")} moreText={""} />
-          </CaptionBoardContainer>
-
-          <RecommendMvsWrapper>
-            <RecommendMvContainer>
-              {getRandomArrayElements(personalizedMV, 2)?.map((mv) => (
+        {isPersonalizedPlaylistLoading ? (
+          <PlaylistsLoadingContainer />
+        ) : (
+          <PlaylistWrapper>
+            <PlaylistContainer>
+              {personalizedPlaylist?.map((playlist) => (
                 <MediaCard
-                  key={mv.id}
-                  href={`/mv/${mv.id}`}
-                  cardType="mv"
-                  coverPath={mv.picUrl + "?param=464y260"}
-                  title={mv.name}
-                  caption={mv.artistName}
-                  playCount={mv.playCount}
-                  onTitleClick={() => router.push(`/mv/${mv.id}`)}
-                  onCaptionClick={() => router.push(`/artist/${mv.artistId}`)}
+                  key={playlist.id}
+                  href={`/playlist/${playlist.id}`}
+                  cardType="album"
+                  coverPath={playlist.picUrl + "?param=512y512"}
+                  title={playlist.name}
+                  caption={playlist.copywriter}
+                  playCount={playlist.playCount}
+                  isCanCaptionClick={false}
+                  onTitleClick={() => router.push(`/playlist/${playlist.id}`)}
                 />
               ))}
-            </RecommendMvContainer>
-          </RecommendMvsWrapper>
-        </RecommendMvWrapper>
+            </PlaylistContainer>
+          </PlaylistWrapper>
+        )}
 
-        <RecommendSongsWrapper>
-          <CaptionBoardContainer>
-            <CaptionBoard
-              caption={loginByAccount ? "每日推荐" : t("new-songs")}
-              moreText={loginByAccount && t("more")}
-              onMoreClick={() => {}}
-            />
-          </CaptionBoardContainer>
+        <FlexModalContainer>
+          <RecommendMvWrapper>
+            <CaptionBoardContainer tw="lg:mx-0">
+              <CaptionBoard caption={t("recommended-videos")} moreText={""} />
+            </CaptionBoardContainer>
 
-          <RecommendSongs>
-            {disPlaySongs?.map((song, index) => (
-              <PlaylistItemCard
-                key={song.id}
-                itemType={
-                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
-                }
-                coverPath={
-                  (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
-                }
-                index={index + 1}
-                name={song.name}
-                artists={song?.song?.artists || song?.ar}
-                album={song?.song?.album?.name || song?.al?.name}
-                albumId={song?.song?.album?.id || song?.al?.id}
-                duration={song?.song?.duration || song?.dt}
-                isLike={false}
-                onDblClick={(e, id) => console.log(e, id)}
-                onContextMenuClick={handleOnContextMenuClick}
+            <RecommendMvsWrapper>
+              <RecommendMvContainer>
+                {getRandomArrayElements(personalizedMV, 2)?.map((mv) => (
+                  <MediaCard
+                    key={mv.id}
+                    href={`/mv/${mv.id}`}
+                    cardType="mv"
+                    coverPath={mv.picUrl + "?param=464y260"}
+                    title={mv.name}
+                    caption={mv.artistName}
+                    playCount={mv.playCount}
+                    onTitleClick={() => router.push(`/mv/${mv.id}`)}
+                    onCaptionClick={() => router.push(`/artist/${mv.artistId}`)}
+                  />
+                ))}
+              </RecommendMvContainer>
+            </RecommendMvsWrapper>
+          </RecommendMvWrapper>
+
+          <RecommendSongsWrapper>
+            <CaptionBoardContainer>
+              <CaptionBoard
+                caption={loginByAccount ? "每日推荐" : t("new-songs")}
+                moreText={loginByAccount && t("more")}
+                onMoreClick={() => {
+                  loginByAccount && setPlaylistDrawerMenuOpen(true);
+                }}
               />
-            ))}
-          </RecommendSongs>
+            </CaptionBoardContainer>
 
-          <MobileRecommendSongsContainer>
-            <MobileRecommendSongs>
-              {personalizedSongs?.map((song, index) => (
-                <MiniPlaylistItemCard
+            <RecommendSongs>
+              {disPlaySongs?.map((song, index) => (
+                <PlaylistItemCard
                   key={song.id}
                   itemType={
                     index === 0
@@ -228,65 +217,107 @@ const Home = () => {
                       ? "disabled"
                       : "default"
                   }
-                  coverPath={song.picUrl + "?param=100y100"}
+                  coverPath={
+                    (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
+                  }
+                  index={index + 1}
                   name={song.name}
-                  artists={song.song.artists}
+                  artists={song?.song?.artists || song?.ar}
+                  album={song?.song?.album?.name || song?.al?.name}
+                  albumId={song?.song?.album?.id || song?.al?.id}
+                  duration={song?.song?.duration || song?.dt}
+                  isLike={false}
                   onDblClick={(e, id) => console.log(e, id)}
-                  onContextMenuClick={handleOnContextMenuClick}
+                  onContextMenuClick={handleContextMenuClick}
                 />
               ))}
-            </MobileRecommendSongs>
-          </MobileRecommendSongsContainer>
-        </RecommendSongsWrapper>
-      </FlexModalContainer>
+            </RecommendSongs>
 
-      <CaptionBoardContainer>
-        <CaptionBoard caption={t("hot-artists")} />
-      </CaptionBoardContainer>
+            <MobileRecommendSongsContainer>
+              <MobileRecommendSongs>
+                {disPlaySongs?.map((song, index) => (
+                  <MiniPlaylistItemCard
+                    key={song.id}
+                    itemType={
+                      index === 0
+                        ? "active"
+                        : index === 3
+                        ? "disabled"
+                        : "default"
+                    }
+                    coverPath={
+                      (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
+                    }
+                    name={song.name}
+                    artists={song?.song?.artists || song?.ar}
+                    onDblClick={(e, id) => console.log(e, id)}
+                    onContextMenuClick={handleContextMenuClick}
+                  />
+                ))}
+              </MobileRecommendSongs>
+            </MobileRecommendSongsContainer>
+          </RecommendSongsWrapper>
+        </FlexModalContainer>
 
-      <ArtistsWrapper>
-        <ArtistsConntainer>
-          {getRandomArrayElements(topArtists, 6)?.map((artist) => (
-            <AvatarCard
-              key={artist.id}
-              id={artist.id}
-              src={artist.picUrl + "?param=512y512"}
-              caption={artist.name}
-            />
-          ))}
-        </ArtistsConntainer>
-      </ArtistsWrapper>
+        <CaptionBoardContainer>
+          <CaptionBoard caption={t("hot-artists")} />
+        </CaptionBoardContainer>
 
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("new-albums")}
-          moreText={t("more")}
-          onMoreClick={() => router.push("/album/new")}
-        />
-      </CaptionBoardContainer>
-
-      {isPersonalizedMVLoading ? (
-        <PlaylistLoadingContainer />
-      ) : (
-        <PlaylistWrapper>
-          <PlaylistContainer>
-            {newestAlbums?.map((album) => (
-              <MediaCard
-                key={album.id}
-                href={`/album/${album.id}`}
-                cardType="album"
-                coverPath={album.picUrl + "?param=512y512"}
-                title={album.name}
-                caption={album.artist.name}
-                isShowPlayCount={false}
-                onTitleClick={() => router.push(`/album/${album.id}`)}
-                onCaptionClick={() => router.push(`/artist/${album.artist.id}`)}
+        <ArtistsWrapper>
+          <ArtistsConntainer>
+            {getRandomArrayElements(topArtists, 6)?.map((artist) => (
+              <AvatarCard
+                key={artist.id}
+                id={artist.id}
+                src={artist.picUrl + "?param=512y512"}
+                caption={artist.name}
               />
             ))}
-          </PlaylistContainer>
-        </PlaylistWrapper>
-      )}
-    </Container>
+          </ArtistsConntainer>
+        </ArtistsWrapper>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("new-albums")}
+            moreText={t("more")}
+            onMoreClick={() => router.push("/album/new")}
+          />
+        </CaptionBoardContainer>
+
+        {isPersonalizedMVLoading ? (
+          <PlaylistsLoadingContainer />
+        ) : (
+          <PlaylistWrapper>
+            <PlaylistContainer>
+              {newestAlbums?.map((album) => (
+                <MediaCard
+                  key={album.id}
+                  href={`/album/${album.id}`}
+                  cardType="album"
+                  coverPath={album.picUrl + "?param=512y512"}
+                  title={album.name}
+                  caption={album.artist.name}
+                  isShowPlayCount={false}
+                  onTitleClick={() => router.push(`/album/${album.id}`)}
+                  onCaptionClick={() =>
+                    router.push(`/artist/${album.artist.id}`)
+                  }
+                />
+              ))}
+            </PlaylistContainer>
+          </PlaylistWrapper>
+        )}
+      </Container>
+
+      <PlaylistDrawerMenu
+        open={playlistDrawerMenuOpen}
+        onClose={() => setPlaylistDrawerMenuOpen(false)}
+        activeSong={disPlaySongs[0]}
+        playlistSongs={disPlaySongs}
+      />
+
+      <MoreActionMenu {...contextMenuInfo} onClose={handleContextMenuClose} />
+    </>
   );
 };
 
@@ -304,9 +335,10 @@ export const scrollbarHiddenStyles = css`
 `;
 
 const MobileRecommendSongs = styled.div(() => [
-  tw`grid grid-cols-4 gap-2 md:w-full ml-3 pr-3 md:hidden`,
+  tw`grid grid-cols-4 gap-2 md:w-full ml-3 pr-3 md:hidden overflow-hidden`,
   css`
     width: 800px;
+    max-height: 148px;
   `,
 ]);
 
@@ -358,7 +390,10 @@ const FlexModalContainer = styled.div(() => [
 ]);
 
 const PlaylistContainer = styled.div(() => [
-  tw`grid grid-cols-10 md:grid-cols-5 gap-2 md:gap-3 lg:gap-4 xl:gap-6 md:w-full pr-3 lg:pr-0`,
+  tw`grid grid-cols-10 md:grid-cols-5 
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+  md:w-full pr-3 lg:pr-0`,
   css`
     width: 1280px;
   `,

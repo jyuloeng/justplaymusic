@@ -4,6 +4,7 @@ export { default as SlideMenu } from "./slide-menu";
 export { default as MoreActionMenu } from "./more-action-menu";
 export { default as TabsMenu } from "./tabs-menu";
 export { default as ContextMenu } from "./context-menu";
+export { default as PlaylistDrawerMenu } from "./playlist-drawer-menu";
 
 export type { TopMenuProps } from "./top-menu";
 export type { MobileTopMenuProps } from "./mobile-top-menu";
@@ -11,6 +12,7 @@ export type { SlideMenuProps } from "./slide-menu";
 export type { MoreActionMenuProps } from "./more-action-menu";
 export type { TabsMenuProps } from "./tabs-menu";
 export type { ContextMenuProps, ContextMenuPosition } from "./context-menu";
+export type { PlaylistDrawerMenuProps } from "./playlist-drawer-menu";
 
 export interface MenuItem {
   name?: string;

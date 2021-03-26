@@ -1,22 +1,22 @@
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
+import RcDrawer from "rc-drawer";
 import { useRouter } from "next/router";
+import { IDrawerProps } from "rc-drawer/lib/IDrawerPropTypes";
 import { MenuItem } from "./index";
 import { Button } from "../buttons";
 import SearchInput from "../commons/search-input";
 import { MediumText } from "../../styles/typography";
 
-export interface SlideMenuProps {
+export interface SlideMenuProps extends IDrawerProps {
   menu?: MenuItem[];
-  visible?: boolean;
   searchPlaceholder?: string;
-  onClose?: React.MouseEventHandler<HTMLElement>;
   onSearch?: (value: string) => void;
 }
 
 const SlideMenu: React.FC<SlideMenuProps> = ({
   menu,
-  visible,
+  open,
   searchPlaceholder,
   onClose,
   onSearch,
@@ -28,47 +28,29 @@ const SlideMenu: React.FC<SlideMenuProps> = ({
   };
 
   return (
-    <Container visible={visible}>
-      <MenuContainer>
+    <RcDrawer open={open} onClose={onClose} level={null} handler={false} className="slide-menu">
+      <Container>
         <SearchInput onSearch={handleSearch} placeholder={searchPlaceholder} />
-        {menu?.map(({ path, name }) => (
-          <Link href={path} key={path}>
-            <a>
-              <Button
-                btnType={router.pathname === path ? "primary" : "default"}
-              >
-                <MediumText bold>{name}</MediumText>
-              </Button>
-            </a>
-          </Link>
-        ))}
-      </MenuContainer>
-
-      <Mask onClick={onClose} />
-    </Container>
+        <MenuContainer>
+          {menu?.map(({ path, name }) => (
+            <Link href={path} key={path}>
+              <a>
+                <Button
+                  btnType={router.pathname === path ? "primary" : "default"}
+                >
+                  <MediumText bold>{name}</MediumText>
+                </Button>
+              </a>
+            </Link>
+          ))}
+        </MenuContainer>
+      </Container>
+    </RcDrawer>
   );
 };
 
 export default SlideMenu;
 
-const MenuContainer = styled.nav(() => [
-  tw`h-full p-2 flex flex-col w-64 shadow absolute bg-neutral-light dark:bg-neutral-dark 
-  transform -translate-x-64 transition`,
-  css`
-    /* width: 196px; */
-  `,
-]);
+const MenuContainer = styled.nav(() => []);
 
-const Container = styled.div<SlideMenuProps>(({ visible }) => [
-  tw`fixed left-0 top-16 w-full h-full bg-neutral-light dark:bg-neutral-dark z-10 `,
-  visible ? tw`block` : tw`hidden`,
-  css`
-    ${MenuContainer} {
-      ${visible && tw`translate-x-0`}
-    }
-  `,
-]);
-
-const Mask = styled.div(() => [
-  tw`w-full h-full bg-light-mode-text bg-opacity-40`,
-]);
+const Container = styled.div<SlideMenuProps>(() => [tw`p-3`]);

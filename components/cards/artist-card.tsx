@@ -45,7 +45,6 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
         <AvatarCard
           id={id}
           src={src}
-          isShowButton={false}
           isShowHover={false}
           isShowShadow={true}
         />

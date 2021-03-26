@@ -1,33 +1,54 @@
-import React, { useEffect } from "react";
-import useTranslation from "next-translate/useTranslation";
 import tw, { styled, css } from "twin.macro";
+import useTranslation from "next-translate/useTranslation";
+import { ContextMenu, ContextMenuProps, ContextMenuItem } from "./index";
 import Image from "next/image";
 import { InfoText, SmallText } from "../../styles/typography";
 
-export interface PositionProps {
-  top: number;
-  left: number;
-}
-
-export interface MoreActionMenuProps {
-  visible: boolean;
-  position?: PositionProps;
+export interface MoreActionMenuProps extends ContextMenuProps {
   coverPath?: string;
   name?: string;
-  artists?: string[];
+  artists?: any[];
 }
 
 const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
   visible,
   position,
+  onClose,
   coverPath,
   name,
   artists,
 }) => {
   const { t } = useTranslation("common");
+  const menu: ContextMenuItem[] = [
+    {
+      key: "play",
+      title: t("play"),
+      onClick: () => {},
+    },
+    {
+      key: "next-play",
+      title: t("next-play"),
+      onClick: () => {},
+    },
+    {
+      key: "add-to-queue",
+      title: t("add-to-queue"),
+      onClick: () => {},
+    },
+    {
+      key: "collect-to-playlist",
+      title: t("collect-to-playlist"),
+      onClick: () => {},
+    },
+  ];
 
   return (
-    <Container visible={visible} position={position}>
+    <ContextMenu
+      visible={visible}
+      position={position}
+      menu={menu}
+      onClose={onClose}
+    >
       {visible && (
         <>
           <InfoContainer>
@@ -37,10 +58,10 @@ const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
             <Info>
               <Name bold>{name}</Name>
               <Artists>
-                {artists.map((artist, index) => (
-                  <ArtistContainer key={artist}>
+                {artists?.map((artist, index) => (
+                  <ArtistContainer key={artist.id}>
                     <Artist>
-                      <SmallText>{artist}</SmallText>
+                      <SmallText>{artist.name}</SmallText>
                     </Artist>
                     {index !== artists.length - 1 && (
                       <SmallText>,&nbsp;&nbsp;</SmallText>
@@ -50,32 +71,13 @@ const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
               </Artists>
             </Info>
           </InfoContainer>
-
-          <Controls>
-            <ControlItem bold>{t("play")}</ControlItem>
-            <ControlItem bold>{t("next-play")}</ControlItem>
-            <ControlItem bold>{t("collect-to-playlist")}</ControlItem>
-            <ControlItem bold>{t("remove-song")}</ControlItem>
-          </Controls>
         </>
       )}
-    </Container>
+    </ContextMenu>
   );
 };
 
 export default MoreActionMenu;
-
-const ControlItem = styled(InfoText)(() => [
-  tw`block p-2 rounded cursor-pointer transition
-    hover:text-primary2 hover:bg-primary-background`,
-  css`
-    &:active {
-      transform: scale(0.96);
-    }
-  `,
-]);
-
-const Controls = styled.div(() => [tw`mt-2`]);
 
 const Artist = styled(SmallText)(() => []);
 
@@ -104,30 +106,20 @@ const Name = styled(InfoText)(() => [
 ]);
 
 const Info = styled.div(() => [
+  tw`flex flex-col justify-center`,
   css`
     max-width: 128px;
+    min-width: 128px;
   `,
 ]);
 
 const Cover = styled.div(() => [
-  tw`relative w-11 h-11 rounded-lg overflow-hidden`,
+  tw`relative w-12 h-12 rounded-lg overflow-hidden`,
 ]);
 
 const InfoContainer = styled.div(() => [
   tw`grid gap-2`,
   css`
-    grid-template-columns: 44px auto;
+    grid-template-columns: 48px auto;
   `,
 ]);
-
-const Container = styled.div(
-  ({ visible, position }: { visible: boolean; position: PositionProps }) => [
-    tw`absolute flex-col p-2 bg-neutral-light rounded-lg shadow-xl`,
-    visible ? tw`inline-flex` : "hidden",
-    position &&
-      css`
-        top: ${position.top}px;
-        left: ${position.left}px;
-      `,
-  ]
-);

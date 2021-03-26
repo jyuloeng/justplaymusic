@@ -4,7 +4,11 @@ import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../components/boards";
 import { MiniAvatarCard, AvatarCard } from "../../components/cards";
-import { ViewMoreCommonContainer } from "../../components/containers";
+import {
+  ViewMoreCommonContainer,
+  ArtistsLoadingContainer,
+  MobileArtistsLoadingContainer,
+} from "../../components/containers";
 import { TabsMenu } from "../../components/menus";
 import {
   IconGlobal,
@@ -149,7 +153,7 @@ const ArtistList: React.FC<ArtistList> = () => {
     );
   };
 
-  const { data: searchArtistsRes } = useArtistList({ ...searchKey });
+  const { data: searchArtistsRes, isLoading } = useArtistList({ ...searchKey });
 
   return (
     <Container>
@@ -192,28 +196,36 @@ const ArtistList: React.FC<ArtistList> = () => {
         isNeedChildrenContainer={false}
         footer={
           <>
-            <ArtistsContainer>
-              {searchArtistsRes?.artists?.map((artist) => (
-                <AvatarCard
-                  key={artist.id}
-                  id={artist.id}
-                  src={artist.picUrl + "?param=512y512"}
-                  caption={artist.name}
-                />
-              ))}
-            </ArtistsContainer>
+            {isLoading ? (
+              <ArtistsLoadingContainer rows={6} isHideUnderMd={true} />
+            ) : (
+              <ArtistsContainer>
+                {searchArtistsRes?.artists?.map((artist) => (
+                  <AvatarCard
+                    key={artist.id}
+                    id={artist.id}
+                    src={artist.picUrl + "?param=512y512"}
+                    caption={artist.name}
+                  />
+                ))}
+              </ArtistsContainer>
+            )}
 
-            <MobileArtistsContainer>
-              {searchArtistsRes?.artists?.map((artist) => (
-                <MiniAvatarCard
-                  key={artist.id}
-                  coverPath={artist.picUrl + "?param=256y256"}
-                  caption={artist.name}
-                  buttonIcon={<IconHeartThread />}
-                  buttonText={t("focus")}
-                />
-              ))}
-            </MobileArtistsContainer>
+            {isLoading ? (
+              <MobileArtistsLoadingContainer />
+            ) : (
+              <MobileArtistsContainer>
+                {searchArtistsRes?.artists?.map((artist) => (
+                  <MiniAvatarCard
+                    key={artist.id}
+                    coverPath={artist.picUrl + "?param=256y256"}
+                    caption={artist.name}
+                    buttonIcon={<IconHeartThread />}
+                    buttonText={t("focus")}
+                  />
+                ))}
+              </MobileArtistsContainer>
+            )}
           </>
         }
       ></ViewMoreCommonContainer>
@@ -223,10 +235,12 @@ const ArtistList: React.FC<ArtistList> = () => {
 
 export default ArtistList;
 
-const MobileArtistsContainer = styled.div(() => [tw`block md:hidden`]);
+const MobileArtistsContainer = styled.div(() => [tw`grid md:hidden gap-2`]);
 
 const ArtistsContainer = styled.div(() => [
-  tw`hidden md:grid grid-cols-3 md:grid-cols-6 gap-2 lg:gap-6`,
+  tw`hidden md:grid grid-cols-3 md:grid-cols-6 
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12`,
 ]);
 
 const TabsMenuContainer = styled.div(() => [tw`mb-2 md:mb-6`]);

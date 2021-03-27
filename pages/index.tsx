@@ -26,7 +26,12 @@ import {
   useNewestAlbum,
   useRecommendSong,
 } from "./../hooks";
-import { PlaylistsLoadingContainer } from "../components/containers";
+import {
+  MiniPlaylistItemsLoadingContainer,
+  MVsLoadingContainer,
+  PlaylistItemsLoadingContainer,
+  PlaylistsLoadingContainer,
+} from "../components/containers";
 import { isLoginByAccount } from "../lib/auth";
 
 const loginByAccount = isLoginByAccount();
@@ -118,12 +123,20 @@ const Home = () => {
   } = usePersonalizedMV();
 
   useEffect(() => {
-    setPersonalizedMV((value) => getRandomArrayElements(value, 2));
-  }, [!isPersonalizedMVLoading]);
+    if (!isPersonalizedMVLoading) {
+      setPersonalizedMV((value) => getRandomArrayElements(value, 2));
+    }
+  }, [isPersonalizedMVLoading]);
 
-  const { personalizedSongs } = usePersonalizedSong(10);
+  const {
+    personalizedSongs,
+    isLoading: isPersonalizedSongsLoading,
+  } = usePersonalizedSong(10);
 
-  const { recommendSongs } = useRecommendSong();
+  const {
+    recommendSongs,
+    isLoading: isRecommendSongsLoading,
+  } = useRecommendSong();
 
   useEffect(() => {
     if (recommendSongs?.length > 0) {
@@ -176,23 +189,34 @@ const Home = () => {
               <CaptionBoard caption={t("recommended-videos")} moreText={""} />
             </CaptionBoardContainer>
 
-            <RecommendMvsWrapper>
-              <RecommendMvContainer>
-                {getRandomArrayElements(personalizedMV, 2)?.map((mv) => (
-                  <MediaCard
-                    key={mv.id}
-                    href={`/mv/${mv.id}`}
-                    cardType="mv"
-                    coverPath={mv.picUrl + "?param=464y260"}
-                    title={mv.name}
-                    caption={mv.artistName}
-                    playCount={mv.playCount}
-                    onTitleClick={() => router.push(`/mv/${mv.id}`)}
-                    onCaptionClick={() => router.push(`/artist/${mv.artistId}`)}
-                  />
-                ))}
-              </RecommendMvContainer>
-            </RecommendMvsWrapper>
+            {isPersonalizedMVLoading ? (
+              <MVsLoadingContainer
+                cols={2}
+                mdCols={1}
+                rows={2}
+                isNeedMarginX={false}
+              />
+            ) : (
+              <RecommendMvsWrapper>
+                <RecommendMvContainer>
+                  {personalizedMV?.map((mv) => (
+                    <MediaCard
+                      key={mv.id}
+                      href={`/mv/${mv.id}`}
+                      cardType="mv"
+                      coverPath={mv.picUrl + "?param=464y260"}
+                      title={mv.name}
+                      caption={mv.artistName}
+                      playCount={mv.playCount}
+                      onTitleClick={() => router.push(`/mv/${mv.id}`)}
+                      onCaptionClick={() =>
+                        router.push(`/artist/${mv.artistId}`)
+                      }
+                    />
+                  ))}
+                </RecommendMvContainer>
+              </RecommendMvsWrapper>
+            )}
           </RecommendMvWrapper>
 
           <RecommendSongsWrapper>
@@ -207,36 +231,11 @@ const Home = () => {
             </CaptionBoardContainer>
 
             <RecommendSongs>
-              {disPlaySongs?.map((song, index) => (
-                <PlaylistItemCard
-                  key={song.id}
-                  itemType={
-                    index === 0
-                      ? "active"
-                      : index === 3
-                      ? "disabled"
-                      : "default"
-                  }
-                  coverPath={
-                    (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
-                  }
-                  index={index + 1}
-                  name={song.name}
-                  artists={song?.song?.artists || song?.ar}
-                  album={song?.song?.album?.name || song?.al?.name}
-                  albumId={song?.song?.album?.id || song?.al?.id}
-                  duration={song?.song?.duration || song?.dt}
-                  isLike={false}
-                  onDblClick={(e, id) => console.log(e, id)}
-                  onContextMenuClick={handleContextMenuClick}
-                />
-              ))}
-            </RecommendSongs>
-
-            <MobileRecommendSongsContainer>
-              <MobileRecommendSongs>
-                {disPlaySongs?.map((song, index) => (
-                  <MiniPlaylistItemCard
+              {isPersonalizedSongsLoading || isRecommendSongsLoading ? (
+                <PlaylistItemsLoadingContainer />
+              ) : (
+                disPlaySongs?.map((song, index) => (
+                  <PlaylistItemCard
                     key={song.id}
                     itemType={
                       index === 0
@@ -248,13 +247,46 @@ const Home = () => {
                     coverPath={
                       (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
                     }
+                    index={index + 1}
                     name={song.name}
                     artists={song?.song?.artists || song?.ar}
+                    album={song?.song?.album?.name || song?.al?.name}
+                    albumId={song?.song?.album?.id || song?.al?.id}
+                    duration={song?.song?.duration || song?.dt}
+                    isLike={false}
                     onDblClick={(e, id) => console.log(e, id)}
                     onContextMenuClick={handleContextMenuClick}
                   />
-                ))}
-              </MobileRecommendSongs>
+                ))
+              )}
+            </RecommendSongs>
+
+            <MobileRecommendSongsContainer>
+              {isPersonalizedSongsLoading || isRecommendSongsLoading ? (
+                <MiniPlaylistItemsLoadingContainer />
+              ) : (
+                <MobileRecommendSongs>
+                  {disPlaySongs?.map((song, index) => (
+                    <MiniPlaylistItemCard
+                      key={song.id}
+                      itemType={
+                        index === 0
+                          ? "active"
+                          : index === 3
+                          ? "disabled"
+                          : "default"
+                      }
+                      coverPath={
+                        (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
+                      }
+                      name={song.name}
+                      artists={song?.song?.artists || song?.ar}
+                      onDblClick={(e, id) => console.log(e, id)}
+                      onContextMenuClick={handleContextMenuClick}
+                    />
+                  ))}
+                </MobileRecommendSongs>
+              )}
             </MobileRecommendSongsContainer>
           </RecommendSongsWrapper>
         </FlexModalContainer>
@@ -265,7 +297,7 @@ const Home = () => {
 
         <ArtistsWrapper>
           <ArtistsConntainer>
-            {getRandomArrayElements(topArtists, 6)?.map((artist) => (
+            {topArtists?.map((artist) => (
               <AvatarCard
                 key={artist.id}
                 id={artist.id}

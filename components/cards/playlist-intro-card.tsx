@@ -15,11 +15,13 @@ import {
 } from "../../styles/typography";
 import { tuple } from "../../lib/type";
 import { formatDate } from "../../lib/format";
+import { BaseSkeletonStyles } from "../containers";
 
 const PlaylistIntroTypes = tuple("playlist", "album");
 type PlaylistIntroType = typeof PlaylistIntroTypes[number];
 
 export interface PlaylistIntroCardProps {
+  isLoading?: boolean;
   introType?: PlaylistIntroType;
   coverPath?: string;
   title?: string;
@@ -36,6 +38,7 @@ export interface PlaylistIntroCardProps {
 }
 
 const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
+  isLoading,
   introType,
   coverPath,
   title,
@@ -56,58 +59,77 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
     <>
       <PlaylistIntroContainer>
         <CoverWrapper>
-          <CoverContainer>
-            <Cover src={coverPath} layout="responsive" width={0} height={0} />
+          <CoverContainer isLoading={isLoading}>
+            <Cover
+              src={isLoading ? "/images/cover-placeholder.webp" : coverPath}
+              layout="responsive"
+              width={0}
+              height={0}
+            />
           </CoverContainer>
         </CoverWrapper>
 
         <InfoContainer>
           <Info>
             <TitleContainer>
-              <H3 bold>{title}</H3>
-              {alias && <MainText bold>({alias})</MainText>}
+              {isLoading ? <LoadingTitle /> : <H3 bold>{title}</H3>}
+              {isLoading && alias ? (
+                <LoadingAlias />
+              ) : (
+                alias && <MainText bold>({alias})</MainText>
+              )}
             </TitleContainer>
 
             <Details>
-              <ArtistWrapper>
-                <ArtistContainer introType={introType}>
-                  {avatarPath && (
-                    <AvatarContainer>
-                      <Avatar src={avatarPath} />
-                    </AvatarContainer>
-                  )}
-                  {introType === "album" ? (
-                    <Link href={`/artist/${artistId}`}>
-                      <Artist introType={introType}>{artist}</Artist>
-                    </Link>
-                  ) : (
-                    <Artist>{artist}</Artist>
-                  )}
-                </ArtistContainer>
+              {isLoading ? (
+                <LoadingDetails />
+              ) : (
+                <>
+                  <ArtistWrapper>
+                    <ArtistContainer introType={introType}>
+                      {avatarPath && (
+                        <AvatarContainer>
+                          <Avatar src={avatarPath} />
+                        </AvatarContainer>
+                      )}
+                      {introType === "album" ? (
+                        <Link href={`/artist/${artistId}`}>
+                          <Artist introType={introType}>{artist}</Artist>
+                        </Link>
+                      ) : (
+                        <Artist>{artist}</Artist>
+                      )}
+                    </ArtistContainer>
 
-                <PublishTime>
-                  {formatDate(publishTime)}{" "}
-                  {introType === "playlist" ? t("created") : t("published")}
-                </PublishTime>
-              </ArtistWrapper>
+                    <PublishTime>
+                      {formatDate(publishTime)}{" "}
+                      {introType === "playlist" ? t("created") : t("published")}
+                    </PublishTime>
+                  </ArtistWrapper>
 
-              <Songs>
-                {t("songs-number")}
-                <span>{songs}</span>
-              </Songs>
+                  <Songs>
+                    {t("songs-number")}
+                    <span>{songs}</span>
+                  </Songs>
+                </>
+              )}
             </Details>
 
             <DescriptionContainer>
-              <Description
-                onClick={onDescriptionClick}
-              >{`${description}`}</Description>
+              {isLoading ? (
+                <LoadingDescription />
+              ) : (
+                <Description onClick={onDescriptionClick}>
+                  {description}
+                </Description>
+              )}
             </DescriptionContainer>
           </Info>
 
           <Buttons>
             <Button
               icon={<IconPlay fill={PrimaryColor} />}
-              btnType="primary"
+              btnType={isLoading ? "disabled" : "primary"}
               isShowBackground={true}
               backgroundColor="primary"
               onClick={onPlayAllClick}
@@ -115,6 +137,7 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
               <CaptionText bold>{t("play-all")}</CaptionText>
             </Button>
             <Button
+              btnType={isLoading ? "disabled" : "default"}
               icon={<IconCollect />}
               isShowBackground={true}
               onClick={onCollectClick}
@@ -128,13 +151,17 @@ const PlaylistIntroCard: React.FC<PlaylistIntroCardProps> = ({
       <MobileButtons>
         <Button
           icon={<IconPlay fill={PrimaryColor} />}
-          btnType="primary"
+          btnType={isLoading ? "disabled" : "primary"}
           isShowBackground={true}
           backgroundColor="primary"
         >
           <CaptionText bold>{t("play-all")}</CaptionText>
         </Button>
-        <Button icon={<IconCollect />} isShowBackground={true}>
+        <Button
+          btnType={isLoading ? "disabled" : "default"}
+          icon={<IconCollect />}
+          isShowBackground={true}
+        >
           <CaptionText bold>{t("collect")}</CaptionText>
         </Button>
       </MobileButtons>
@@ -229,6 +256,26 @@ const Details = styled.div(() => [
   `,
 ]);
 
+const LoadingDescription = styled.div(() => [
+  BaseSkeletonStyles,
+  tw`w-full h-5 animate-pulse`,
+]);
+
+const LoadingDetails = styled.div(() => [
+  BaseSkeletonStyles,
+  tw`w-24 md:w-52 h-4 md:h-7 animate-pulse`,
+]);
+
+const LoadingAlias = styled.div(() => [
+  BaseSkeletonStyles,
+  tw`w-10 md:w-20 h-4 md:h-7 animate-pulse`,
+]);
+
+const LoadingTitle = styled.div(() => [
+  BaseSkeletonStyles,
+  tw`w-20 md:w-44 h-7 md:h-12 mb-2 animate-pulse`,
+]);
+
 const TitleContainer = styled.div(() => [
   tw`text-light-mode-text`,
   css`
@@ -242,10 +289,16 @@ const Info = styled.div(() => []);
 
 const InfoContainer = styled.div(() => [tw`flex flex-col justify-around`]);
 
-const Cover = styled(Image)(() => [tw`rounded-xl overflow-hidden`]);
+const Cover = styled(Image)(() => [
+  BaseSkeletonStyles,
+  tw`rounded-xl overflow-hidden`,
+]);
 
-const CoverContainer = styled.div(() => [
-  tw`rounded-xl overflow-hidden shadow-2xl`,
+const CoverContainer = styled.div(({ isLoading }: { isLoading?: boolean }) => [
+  BaseSkeletonStyles,
+  tw`rounded-xl overflow-hidden`,
+  !isLoading && tw`shadow-2xl`,
+  isLoading && tw`animate-pulse`,
 ]);
 
 const CoverWrapper = styled.div(() => [tw``]);

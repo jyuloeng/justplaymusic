@@ -1,4 +1,5 @@
 import tw, { styled, css } from "twin.macro";
+import Image from "next/image";
 import useTranslation from "next-translate/useTranslation";
 import { AvatarCard, AvatarCardProps } from "./index";
 import { Button } from "../buttons";
@@ -6,6 +7,7 @@ import { IconCollect, IconHeartThread } from "../../styles/icons";
 import { H2, MainText, MediumText, InfoText } from "../../styles/typography";
 
 export interface ArtistCardProps extends AvatarCardProps {
+  isLoading?: boolean;
   title: string;
   songs?: number;
   albums?: number;
@@ -18,6 +20,7 @@ export interface ArtistCardProps extends AvatarCardProps {
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({
+  isLoading,
   id,
   src,
   title,
@@ -42,37 +45,56 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
   return (
     <Container>
       <AvatarContianer>
-        <AvatarCard
-          id={id}
-          src={src}
-          isShowHover={false}
-          isShowShadow={true}
-        />
+        {isLoading ? (
+          <Cover
+            width={0}
+            height={0}
+            layout="responsive"
+            src="/images/cover-placeholder.webp"
+          />
+        ) : (
+          <AvatarCard
+            id={id}
+            src={src}
+            isShowHover={false}
+            isShowShadow={true}
+          />
+        )}
       </AvatarContianer>
 
       <InfoContainer>
-        <Info>
-          <Title>{title}</Title>
-          {caption && <Caption>{caption}</Caption>}
-          {songs && albums && mvs && (
-            <Data>
-              {displayDataList.map((item) => (
-                <DataItem key={item.text} onClick={item.onClick}>
-                  <DataText>{item.text}</DataText>
-                  <DataNum>{item.num}</DataNum>
-                </DataItem>
-              ))}
-            </Data>
-          )}
-        </Info>
-
-        {isShowCollect && (
-          <Collect>
-            <Button icon={<IconHeartThread />} isShowBackground={true}>
-              <MediumText bold>{t("focus")}</MediumText>
-            </Button>
-          </Collect>
+        {isLoading ? (
+          <LoadingInfo>
+            <LoadingTitle />
+            <LoadingCaption />
+            <LoadingData />
+          </LoadingInfo>
+        ) : (
+          <Info>
+            <Title>{title}</Title>
+            {caption && <Caption>{caption}</Caption>}
+            {songs && albums && mvs && (
+              <Data>
+                {displayDataList.map((item) => (
+                  <DataItem key={item.text} onClick={item.onClick}>
+                    <DataText>{item.text}</DataText>
+                    <DataNum>{item.num}</DataNum>
+                  </DataItem>
+                ))}
+              </Data>
+            )}
+          </Info>
         )}
+
+        <Collect>
+          <Button
+            btnType={isLoading ? "disabled" : "default"}
+            icon={<IconHeartThread />}
+            isShowBackground={true}
+          >
+            <MediumText bold>{t("focus")}</MediumText>
+          </Button>
+        </Collect>
       </InfoContainer>
     </Container>
   );
@@ -103,11 +125,30 @@ const Title = styled(H2)(() => [tw`mb-2 text-light-mode-text`]);
 
 const Info = styled.div(() => [tw``]);
 
+const LoadingData = styled.div(() => [
+  tw`w-60 h-4 mt-3 md:mt-5 mb-4 md:mb-6 bg-background rounded-md`,
+]);
+
+const LoadingCaption = styled.div(() => [
+  tw`w-24 h-6 bg-background rounded-md`,
+]);
+
+const LoadingTitle = styled.div(() => [
+  tw`w-32 h-12 mb-2 bg-background rounded-md`,
+]);
+
+const LoadingInfo = styled.div(() => [
+  tw`flex flex-col items-center md:items-start`,
+]);
+
 const InfoContainer = styled.div(() => [
   tw`flex flex-col items-center md:block mt-3 md:mt-0 md:ml-8 text-center md:text-left`,
 ]);
 
+const Cover = styled(Image)(() => [tw`bg-background rounded-full`]);
+
 const AvatarContianer = styled.div(() => [
+  tw`bg-background rounded-full`,
   css`
     width: 100px;
     height: 100px;

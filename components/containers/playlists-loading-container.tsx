@@ -1,3 +1,4 @@
+import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
 import { scrollbarHiddenStyles } from "../../pages";
@@ -6,14 +7,16 @@ export interface PlaylistsLoadingContainerProps {
   rows?: number;
   cols?: number;
   isOverflow?: boolean;
+  isNeedMarginX?: boolean;
 }
 
 const PlaylistsLoadingContainer: React.FC<PlaylistsLoadingContainerProps> = ({
   rows = 2,
   cols = 5,
   isOverflow = true,
+  isNeedMarginX = true,
 }) => {
-  const arr = new Array(rows * cols).fill("");
+  const [arr] = useState(new Array(rows * cols).fill(""));
 
   return (
     <Wrapper>
@@ -56,8 +59,8 @@ const CoverContainer = styled.div(() => [tw`w-full bg-background rounded-lg`]);
 
 const PlaylistItem = styled.div(() => [tw`animate-pulse`]);
 
-const Container = styled.div(
-  ({ cols, isOverflow }: { cols: number; isOverflow: boolean }) => [
+const Container = styled.div<PlaylistsLoadingContainerProps>(
+  ({ cols, isOverflow }) => [
     isOverflow ? tw`grid-cols-10` : tw`grid-cols-3`,
     tw`grid 
         gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
@@ -76,7 +79,10 @@ const Container = styled.div(
   ]
 );
 
-const Wrapper = styled.div(() => [
-  scrollbarHiddenStyles,
-  tw`pl-3 lg:pl-0 lg:mx-7 overflow-x-scroll lg:overflow-visible`,
-]);
+const Wrapper = styled.div<PlaylistsLoadingContainerProps>(
+  ({ isNeedMarginX }) => [
+    scrollbarHiddenStyles,
+    tw`pl-3 lg:pl-0 overflow-x-scroll lg:overflow-visible`,
+    isNeedMarginX && tw`lg:mx-7`,
+  ]
+);

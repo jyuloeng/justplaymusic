@@ -9,7 +9,7 @@ import {
 } from "../../styles/colors";
 import { tuple } from "./../../lib/type";
 
-const ButtonTypes = tuple("default", "primary", "secondary");
+const ButtonTypes = tuple("default", "primary", "secondary", "disabled");
 export type ButtonType = typeof ButtonTypes[number];
 
 const ButtonTypeColors = {
@@ -39,18 +39,18 @@ export interface ButtonProps {
 const DefaultButton: React.FC<ButtonProps> = ({
   icon,
   children,
-  btnType,
+  btnType = "default",
   paddingX,
   paddingY,
-  backgroundColor,
+  backgroundColor = "default",
   isShowBackground,
-  isShowHover,
+  isShowHover = true,
   isJustifyStart,
   onClick,
 }) => {
   return (
     <ButtonContainer
-      onClick={onClick}
+      onClick={btnType !== "disabled" ? onClick : null}
       btnType={btnType}
       paddingX={paddingX}
       paddingY={paddingY}
@@ -71,12 +71,12 @@ const Icon = styled.span(() => [tw`inline-block`]);
 
 const ButtonContainer = styled.button<ButtonProps>(
   ({
-    btnType = "default",
+    btnType,
     paddingX,
     paddingY,
-    backgroundColor = "default",
+    backgroundColor,
     isShowBackground,
-    isShowHover = true,
+    isShowHover,
     isJustifyStart,
   }) => [
     tw`flex justify-center items-center p-3 rounded-lg transition`,
@@ -94,14 +94,16 @@ const ButtonContainer = styled.button<ButtonProps>(
 
       color: ${ButtonTypeColors[btnType]};
 
-      &:active {
-        transform: scale(0.92);
-      }
-
       &:focus {
         outline: none;
       }
     `,
+    btnType !== "disabled" &&
+      css`
+        &:active {
+          transform: scale(0.92);
+        }
+      `,
     paddingX &&
       css`
         padding-left: ${paddingX * 0.25}rem;
@@ -117,11 +119,22 @@ const ButtonContainer = styled.button<ButtonProps>(
         background-color: ${ButtonBackgroundColors[backgroundColor]};
       `,
     isShowHover &&
+      btnType !== "disabled" &&
       css`
         &:hover {
           background-color: ${ButtonBackgroundColors[backgroundColor]};
           color: ${ButtonTypeColors[backgroundColor]};
         }
       `,
+    btnType === "disabled" && [
+      tw`opacity-60 cursor-not-allowed`,
+      css`
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+      `,
+    ],
   ]
 );

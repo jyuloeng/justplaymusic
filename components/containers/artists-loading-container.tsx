@@ -1,4 +1,5 @@
 import tw, { styled, css } from "twin.macro";
+import { useState } from "react";
 import Image from "next/image";
 import { scrollbarHiddenStyles } from "../../pages";
 
@@ -13,7 +14,7 @@ const ArtistsLoadingContainer: React.FC<ArtistsLoadingContainerProps> = ({
   isOverflow = true,
   isHideUnderMd = false,
 }) => {
-  const arr = new Array(rows * 6).fill("");
+  const [arr] = useState(new Array(rows * 6).fill(""));
 
   return (
     <Wrapper>

@@ -7,7 +7,8 @@ import { CaptionBoard } from "../../../components/boards";
 import { MiniPlaylistItemCard, MediaCard } from "../../../components/cards";
 import {
   ArtistsLoadingContainer,
-  LoadingContainer,
+  MiniPlaylistItemsLoadingContainer,
+  MVsLoadingContainer,
   PlaylistsLoadingContainer,
 } from "../../../components/containers";
 import { scrollbarHiddenStyles } from "../../index";
@@ -45,7 +46,9 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
     setIsShowingMoreSimilarArtists,
   ] = useState<boolean>(false);
 
-  const handleAllMoives = () => {};
+  const handleAllMoives = () => {
+    router.push(`/artist/${router.query.id}/mvs`);
+  };
   const handleOnContextMenuClick = () => {};
 
   const handleMoreHotSongs = () => {
@@ -71,39 +74,34 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
   const {
     singleAlbums,
     defaultAlbums,
-    isLoading: isArtistAlbumLoading,
+    isLoading: isArtistAlbumsLoading,
   } = useArtistAlbum({
     id: router.query.id as string,
     limit: 200,
   });
 
-  const { mvs, isLoading: isMVLoading } = useArtistMV({
+  const { mvs, isLoading: isMVsLoading } = useArtistMV({
     id: router.query.id as string,
     limit: 8,
   });
 
-  const { similarArtists, isLoading: isSimiArtistLoading } = useSimiArtist(
+  const { similarArtists, isLoading: isSimiArtistsLoading } = useSimiArtist(
     router.query.id as string
   );
 
   return (
     <Container>
       <ArtistCardContainer>
-        {isArtistLoading ? (
-          <LoadingContainer></LoadingContainer>
-        ) : (
-          artist && (
-            <ArtistCard
-              id={artist.id}
-              src={artist.picUrl + "?param=512y512"}
-              title={artist.name}
-              caption={artist.alias?.join(", ")}
-              songs={artist.musicSize}
-              albums={artist.albumSize}
-              mvs={artist.mvSize}
-            />
-          )
-        )}
+        <ArtistCard
+          isLoading={isArtistLoading}
+          id={artist?.id}
+          src={artist?.picUrl + "?param=512y512"}
+          title={artist?.name}
+          caption={artist?.alias?.join(", ")}
+          songs={artist?.musicSize}
+          albums={artist?.albumSize}
+          mvs={artist?.mvSize}
+        />
       </ArtistCardContainer>
 
       <CaptionBoardContainer>
@@ -116,7 +114,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 
       <HotSongsContainer>
         {isArtistLoading ? (
-          <LoadingContainer></LoadingContainer>
+          <MiniPlaylistItemsLoadingContainer />
         ) : (
           <HotSongs>
             {getSpecifiedArrayElements(
@@ -148,7 +146,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {isArtistAlbumLoading ? (
+      {isArtistAlbumsLoading ? (
         <PlaylistsLoadingContainer />
       ) : (
         <PlaylistWrapper>
@@ -181,21 +179,25 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      <RecommendMvsWrapper>
-        <RecommendMvsContainer>
-          {mvs?.map((mv) => (
-            <MediaCard
-              key={mv.id}
-              href={`/mv/${mv.id}`}
-              cardType="mv"
-              coverPath={mv.imgurl16v9 + "?param=464y260"}
-              title={mv.name}
-              caption={mv.artistName}
-              playCount={mv.playCount}
-            />
-          ))}
-        </RecommendMvsContainer>
-      </RecommendMvsWrapper>
+      {isMVsLoading ? (
+        <MVsLoadingContainer cols={5} />
+      ) : (
+        <RecommendMvsWrapper>
+          <RecommendMvsContainer>
+            {mvs?.map((mv) => (
+              <MediaCard
+                key={mv.id}
+                href={`/mv/${mv.id}`}
+                cardType="mv"
+                coverPath={mv.imgurl16v9 + "?param=464y260"}
+                title={mv.name}
+                caption={mv.artistName}
+                playCount={mv.playCount}
+              />
+            ))}
+          </RecommendMvsContainer>
+        </RecommendMvsWrapper>
+      )}
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -205,7 +207,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {isArtistAlbumLoading ? (
+      {isArtistAlbumsLoading ? (
         <PlaylistsLoadingContainer />
       ) : (
         <PlaylistWrapper>
@@ -238,7 +240,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {isSimiArtistLoading ? (
+      {isSimiArtistsLoading ? (
         <ArtistsLoadingContainer />
       ) : (
         <ArtistsWrapper>
@@ -264,7 +266,10 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
 export default ArtistId;
 
 const RecommendMvsContainer = styled.div(() => [
-  tw`grid grid-cols-5 md:grid-cols-4 gap-2 lg:gap-6 pr-3 lg:pr-0`,
+  tw`grid grid-cols-5 md:grid-cols-4 
+  gap-x-2 md:gap-x-3 lg:gap-x-4 xl:gap-x-6 
+  gap-y-6 md:gap-y-8 lg:gap-y-10 xl:gap-y-12
+  pr-3 lg:pr-0`,
   css`
     @media (max-width: 767px) {
       width: 1114px;

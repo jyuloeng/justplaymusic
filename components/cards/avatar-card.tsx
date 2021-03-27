@@ -4,7 +4,7 @@ import { Avatar, AvatarProps } from "../commons";
 import { CaptionText } from "../../styles/typography";
 
 export interface AvatarCardProps extends AvatarProps {
-  id: number;
+  id?: number;
   caption?: string;
   isShowHover?: boolean;
   isShowShadow?: boolean;

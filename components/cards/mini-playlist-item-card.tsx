@@ -113,7 +113,7 @@ const Info = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
   tw`pr-3 md:pr-2`,
 ]);
 
-const Cover = styled.div(() => [tw`w-10 h-10 rounded-lg overflow-hidden`]);
+const Cover = styled.div(() => [tw`w-10 h-10 rounded-md overflow-hidden`]);
 
 const Container = styled.div(
   ({
@@ -123,7 +123,7 @@ const Container = styled.div(
     itemType: PlaylistItemType;
     isShowHover: boolean;
   }) => [
-    tw`grid gap-2 items-center rounded-lg overflow-hidden`,
+    tw`grid gap-2 items-center rounded-md overflow-hidden`,
     isShowHover && itemType !== "disabled" && tw`hover:bg-background`,
     isShowHover && tw`md:p-2`,
     css`

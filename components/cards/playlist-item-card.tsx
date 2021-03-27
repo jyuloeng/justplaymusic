@@ -288,7 +288,7 @@ const Status = styled.div(() => [
 ]);
 
 const Cover = styled.a(() => [
-  tw`relative hidden w-10 h-10 rounded-lg overflow-hidden cursor-pointer`,
+  tw`relative hidden w-10 h-10 rounded-md overflow-hidden cursor-pointer`,
   tw`md:inline-block`,
 ]);
 

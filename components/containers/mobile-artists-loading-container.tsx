@@ -1,6 +1,6 @@
+import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
-import { Avatar } from "../commons";
 
 export interface MobileArtistsLoadingContainerProps {
   rows?: number;
@@ -9,7 +9,7 @@ export interface MobileArtistsLoadingContainerProps {
 const MobileArtistsLoadingContainer: React.FC<MobileArtistsLoadingContainerProps> = ({
   rows = 12,
 }) => {
-  const arr = new Array(rows).fill("");
+  const [arr] = useState(new Array(rows).fill(""));
   return (
     <Container>
       {arr.map((item, index) => (

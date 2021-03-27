@@ -5,6 +5,7 @@ import { IconLoading } from "../../styles/icons";
 import { CaptionText } from "../../styles/typography";
 
 export interface ViewMoreCommonContainerProps {
+  isLoading?: boolean;
   titleBoard?: React.ReactNode;
   header?: React.ReactNode;
   isNeedChildrenContainer?: boolean;
@@ -18,6 +19,7 @@ export interface ViewMoreCommonContainerProps {
 }
 
 const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
+  isLoading,
   titleBoard,
   header,
   children,
@@ -33,7 +35,11 @@ const ViewMoreCommonContainer: React.FC<ViewMoreCommonContainerProps> = ({
   const { t } = useTranslation("common");
   return (
     <Container>
-      {titleBoard && <TitleBoardContainer>{titleBoard}</TitleBoardContainer>}
+      {isLoading ? (
+        <LoadingTitle />
+      ) : (
+        titleBoard && <TitleBoardContainer>{titleBoard}</TitleBoardContainer>
+      )}
 
       {header && <HeaderContainer>{header}</HeaderContainer>}
 
@@ -95,5 +101,9 @@ const ChlidrenContainer = styled.div(
 const HeaderContainer = styled.div(() => [tw`pt-5 lg:pt-10 px-3 md:px-7`]);
 
 const TitleBoardContainer = styled.div(() => [tw`mx-5 lg:mx-10 mt-4 lg:mt-6`]);
+
+const LoadingTitle = styled.div(() => [
+  tw`w-60 h-10 mx-5 lg:mx-10 mt-4 lg:mt-6 bg-background rounded-md`,
+]);
 
 const Container = styled.div(() => []);

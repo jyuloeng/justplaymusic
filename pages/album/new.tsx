@@ -2,7 +2,10 @@ import { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
-import { ViewMoreCommonContainer } from "../../components/containers";
+import {
+  PlaylistsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../components/containers";
 import { TitleBoard } from "../../components/boards";
 import { TabsMenu } from "../../components/menus";
 import { MediaCard } from "../../components/cards";
@@ -44,7 +47,7 @@ const AlbumNew: React.FC<AlbumNewProps> = () => {
   const [newAlbumLimit, setNewAlbumLimit] = useState(30);
   const [searchKey, setSearchKey] = useState<AlbumNewArea>(areaList[0].key);
 
-  const { total, newAlbums } = useNewAlbum({
+  const { total, newAlbums, isLoading } = useNewAlbum({
     limit: newAlbumLimit,
     area: searchKey,
   });
@@ -87,6 +90,9 @@ const AlbumNew: React.FC<AlbumNewProps> = () => {
         isShowLoadMore={total > newAlbums?.length}
         onLoadMoreClick={() => setNewAlbumLimit((value) => value + 30)}
         mdCols={5}
+        footer={
+          isLoading && <PlaylistsLoadingContainer isNeedMarginX={false} />
+        }
       >
         {newAlbums?.map((album) => (
           <MediaCard

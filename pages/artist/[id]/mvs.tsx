@@ -3,7 +3,10 @@ import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
-import { ViewMoreCommonContainer } from "../../../components/containers";
+import {
+  MVsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../../components/containers";
 import { useArtistMV } from "../../../hooks";
 
 export interface ArtistIdMvsProps {}
@@ -11,7 +14,7 @@ export interface ArtistIdMvsProps {}
 const ArtistIdMvs: React.FC<ArtistIdMvsProps> = () => {
   const { query } = useRouter();
 
-  const { data: searchMvsResult, isLoading: isMVLoading } = useArtistMV({
+  const { data: searchMvsResult, isLoading: isMVsLoading } = useArtistMV({
     id: query.id as string,
     limit: 24,
   });
@@ -19,6 +22,7 @@ const ArtistIdMvs: React.FC<ArtistIdMvsProps> = () => {
   return (
     <Container>
       <ViewMoreCommonContainer
+        isLoading={isMVsLoading}
         titleBoard={
           searchMvsResult?.mvs?.length > 0 && (
             <TitleBoard
@@ -26,9 +30,19 @@ const ArtistIdMvs: React.FC<ArtistIdMvsProps> = () => {
             />
           )
         }
-        cols={2}
-        mdCols={4}
+        cols={isMVsLoading ? 1 : 2}
+        mdCols={isMVsLoading ? 1 : 4}
         isShowLoadMore={searchMvsResult?.hasMore}
+        footer={
+          isMVsLoading && (
+            <MVsLoadingContainer
+              cols={2}
+              rows={5}
+              isOverflow={false}
+              isNeedMarginX={false}
+            />
+          )
+        }
       >
         {searchMvsResult?.mvs?.map((mv) => (
           <MediaCard

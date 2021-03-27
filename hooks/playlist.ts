@@ -110,7 +110,7 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
     }
   }, [trackIds.length, params.limit, setSongIds, setOldLimit]);
 
-  const { songs } = useSong(songIds);
+  const { songs, isLoading: isPlaylistSongsLoading } = useSong(songIds);
 
   useEffect(() => {
     setPlaylistSongs((value) => [...value, ...songs]);
@@ -121,6 +121,7 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
     setPlaylistInfo,
     playlistSongs,
     setPlaylistSongs,
+    isPlaylistSongsLoading,
     errorMsg,
     data,
     ...queryProps,

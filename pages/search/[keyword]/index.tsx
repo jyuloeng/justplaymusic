@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import tw, { styled, css } from "twin.macro";
 import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
@@ -18,6 +18,8 @@ import {
 } from "../../../hooks";
 import {
   ArtistsLoadingContainer,
+  MiniPlaylistItemsLoadingContainer,
+  MVsLoadingContainer,
   PlaylistsLoadingContainer,
 } from "../../../components/containers";
 
@@ -70,7 +72,6 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
           info={t("subtitle")}
         />
       </TitleBoardContainer>
-
       <CaptionBoardContainer>
         <CaptionBoard
           caption={t("artists")}
@@ -120,10 +121,10 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {isSearchAlbumsLoading ? (
-        <PlaylistsLoadingContainer cols={6} />
-      ) : (
-        <SearchPlaylistsWrapper>
+      <SearchPlaylistsWrapper>
+        {isSearchAlbumsLoading ? (
+          <PlaylistsLoadingContainer cols={6} />
+        ) : (
           <SearchPlaylistsContainer>
             {searchAlbumsRes?.albums?.map((album) => (
               <MediaCard
@@ -137,8 +138,8 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               />
             ))}
           </SearchPlaylistsContainer>
-        </SearchPlaylistsWrapper>
-      )}
+        )}
+      </SearchPlaylistsWrapper>
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -155,21 +156,25 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
       </CaptionBoardContainer>
 
       <SearchSongsContainer>
-        <SearchSongs>
-          {searchSongsRes?.songs?.map((song, index) => (
-            <MiniPlaylistItemCard
-              key={song.id}
-              itemType={
-                index === 0 ? "active" : index === 3 ? "disabled" : "default"
-              }
-              coverPath={song.al.picUrl + "?param=100y100"}
-              name={song.name}
-              artists={song.ar}
-              isShowHover={true}
-              onDblClick={(e, id) => console.log(e, id)}
-            />
-          ))}
-        </SearchSongs>
+        {isSearchSongsLoading || !searchSongsRes ? (
+          <MiniPlaylistItemsLoadingContainer rows={4} />
+        ) : (
+          <SearchSongs>
+            {searchSongsRes?.songs?.map((song, index) => (
+              <MiniPlaylistItemCard
+                key={song.id}
+                itemType={
+                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                }
+                coverPath={song.al.picUrl + "?param=100y100"}
+                name={song.name}
+                artists={song.ar}
+                isShowHover={true}
+                onDblClick={(e, id) => console.log(e, id)}
+              />
+            ))}
+          </SearchSongs>
+        )}
       </SearchSongsContainer>
 
       <CaptionBoardContainer>
@@ -188,10 +193,10 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
         />
       </CaptionBoardContainer>
 
-      {isSearchPlaylistsLoading ? (
-        <PlaylistsLoadingContainer cols={6} />
-      ) : (
-        <SearchPlaylistsWrapper>
+      <SearchPlaylistsWrapper>
+        {isSearchPlaylistsLoading ? (
+          <PlaylistsLoadingContainer cols={6} />
+        ) : (
           <SearchPlaylistsContainer>
             {searchPlaylistsRes?.playlists?.map((playlist) => (
               <MediaCard
@@ -206,8 +211,8 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               />
             ))}
           </SearchPlaylistsContainer>
-        </SearchPlaylistsWrapper>
-      )}
+        )}
+      </SearchPlaylistsWrapper>
 
       <CaptionBoardContainer>
         <CaptionBoard
@@ -222,19 +227,23 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
       </CaptionBoardContainer>
 
       <SearchMvsWrapper>
-        <SearchMvsContainer>
-          {searchMVsRes?.mvs?.map((mv) => (
-            <MediaCard
-              key={mv.id}
-              href={`/mv/${mv.id}`}
-              cardType="mv"
-              coverPath={mv.cover + "?param=464y260"}
-              title={mv.name}
-              caption={mv.artistName}
-              playCount={mv.playCount}
-            />
-          ))}
-        </SearchMvsContainer>
+        {isSearchMVsLoading ? (
+          <MVsLoadingContainer />
+        ) : (
+          <SearchMvsContainer>
+            {searchMVsRes?.mvs?.map((mv) => (
+              <MediaCard
+                key={mv.id}
+                href={`/mv/${mv.id}`}
+                cardType="mv"
+                coverPath={mv.cover + "?param=464y260"}
+                title={mv.name}
+                caption={mv.artistName}
+                playCount={mv.playCount}
+              />
+            ))}
+          </SearchMvsContainer>
+        )}
       </SearchMvsWrapper>
     </Container>
   );

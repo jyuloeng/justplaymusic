@@ -113,7 +113,7 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
       </CaptionBoardContainer>
 
       <HotSongsContainer>
-        {isArtistLoading ? (
+        {isArtistLoading || !hotSongs ? (
           <MiniPlaylistItemsLoadingContainer />
         ) : (
           <HotSongs>

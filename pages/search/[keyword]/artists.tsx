@@ -4,7 +4,10 @@ import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { AvatarCard } from "../../../components/cards";
-import { ViewMoreCommonContainer } from "../../../components/containers";
+import {
+  ArtistsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../../components/containers";
 import { useSearchArtists } from "./../../../hooks";
 
 export interface SearchKeywordArtistsProps {}
@@ -13,7 +16,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
   const { t } = useTranslation("search");
   const { query } = useRouter();
 
-  const { searchArtistsRes } = useSearchArtists({
+  const { searchArtistsRes, isLoading } = useSearchArtists({
     keywords: query.keyword as string,
   });
 
@@ -28,6 +31,7 @@ const SearchKeywordArtists: React.FC<SearchKeywordArtistsProps> = () => {
           />
         }
         isShowLoadMore={searchArtistsRes?.hasMore}
+        footer={isLoading && <ArtistsLoadingContainer rows={4} />}
       >
         {searchArtistsRes?.artists?.map((artist) => (
           <AvatarCard

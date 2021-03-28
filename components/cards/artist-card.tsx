@@ -20,7 +20,7 @@ export interface ArtistCardProps extends AvatarCardProps {
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({
-  isLoading,
+  isLoading = true,
   id,
   src,
   title,
@@ -66,8 +66,8 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
         {isLoading ? (
           <LoadingInfo>
             <LoadingTitle />
-            <LoadingCaption />
-            <LoadingData />
+            {caption && <LoadingCaption />}
+            {songs && albums && mvs && <LoadingData />}
           </LoadingInfo>
         ) : (
           <Info>

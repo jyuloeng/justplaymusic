@@ -3,7 +3,10 @@ import tw, { styled, css } from "twin.macro";
 import useTranslation from "next-translate/useTranslation";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
-import { ViewMoreCommonContainer } from "../../../components/containers";
+import {
+  PlaylistsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../../components/containers";
 import { useSearchAlbums } from "./../../../hooks";
 import { useRouter } from "next/router";
 
@@ -13,7 +16,7 @@ const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
   const { t } = useTranslation("search");
   const { query } = useRouter();
 
-  const { searchAlbumsRes } = useSearchAlbums({
+  const { searchAlbumsRes, isLoading } = useSearchAlbums({
     keywords: query.keyword as string,
   });
 
@@ -29,6 +32,15 @@ const SearchKeywordAlbums: React.FC<SearchKeywordAlbumsProps> = () => {
         }
         isShowLoadMore={
           searchAlbumsRes?.albumCount > searchAlbumsRes?.albums?.length
+        }
+        footer={
+          isLoading && (
+            <PlaylistsLoadingContainer
+              cols={6}
+              rows={4}
+              isNeedMarginX={false}
+            />
+          )
         }
       >
         {searchAlbumsRes?.albums?.map((album) => (

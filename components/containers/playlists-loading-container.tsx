@@ -19,7 +19,7 @@ const PlaylistsLoadingContainer: React.FC<PlaylistsLoadingContainerProps> = ({
   const [arr] = useState(new Array(rows * cols).fill(""));
 
   return (
-    <Wrapper>
+    <Wrapper isNeedMarginX={isNeedMarginX}>
       <Container cols={cols} isOverflow={isOverflow}>
         {arr.map((item, index) => (
           <PlaylistItem key={index}>

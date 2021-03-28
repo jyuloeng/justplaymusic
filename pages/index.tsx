@@ -231,7 +231,9 @@ const Home = () => {
             </CaptionBoardContainer>
 
             <RecommendSongs>
-              {isPersonalizedSongsLoading || isRecommendSongsLoading ? (
+              {isPersonalizedSongsLoading ||
+              isRecommendSongsLoading ||
+              !disPlaySongs ? (
                 <PlaylistItemsLoadingContainer />
               ) : (
                 disPlaySongs?.map((song, index) => (
@@ -262,7 +264,9 @@ const Home = () => {
             </RecommendSongs>
 
             <MobileRecommendSongsContainer>
-              {isPersonalizedSongsLoading || isRecommendSongsLoading ? (
+              {isPersonalizedSongsLoading ||
+              isRecommendSongsLoading ||
+              !disPlaySongs ? (
                 <MiniPlaylistItemsLoadingContainer />
               ) : (
                 <MobileRecommendSongs>

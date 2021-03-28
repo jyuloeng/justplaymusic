@@ -4,7 +4,10 @@ import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { MediaCard } from "../../../components/cards";
-import { ViewMoreCommonContainer } from "../../../components/containers";
+import {
+  PlaylistsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../../components/containers";
 import { useSearchPlaylists } from "./../../../hooks";
 
 export interface SearchKeywordPlaylistsProps {}
@@ -13,7 +16,7 @@ const SearchKeywordPlaylists: React.FC<SearchKeywordPlaylistsProps> = () => {
   const { t } = useTranslation("search");
   const { query } = useRouter();
 
-  const { searchPlaylistsRes } = useSearchPlaylists({
+  const { searchPlaylistsRes, isLoading } = useSearchPlaylists({
     keywords: query.keyword as string,
   });
 
@@ -28,6 +31,15 @@ const SearchKeywordPlaylists: React.FC<SearchKeywordPlaylistsProps> = () => {
           />
         }
         isShowLoadMore={searchPlaylistsRes?.hasMore}
+        footer={
+          isLoading && (
+            <PlaylistsLoadingContainer
+              rows={4}
+              cols={6}
+              isNeedMarginX={false}
+            />
+          )
+        }
       >
         {searchPlaylistsRes?.playlists?.map((playlist) => (
           <MediaCard

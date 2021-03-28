@@ -71,9 +71,9 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             />
           ))}
 
-          {(isPlaylistSongsLoading || isPlaylistInfoLoading) && (
-            <PlaylistItemsLoadingContainer />
-          )}
+          {(isPlaylistSongsLoading ||
+            isPlaylistInfoLoading ||
+            !playlistSongs) && <PlaylistItemsLoadingContainer />}
         </PlaylistSongs>
 
         <div onClick={() => setSongLimit((value) => value + 30)}>加载更多</div>

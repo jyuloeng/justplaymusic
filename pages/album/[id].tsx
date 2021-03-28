@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
-import {
-  LoadingContainer,
-  ErrorContainer,
-  PlaylistItemsLoadingContainer,
-} from "../../components/containers";
+import { PlaylistItemsLoadingContainer } from "../../components/containers";
 import { Modal } from "../../components/controls";
 import { InfoText, MediumText } from "../../styles/typography";
 import { useAlbum } from "../../hooks";
@@ -45,8 +41,6 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
         </AlbumIntro>
 
         <AlbumSongs>
-          {isLoading && <PlaylistItemsLoadingContainer />}
-
           {albumSongs?.map((song, index) => (
             <PlaylistItemCard
               key={song.id}
@@ -61,6 +55,7 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
               duration={song.dt}
             />
           ))}
+          {(isLoading || !albumSongs) && <PlaylistItemsLoadingContainer />}
         </AlbumSongs>
       </Container>
 

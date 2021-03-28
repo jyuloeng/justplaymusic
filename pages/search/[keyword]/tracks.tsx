@@ -4,7 +4,10 @@ import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
 import { TitleBoard } from "../../../components/boards";
 import { PlaylistItemCard } from "../../../components/cards";
-import { ViewMoreCommonContainer } from "../../../components/containers";
+import {
+  PlaylistItemsLoadingContainer,
+  ViewMoreCommonContainer,
+} from "../../../components/containers";
 import { useSearchSongs } from "../../../hooks";
 
 export interface SearchKeywordTracksProps {}
@@ -13,7 +16,7 @@ const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
   const { t } = useTranslation("search");
   const { query } = useRouter();
 
-  const { searchSongsRes } = useSearchSongs({
+  const { searchSongsRes, isLoading } = useSearchSongs({
     keywords: query.keyword as string,
   });
 
@@ -32,6 +35,11 @@ const SearchKeywordTracks: React.FC<SearchKeywordTracksProps> = () => {
         gap={0}
         lgGap={0}
         isShowLoadMore={searchSongsRes?.hasMore}
+        footer={
+          (isLoading || !searchSongsRes) && (
+            <PlaylistItemsLoadingContainer rows={16} />
+          )
+        }
       >
         {searchSongsRes?.songs &&
           searchSongsRes?.songs?.map((song, index) => (

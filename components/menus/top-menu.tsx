@@ -82,7 +82,13 @@ const TopMenu: React.FC<TopMenuProps> = ({
           <Button
             icon={
               <AvatarContainer>
-                <Avatar src={userAvatarPath + "?param=60y60"} />
+                <Avatar
+                  src={
+                    userAvatarPath
+                      ? userAvatarPath + "?param=60y60"
+                      : defaultAvatar
+                  }
+                />
               </AvatarContainer>
             }
             isShowHover={false}
@@ -113,7 +119,9 @@ const BaseNavContainer = tw.div`flex justify-between items-center w-full`;
 
 const MobileNavContainer = styled(BaseNavContainer)(() => [tw`md:hidden px-2`]);
 
-const ScreenNavContainer = styled(BaseNavContainer)(() => [tw`relative md:flex hidden h-16 justify-center`]);
+const ScreenNavContainer = styled(BaseNavContainer)(() => [
+  tw`relative md:flex hidden h-16 justify-center`,
+]);
 
 const PlaceHolder = styled.div`
   width: 48px;

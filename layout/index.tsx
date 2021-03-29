@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect } from "react";
 import Head from "next/head";
 import tw, { styled, css } from "twin.macro";
 import Header from "./header";
+import Footer from "./footer";
 import { getAuthCookie, getLocalUser, setLocalUser } from "../lib/auth";
 import { useAppSelector, useAppDispatch } from "../store";
 import { setUser, setCookie, setLoginMode } from "../store/slice/user.slice";
@@ -64,6 +65,7 @@ const Layout: React.FC<LayoutProps> = ({
       </Head>
       <Header />
       <Container>{children}</Container>
+      <Footer />
     </Wrapper>
   );
 };

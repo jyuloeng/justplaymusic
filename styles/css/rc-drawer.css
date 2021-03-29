@@ -37,6 +37,12 @@
   z-index: 1;
   position: relative;
 }
+.drawer:focus:focus,
+.drawer-mask:focus,
+.drawer-content:focus {
+  border: none;
+  outline: none;
+}
 .drawer-handle {
   position: absolute;
   top: 72px;
@@ -198,6 +204,9 @@
 }
 .drawer.drawer-open .drawer-handle-icon:after {
   transform: translateY(-5px) rotate(-45deg);
+}
+.playlist-drawer {
+  /* margin-bottom: 68px; */
 }
 
 .slide-menu {

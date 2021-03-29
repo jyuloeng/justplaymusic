@@ -33,6 +33,7 @@ export interface ButtonProps {
   isShowBackground?: boolean;
   isShowHover?: boolean;
   isJustifyStart?: boolean;
+  marginX?: number;
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
@@ -46,6 +47,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
   isShowBackground,
   isShowHover = true,
   isJustifyStart,
+  marginX,
   onClick,
 }) => {
   return (
@@ -58,6 +60,7 @@ const DefaultButton: React.FC<ButtonProps> = ({
       isShowBackground={isShowBackground}
       isShowHover={isShowHover}
       isJustifyStart={isJustifyStart}
+      marginX={marginX}
     >
       {icon && <Icon>{icon}</Icon>}
       {children}
@@ -78,6 +81,7 @@ const ButtonContainer = styled.button<ButtonProps>(
     isShowBackground,
     isShowHover,
     isJustifyStart,
+    marginX,
   }) => [
     tw`flex justify-center items-center p-3 rounded-lg transition`,
     isJustifyStart && tw`justify-start`,
@@ -98,6 +102,12 @@ const ButtonContainer = styled.button<ButtonProps>(
         outline: none;
       }
     `,
+    marginX &&
+      css`
+        ${Icon} + span {
+          margin-left: ${marginX}px !important;
+        }
+      `,
     btnType !== "disabled" &&
       css`
         &:active {

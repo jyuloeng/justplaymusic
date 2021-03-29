@@ -5,39 +5,11 @@ import {
   PrimaryColor,
   Primary2Color,
 } from "../../styles/colors";
-import RcSlider from "rc-slider";
+import RcSlider, { SliderProps } from "rc-slider";
 import "rc-slider/assets/index.css";
 
-export interface SliderProps {
-  min?: number;
-  max?: number;
-  vertical?: boolean;
-  disabled?: boolean;
-  onBeforeChange?: (value: number) => void;
-  onChange?: (value: number) => void;
-  onAfterChange?: (value: number) => void;
-}
-
-const Slider: React.FC<SliderProps> = ({
-  min,
-  max,
-  vertical,
-  disabled,
-  onChange,
-  onBeforeChange,
-  onAfterChange,
-}) => {
-  return (
-    <StyledRcSlider
-      min={min}
-      max={max}
-      vertical={vertical}
-      disabled={disabled}
-      onBeforeChange={onBeforeChange}
-      onChange={onChange}
-      onAfterChange={onAfterChange}
-    />
-  );
+const Slider: React.FC<SliderProps> = ({ children, ...props }) => {
+  return <StyledRcSlider {...props} />;
 };
 
 export default Slider;

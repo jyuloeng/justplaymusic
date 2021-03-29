@@ -6,8 +6,11 @@ import {
   QUERY_SONG,
   QUERY_PERSONALIZED_NEWSONG,
   QUERY_RECOMMEND_SONGS,
+  QUERY_SONG_DETAIL,
 } from "../lib/const";
 import { isLoginByAccount } from "../lib/auth";
+import { useAppDispatch } from "../store";
+import { setCurrentSong } from "../store/slice/song.slice";
 
 interface QuerySongResponse {
   code?: number;
@@ -28,6 +31,11 @@ interface QueryRecommendSongResponse {
     orderSongs?: any[];
     recommendReasons?: any[];
   };
+}
+
+interface QuerySongDetailResponse {
+  code?: number;
+  data: any;
 }
 
 export const useQuerySong = (ids: number[]) => {
@@ -148,4 +156,37 @@ export const useRecommendSong = () => {
     data,
     ...queryProps,
   };
+};
+
+export const useQuerySongDetail = (id?: number | string) => {
+  return useQuery<QuerySongDetailResponse>(
+    [QUERY_SONG_DETAIL, { id }],
+    () => request.get(QUERY_SONG_DETAIL.URL, { params: { id } }),
+    { enabled: Boolean(id) }
+  );
+};
+
+export const useSongDetail = (song?: any) => {
+  const dispatch = useAppDispatch();
+
+  const { data: resData, ...queryProps } = useQuerySongDetail(song?.id);
+
+  useEffect(() => {
+    if (resData) {
+      const { code, data } = resData;
+      if (code === 200) {
+        dispatch(
+          setCurrentSong({
+            ...song,
+            ...data[0],
+          })
+        );
+      } else {
+        setCurrentSong({
+          ...song,
+          url: "",
+        });
+      }
+    }
+  }, [resData]);
 };

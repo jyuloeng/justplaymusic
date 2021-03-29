@@ -3,9 +3,12 @@ export { default as Slider } from "./slider";
 export { default as MediaControl } from "./media-control";
 export { default as Pagination } from "./pagination";
 export { default as Modal } from "./modal";
+export { default as Player } from "./player";
+export { default as VolumeControl, VolumeIcon } from "./volume-control";
 
 export type { ProgressBarProps } from "./progress-bar";
-export type { SliderProps } from "./slider";
 export type { MediaControlProps } from "./media-control";
 export type { PaginationProps } from "./pagination";
 export type { ModalProps } from "./modal";
+export type { PlayerProps } from "./player";
+export type { VolumeControlProps } from "./volume-control";

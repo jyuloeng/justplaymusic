@@ -6,6 +6,7 @@ import storage from "redux-persist/lib/storage";
 import thunk from "redux-thunk";
 import userReducer from "./slice/user.slice";
 import settingsReducer from "./slice/settings.slice";
+import songReducer from "./slice/song.slice";
 
 const persistConfig = {
   key: "_data",
@@ -14,6 +15,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   settingsReducer,
+  songReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

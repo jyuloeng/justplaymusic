@@ -23,7 +23,8 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
       level={null}
       handler={false}
       placement="bottom"
-      height={600}
+      height={740}
+      className="playlist-drawer"
     >
       <Container>
         {activeSong && (

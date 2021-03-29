@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { useDispatch } from "react-redux";
+import {
+  selectCurrentSong,
+  setCurrentSong,
+  setSonglist,
+} from "../../store/slice/song.slice";
 import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
 import { usePlaylistDetail } from "../../hooks";
 import {
@@ -13,9 +20,13 @@ import { InfoText, MediumText } from "../../styles/typography";
 export interface PlaylistIdProps {}
 
 const PlaylistId: React.FC<PlaylistIdProps> = () => {
+  const dispatch: (...args: unknown[]) => Promise<void> = useDispatch();
+
   const { query } = useRouter();
   const [songLimit, setSongLimit] = useState(30);
   const [visivle, setVisible] = useState(false);
+
+  const currentSong = useAppSelector(selectCurrentSong);
 
   const {
     playlistInfo,
@@ -26,6 +37,13 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
     id: query.id as string,
     limit: songLimit,
   });
+
+  const handlePlayAll = () => {
+    if (playlistSongs.length > 0) {
+      dispatch(setSonglist(playlistSongs));
+      dispatch(setCurrentSong(playlistSongs[0]));
+    }
+  };
 
   return (
     <>
@@ -50,6 +68,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             songs={playlistInfo?.trackCount}
             description={playlistInfo?.description}
             onDescriptionClick={() => setVisible(true)}
+            onPlayAllClick={() => handlePlayAll()}
           />
         </PlaylistInfo>
 

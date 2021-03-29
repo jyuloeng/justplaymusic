@@ -112,3 +112,8 @@ export const QUERY_RECOMMEND_SONGS = {
   KEY: "QUERY_RECOMMEND_SONGS",
   URL: "/recommend/songs",
 };
+
+export const QUERY_SONG_DETAIL = {
+  KEY: "QUERY_SONG_DETAIL",
+  URL: "/song/url",
+};

@@ -52,6 +52,8 @@ export {
   usePersonalizedSong,
   useQueryRecommendSong,
   useRecommendSong,
+  useQuerySongDetail,
+  useSongDetail,
 } from "./song";
 
 export { useQueryPersonalizedMV, usePersonalizedMV } from "./mv";

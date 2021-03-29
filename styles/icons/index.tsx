@@ -42,3 +42,4 @@ export { default as IconNCloudLogo } from "./ncloud-logo";
 export { default as IconPhone } from "./phone";
 export { default as IconEarth } from "./earth";
 export { default as IconClose } from "./close";
+export { default as IconLyric } from "./lyric";

@@ -162,10 +162,10 @@ const Player: React.FC<PlayerProps> = ({ artists }) => {
   return (
     <>
       <Container>
-        <audio controls src={currentSong?.url} ref={audioRef}>
+        <StyledAudio controls src={currentSong?.url} ref={audioRef}>
           Your browser does not support the
           <code>audio</code> element.
-        </audio>
+        </StyledAudio>
 
         <MobileControlContainer>
           <MobileInfoContainer>
@@ -182,14 +182,14 @@ const Player: React.FC<PlayerProps> = ({ artists }) => {
             <Info>
               <Name>{currentSong?.name}</Name>
               <Artists>
-                {artists.map((artist, index) => (
+                {currentSong?.ar?.map((artist, index) => (
                   <ArtistContainer key={artist.id}>
                     <Link href={`/artist/${artist.id}`}>
                       <Artist>
                         <SmallText>{artist.name}</SmallText>
                       </Artist>
                     </Link>
-                    {index !== artists.length - 1 && (
+                    {index !== currentSong?.ar?.length - 1 && (
                       <SmallText>,&nbsp;&nbsp;</SmallText>
                     )}
                   </ArtistContainer>
@@ -238,6 +238,8 @@ const Player: React.FC<PlayerProps> = ({ artists }) => {
           </InfoContainer>
 
           <Control>
+            <PlayModeButton>
+
             {playMode === "repeat" ? (
               <Button
                 icon={<IconRepeat {...baseIconSize} />}
@@ -249,6 +251,7 @@ const Player: React.FC<PlayerProps> = ({ artists }) => {
                 onClick={() => dispatch(setPlayMode("repeat"))}
               />
             )}
+            </PlayModeButton>
             <ControlButtons>
               <Button
                 icon={<IconPrev {...baseIconSize} />}
@@ -279,6 +282,16 @@ const Player: React.FC<PlayerProps> = ({ artists }) => {
                 onClick={handleShowVolumeControl}
               />
             </VolumeControlWrapper>
+
+            <MobileSonglistButton>
+              <Button
+                icon={<IconMusicList {...baseIconSize} />}
+                marginX={2}
+                onClick={handleShowSonglist}
+              >
+                <SmallText bold>{songlist.length}</SmallText>
+              </Button>
+            </MobileSonglistButton>
           </Control>
 
           <MetaContainer>
@@ -328,6 +341,8 @@ const ControlButtons = styled.div(() => [
   `,
 ]);
 
+const MobileSonglistButton = styled.div(() => [tw`absolute right-0 block md:hidden`]);
+
 const VolumeControlContainer = styled.div(
   ({ visible }: { visible?: boolean }) => [
     tw`absolute`,
@@ -338,11 +353,13 @@ const VolumeControlContainer = styled.div(
   ]
 );
 
-const VolumeControlWrapper = styled.div(() => [tw`relative`]);
+const VolumeControlWrapper = styled.div(() => [tw`relative hidden md:block`]);
+
+const PlayModeButton = styled.div(() => [tw`absolute md:relative left-0`])
 
 const Control = styled.div(() => [
   tw`flex md:grid gap-1 items-center
-   w-full md:w-auto justify-between`,
+   w-full md:w-auto justify-center`,
   css`
     @media (min-width: 768px) {
       grid-template-columns: repeat(3, minmax(0, max-content));
@@ -398,10 +415,12 @@ const Info = styled.div(() => [tw`flex flex-col flex-1 md:pl-1 pr-3 md:pr-2`]);
 
 const Cover = styled(Image)(() => [tw`w-11 h-11 rounded-md bg-background`]);
 
-const MobileInfoContainer = styled(InfoContainer)(() => [tw`grid md:hidden`]);
+const MobileInfoContainer = styled(InfoContainer)(() => [tw`grid md:hidden gap-3`]);
 
 const MobileControlContainer = styled.div(() => [
   tw`flex md:hidden justify-between px-3 py-1`,
 ]);
+
+const StyledAudio = styled.audio(() => [tw`hidden`]);
 
 const Container = styled.div(() => [tw``]);

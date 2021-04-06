@@ -267,7 +267,7 @@ const Name = styled(CaptionText)(() => [
 const Info = styled.div(
   ({ isAlbum, itemType }: { isAlbum: boolean; itemType: PlaylistItemType }) => [
     tw`flex flex-col flex-1 md:pl-1 pr-3 md:pr-2`,
-    isAlbum && tw`md:flex-row items-center`,
+    isAlbum && tw`md:flex-row items-start md:items-center`,
     !isAlbum && tw`md:ml-3`,
     itemType === "active" ? tw`text-primary2` : tw`text-light-mode-text`,
   ]

@@ -97,7 +97,7 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
               <AvatarCard
                 key={artist.id}
                 id={artist.id}
-                src={artist.picUrl + "?param=512y512"}
+                src={artist.img1v1Url + "?param=512y512"}
                 caption={artist.name}
               />
             ))}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../store";
@@ -23,6 +23,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
   const dispatch: (...args: unknown[]) => Promise<void> = useDispatch();
 
   const { query } = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [songLimit, setSongLimit] = useState(30);
   const [visivle, setVisible] = useState(false);
 
@@ -45,9 +46,26 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
     }
   };
 
+  const handleScroll = (e) => {
+    const { scrollHeight, clientHeight, scrollTop } = document.documentElement;
+
+    if (scrollHeight - clientHeight > scrollTop + 28) {
+    } else {
+      setSongLimit((value) => value + 30)
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <>
-      <Container>
+      <Container ref={containerRef}>
         <PlaylistInfo>
           <PlaylistIntroCard
             isLoading={isPlaylistInfoLoading}
@@ -77,7 +95,8 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             <PlaylistItemCard
               key={song.id}
               itemType={
-                index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                // index === 0 ? "active" : index === 3 ? "disabled" : "default"
+                currentSong?.id === song.id ? "active" : "default"
               }
               coverPath={song.al.picUrl + "?param=100y100"}
               index={index + 1}
@@ -95,7 +114,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             !playlistSongs) && <PlaylistItemsLoadingContainer />}
         </PlaylistSongs>
 
-        <div onClick={() => setSongLimit((value) => value + 30)}>加载更多</div>
+        {/* <div onClick={() => setSongLimit((value) => value + 30)}>加载更多</div> */}
       </Container>
 
       {playlistInfo && (
@@ -120,6 +139,6 @@ const ModalContentContainer = styled.div(() => [tw``]);
 
 const PlaylistSongs = styled.div(() => [tw`pb-5 lg:p-10`]);
 
-const PlaylistInfo = styled.div(() => [tw`p-5 md:px-0 md:py-5  lg:p-10`]);
+const PlaylistInfo = styled.div(() => [tw`p-5 md:px-0 md:py-5 lg:p-10`]);
 
 const Container = styled.div(() => [tw``]);

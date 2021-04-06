@@ -32,7 +32,6 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
             <Component {...pageProps} />
           </Layout>
           <ToastContainer />
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </PersistGate>
     </Provider>

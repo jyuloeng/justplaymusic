@@ -81,6 +81,6 @@ const ModalContentContainer = styled.div(() => [tw``]);
 
 const AlbumSongs = styled.div(() => [tw`mt-11`]);
 
-const AlbumIntro = styled.div(() => [tw``]);
+const AlbumIntro = styled.div(() => [tw`p-5 md:px-0 md:py-5 lg:p-10`]);
 
 const Container = styled.div(() => [tw`md:p-10`]);

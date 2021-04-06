@@ -37,9 +37,8 @@ function DefaultSelect<T>({
   }, [setShowOptions]);
 
   const handleMouseOut = (e: MouseEvent) => {
-    if (!ref.current.contains(e.target as Node)) {
+    if (!ref?.current?.contains(e.target as Node)) {
       handleHideOptions();
-      console.log(1);
     }
   };
 
@@ -53,6 +52,7 @@ function DefaultSelect<T>({
     document.addEventListener("touchstart", handleMouseOut);
     document.addEventListener("scroll", handleMouseOut);
     return () => {
+      console.log('unmount');
       document.removeEventListener("mousedown", handleMouseOut);
       document.removeEventListener("touchstart", handleMouseOut);
       document.addEventListener("scroll", handleMouseOut);

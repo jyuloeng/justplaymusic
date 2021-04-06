@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect,useRef } from "react";
 import Head from "next/head";
 import tw, { styled, css } from "twin.macro";
 import Header from "./header";
@@ -20,6 +20,8 @@ const Layout: React.FC<LayoutProps> = ({
   // useAppSelector()
 
   const dispatch = useAppDispatch();
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { userProfile } = useUserProfile(getAuthCookie());
 
@@ -53,6 +55,18 @@ const Layout: React.FC<LayoutProps> = ({
     getLocalUser,
   ]);
 
+
+  const handleScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
+    const { scrollHeight, clientHeight, scrollTop } = containerRef.current;
+    if (scrollHeight - clientHeight > scrollTop) {
+      //  未到底
+      console.log(2);
+    } else {
+      console.log(1);
+    }
+    console.log(1);
+  };
+
   return (
     <Wrapper>
       <Head>
@@ -64,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({
         />
       </Head>
       <Header />
-      <Container>{children}</Container>
+      <Container ref={containerRef} onScroll={handleScroll}>{children}</Container>
       <Footer />
     </Wrapper>
   );
@@ -84,6 +98,7 @@ const Container = styled.div(() => [
   tw`container mx-auto`,
   css`
     padding-top: 86px;
+    padding-bottom:72px;
 
     /* @media (max-width: 768px) {
       padding-top: 64px;

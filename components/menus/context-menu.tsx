@@ -49,11 +49,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         {menu?.map(
           (item) =>
             item && (
-              <ControlItem key={item.key}>
+              <ControlItem key={item.key} onClick={item.onClick}>
                 {item.icon && <Icon>{item.icon}</Icon>}
-                <InfoText bold onClick={item.onClick}>
-                  {item.title}
-                </InfoText>
+                <InfoText bold>{item.title}</InfoText>
               </ControlItem>
             )
         )}
@@ -69,11 +67,6 @@ const Icon = styled.div(() => [tw`mr-2`]);
 const ControlItem = styled(InfoText)(() => [
   tw`flex items-center p-2 rounded cursor-pointer transition
       hover:text-primary2 hover:bg-primary-background`,
-  css`
-    &:active {
-      transform: scale(0.96);
-    }
-  `,
 ]);
 
 const Controls = styled.div(() => [tw``]);

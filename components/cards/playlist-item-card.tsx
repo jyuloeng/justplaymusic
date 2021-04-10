@@ -19,6 +19,7 @@ export type PlaylistItemType = typeof PlaylistItemTypes[number];
 
 export interface PlaylistItemCardProps {
   itemType: PlaylistItemType;
+  title?: string;
   index?: number;
   coverPath?: string;
   coverSize?: { width: number; height: number };
@@ -31,15 +32,14 @@ export interface PlaylistItemCardProps {
   isShowDuration?: boolean;
   isShowCover?: boolean;
   isAlbum?: boolean;
-  onDblClick?: (e: React.MouseEvent<HTMLDivElement>, id: string) => void;
-  onContextMenuClick?: (
-    e: React.MouseEvent<HTMLDivElement>,
-    item: Omit<PlaylistItemCardProps, "duration">
-  ) => void;
+  onLikeClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onDblClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onContextMenuClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   itemType,
+  title,
   index,
   coverPath,
   coverSize = {
@@ -55,28 +55,21 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
   isShowDuration = true,
   isShowCover = true,
   isAlbum = false,
+  onLikeClick,
   onDblClick,
   onContextMenuClick,
 }) => {
-  const handleDblClick = (e: React.MouseEvent<HTMLEmbedElement>) => {
+  const handleOnDblClick = (e: React.MouseEvent<HTMLEmbedElement>) => {
     e.preventDefault();
     if (itemType !== "disabled" && onDblClick) {
-      onDblClick(e, index.toString());
+      onDblClick(e);
     }
   };
 
   const handleOnContextMenuClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (itemType !== "disabled" && onContextMenuClick) {
-      onContextMenuClick(e, {
-        itemType,
-        index,
-        coverPath,
-        name,
-        artists,
-        album,
-        albumId,
-      });
+      onContextMenuClick(e);
     }
   };
 
@@ -85,7 +78,8 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
       itemType={itemType}
       isAlbum={isAlbum}
       onContextMenu={handleOnContextMenuClick}
-      onDoubleClick={handleDblClick}
+      onDoubleClick={handleOnDblClick}
+      title={title}
     >
       <Status>
         {itemType === "active" ? (
@@ -147,10 +141,10 @@ const PlaylistItemCard: React.FC<PlaylistItemCardProps> = ({
       )}
 
       <Controls>
-        <More>
+        <More onClick={handleOnContextMenuClick}>
           <IconMoreVertical {...coverSize} />
         </More>
-        <Like>
+        <Like onClick={onLikeClick}>
           {isLike ? (
             <IconHeart {...coverSize} fill={PrimaryColor} />
           ) : (

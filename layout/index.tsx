@@ -1,12 +1,19 @@
-import React, { ReactNode, useEffect,useRef } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 import Head from "next/head";
 import tw, { styled, css } from "twin.macro";
 import Header from "./header";
 import Footer from "./footer";
 import { getAuthCookie, getLocalUser, setLocalUser } from "../lib/auth";
 import { useAppSelector, useAppDispatch } from "../store";
-import { setUser, setCookie, setLoginMode } from "../store/slice/user.slice";
+import {
+  setUser,
+  setCookie,
+  setLoginMode,
+  setLikedList,
+  selectUser,
+} from "../store/slice/user.slice";
 import { useUserProfile } from "../hooks/user";
+import { useLikedList } from "../hooks";
 
 export interface LayoutProps {
   children?: ReactNode;
@@ -21,9 +28,11 @@ const Layout: React.FC<LayoutProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const user = useAppSelector(selectUser);
 
   const { userProfile } = useUserProfile(getAuthCookie());
+
+  const { likedList } = useLikedList(user?.userId);
 
   useEffect(() => {
     const localUser = getLocalUser();
@@ -55,17 +64,12 @@ const Layout: React.FC<LayoutProps> = ({
     getLocalUser,
   ]);
 
-
-  const handleScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
-    const { scrollHeight, clientHeight, scrollTop } = containerRef.current;
-    if (scrollHeight - clientHeight > scrollTop) {
-      //  未到底
-      console.log(2);
-    } else {
-      console.log(1);
+  useEffect(() => {
+    console.log(likedList);
+    if (likedList?.length > 0) {
+      dispatch(setLikedList(likedList));
     }
-    console.log(1);
-  };
+  }, [likedList]);
 
   return (
     <Wrapper>
@@ -78,7 +82,7 @@ const Layout: React.FC<LayoutProps> = ({
         />
       </Head>
       <Header />
-      <Container ref={containerRef} onScroll={handleScroll}>{children}</Container>
+      <Container>{children}</Container>
       <Footer />
     </Wrapper>
   );
@@ -98,7 +102,7 @@ const Container = styled.div(() => [
   tw`container mx-auto`,
   css`
     padding-top: 86px;
-    padding-bottom:72px;
+    padding-bottom: 72px;
 
     /* @media (max-width: 768px) {
       padding-top: 64px;

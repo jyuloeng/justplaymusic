@@ -7,30 +7,27 @@ import request from "../../lib/request";
 const PlayModeTypes = tuple("repeat", "shuffle");
 type PlayModeType = typeof PlayModeTypes[number];
 
-const PlayStatusTypes = tuple("play", "pause", "playing");
-type PlayStatusType = typeof PlayStatusTypes[number];
-
 interface SongState {
+  songlistInfo?: any;
   songlist?: any[];
   currentSong?: any;
   current?: number;
   shuffledPlayQuene?: number[];
   shuffledPlayCurrent?: number;
   playMode?: PlayModeType;
-  playStatus?: PlayStatusType;
   volume?: number; //  [0, 1]
   volumeBeforeMute?: number;
   mute?: boolean;
 }
 
 const initialState: SongState = {
+  songlistInfo: {},
   songlist: [],
   currentSong: {},
   current: 0,
   shuffledPlayQuene: [0],
   shuffledPlayCurrent: 0,
   playMode: "repeat",
-  playStatus: "playing",
   volume: 0.5,
   volumeBeforeMute: 0.5,
   mute: false,
@@ -40,6 +37,12 @@ export const songSlice = createSlice({
   name: "song",
   initialState,
   reducers: {
+    setSonglistInfo: (state, action: PayloadAction<any>) => {
+      return {
+        ...state,
+        songlistInfo: action.payload,
+      };
+    },
     setSonglist: (state, action: PayloadAction<any[]>) => {
       return {
         ...state,
@@ -76,12 +79,6 @@ export const songSlice = createSlice({
         playMode: action.payload,
       };
     },
-    setPlayStatus: (state, action: PayloadAction<PlayStatusType>) => {
-      return {
-        ...state,
-        playStatus: action.payload,
-      };
-    },
     setVolume: (state, action: PayloadAction<number>) => {
       return {
         ...state,
@@ -104,17 +101,20 @@ export const songSlice = createSlice({
 });
 
 export const {
+  setSonglistInfo,
   setSonglist,
   setCurrentSong,
   setCurrent,
   setShuffledPlayQuene,
   setShuffledCurrent,
   setPlayMode,
-  setPlayStatus,
   setVolume,
   setVolumeBeforeMute,
   setMute,
 } = songSlice.actions;
+
+export const selectSonglistInfo = (state: RootState) =>
+  state.persistedReducer.songReducer.songlistInfo;
 
 export const selectSonglist = (state: RootState) =>
   state.persistedReducer.songReducer.songlist;
@@ -133,9 +133,6 @@ export const selectShuffledCurrent = (state: RootState) =>
 
 export const selectPlayMode = (state: RootState) =>
   state.persistedReducer.songReducer.playMode;
-
-export const selectPlayStatus = (state: RootState) =>
-  state.persistedReducer.songReducer.playStatus;
 
 export const selectVolume = (state: RootState) =>
   state.persistedReducer.songReducer.volume;

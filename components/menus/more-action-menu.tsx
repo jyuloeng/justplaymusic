@@ -3,37 +3,95 @@ import useTranslation from "next-translate/useTranslation";
 import { ContextMenu, ContextMenuProps, ContextMenuItem } from "./index";
 import Image from "next/image";
 import { InfoText, SmallText } from "../../styles/typography";
+import { useAppDispatch, useAppSelector } from "../../store";
+import {
+  setCurrentSong,
+  setCurrent,
+  selectSonglist,
+  setSonglist,
+  selectCurrent,
+  selectPlayMode,
+  selectShuffledPlayQuene,
+  selectShuffledCurrent,
+} from "../../store/slice/song.slice";
 
 export interface MoreActionMenuProps extends ContextMenuProps {
-  coverPath?: string;
-  name?: string;
-  artists?: any[];
+  song?: any;
 }
 
 const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
   visible,
   position,
   onClose,
-  coverPath,
-  name,
-  artists,
+  song,
 }) => {
   const { t } = useTranslation("common");
+
+  const dispatch = useAppDispatch();
+  const songlist = useAppSelector(selectSonglist);
+  const current = useAppSelector(selectCurrent);
+  const playMode = useAppSelector(selectPlayMode);
+  const shuffledPlayQuene = useAppSelector(selectShuffledPlayQuene);
+  const shuffledCurrent = useAppSelector(selectShuffledCurrent);
+
+  const handleAddSong = (index: number) => {
+    const newSonglist = [...songlist].splice(index, 0, song);
+    dispatch(setSonglist(newSonglist));
+  };
+
   const menu: ContextMenuItem[] = [
     {
       key: "play",
       title: t("play"),
-      onClick: () => {},
+      onClick: () => {
+        const current = songlist.findIndex((item) => item.id === song.id);
+        if (current < 0) {
+          handleAddSong(songlist.length);
+          dispatch(setCurrent(songlist.length));
+        } else {
+          dispatch(setCurrent(current));
+        }
+        dispatch(setCurrentSong(song));
+        onClose();
+      },
     },
     {
       key: "next-play",
       title: t("next-play"),
-      onClick: () => {},
+      onClick: () => {
+        const isInQueue = songlist.some((item) => item.id === song.id);
+        if (isInQueue) {
+          const selectedIndex = songlist.findIndex(
+            (item) => item.id === song.id
+          );
+          const selectedSong = songlist[selectedIndex];
+
+          let newSonglist = [...songlist];
+
+          if (selectedIndex > current) {
+            newSonglist.splice(selectedIndex, 1);
+            newSonglist.splice(current + 1, 0, selectedSong);
+          } else {
+            newSonglist.splice(selectedIndex, 1);
+            newSonglist.splice(current, 0, selectedSong);
+            dispatch(setCurrent(current - 1));
+          }
+
+          dispatch(setSonglist(newSonglist));
+        } else {
+          handleAddSong(current + 1);
+        }
+        onClose();
+      },
     },
     {
       key: "add-to-queue",
       title: t("add-to-queue"),
-      onClick: () => {},
+      onClick: () => {
+        const current = songlist.findIndex((item) => item.id === song.id);
+        current < 0 && handleAddSong(songlist.length);
+        onClose();
+      },
     },
     {
       key: "collect-to-playlist",
@@ -53,17 +111,17 @@ const MoreActionMenu: React.FC<MoreActionMenuProps> = ({
         <>
           <InfoContainer>
             <Cover>
-              <Image src={coverPath} layout="fill" />
+              <Image src={song?.al?.picUrl + "?param=100y100"} layout="fill" />
             </Cover>
             <Info>
-              <Name bold>{name}</Name>
+              <Name bold>{song?.name}</Name>
               <Artists>
-                {artists?.map((artist, index) => (
+                {song?.ar?.map((artist, index) => (
                   <ArtistContainer key={artist.id}>
                     <Artist>
                       <SmallText>{artist.name}</SmallText>
                     </Artist>
-                    {index !== artists.length - 1 && (
+                    {index !== song?.ar?.length - 1 && (
                       <SmallText>,&nbsp;&nbsp;</SmallText>
                     )}
                   </ArtistContainer>

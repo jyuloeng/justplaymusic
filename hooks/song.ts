@@ -11,6 +11,7 @@ import {
 import { isLoginByAccount } from "../lib/auth";
 import { useAppDispatch } from "../store";
 import { setCurrentSong } from "../store/slice/song.slice";
+import { QUERY_LIKE_SONG } from "./../lib/const";
 
 interface QuerySongResponse {
   code?: number;
@@ -36,6 +37,12 @@ interface QueryRecommendSongResponse {
 interface QuerySongDetailResponse {
   code?: number;
   data: any;
+}
+
+interface QueryLikeSongResponse {
+  code?: number;
+  playlistId?: number;
+  songs?: any[];
 }
 
 export const useQuerySong = (ids: number[]) => {
@@ -160,7 +167,7 @@ export const useRecommendSong = () => {
 
 export const useQuerySongDetail = (id?: number | string) => {
   return useQuery<QuerySongDetailResponse>(
-    [QUERY_SONG_DETAIL, { id }],
+    [QUERY_SONG_DETAIL.KEY, { id }],
     () => request.get(QUERY_SONG_DETAIL.URL, { params: { id } }),
     { enabled: Boolean(id) }
   );
@@ -171,22 +178,67 @@ export const useSongDetail = (song?: any) => {
 
   const { data: resData, ...queryProps } = useQuerySongDetail(song?.id);
 
+  const handleSetCurrentSongUrl = () => {
+    const newCurrentSong = {
+      ...song,
+      url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3`,
+    };
+    dispatch(setCurrentSong(newCurrentSong));
+  };
+
   useEffect(() => {
     if (resData) {
       const { code, data } = resData;
       if (code === 200) {
-        dispatch(
-          setCurrentSong({
-            ...song,
-            ...data[0],
-          })
-        );
+        if (data[0].url !== null) {
+          dispatch(
+            setCurrentSong({
+              ...song,
+              ...data[0],
+            })
+          );
+        } else {
+          handleSetCurrentSongUrl();
+        }
       } else {
-        setCurrentSong({
-          ...song,
-          url: "",
-        });
+        handleSetCurrentSongUrl();
       }
     }
   }, [resData]);
+};
+
+export const useQueryLikeSong = (id?: number | string, like?: boolean) => {
+  return useQuery<QueryLikeSongResponse>(
+    [QUERY_LIKE_SONG, { id, like }],
+    () => request.get(QUERY_LIKE_SONG.URL, { params: { id, like } }),
+    {
+      enabled: Boolean(id),
+    }
+  );
+};
+
+export const useLikeSong = (id?: number | string, like?: boolean) => {
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const { data, ...queryProps } = useQueryLikeSong(id, like);
+
+  useEffect(() => {
+    if (data) {
+      const { code } = data;
+      if (code === 200) {
+        like
+          ? toast(`歌曲已添加到我喜欢的音乐中`)
+          : toast(`歌曲已从我喜欢的音乐中移除`);
+      } else {
+        setErrorMsg(data);
+        toast(`🦄 ${data}`);
+      }
+    }
+  }, [data, setErrorMsg, toast]);
+
+  return {
+    errorMsg,
+    data,
+    ...queryProps,
+  };
 };

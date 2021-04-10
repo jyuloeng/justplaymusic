@@ -5,8 +5,11 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { useDispatch } from "react-redux";
 import {
   selectCurrentSong,
+  selectSonglist,
+  setCurrent,
   setCurrentSong,
   setSonglist,
+  setSonglistInfo,
 } from "../../store/slice/song.slice";
 import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
 import { usePlaylistDetail } from "../../hooks";
@@ -14,20 +17,33 @@ import {
   LoadingContainer,
   PlaylistItemsLoadingContainer,
 } from "../../components/containers";
+import { isTrackPlayable } from "../../lib/util";
 import { Modal } from "../../components/controls";
+import { MoreActionMenu, ContextMenuPosition } from "../../components/menus";
 import { InfoText, MediumText } from "../../styles/typography";
+import { selectLikedList } from "../../store/slice/user.slice";
 
 export interface PlaylistIdProps {}
 
 const PlaylistId: React.FC<PlaylistIdProps> = () => {
-  const dispatch: (...args: unknown[]) => Promise<void> = useDispatch();
-
   const { query } = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [songLimit, setSongLimit] = useState(30);
-  const [visivle, setVisible] = useState(false);
 
+  const dispatch = useAppDispatch();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const songlist = useAppSelector(selectSonglist);
   const currentSong = useAppSelector(selectCurrentSong);
+  const likedList = useAppSelector(selectLikedList);
+
+  const [songLimit, setSongLimit] = useState(30);
+  const [modalVisivle, setModalVisible] = useState(false);
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [selectedSong, setSelectedSong] = useState(null);
 
   const {
     playlistInfo,
@@ -41,9 +57,34 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
 
   const handlePlayAll = () => {
     if (playlistSongs.length > 0) {
+      dispatch(setSonglistInfo(playlistInfo));
       dispatch(setSonglist(playlistSongs));
+      dispatch(setCurrent(0));
       dispatch(setCurrentSong(playlistSongs[0]));
     }
+  };
+
+  const handleOnDblClick = (song) => {
+    const current = songlist.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
   };
 
   const handleScroll = (e) => {
@@ -51,7 +92,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
 
     if (scrollHeight - clientHeight > scrollTop + 28) {
     } else {
-      setSongLimit((value) => value + 30)
+      setSongLimit((value) => value + 30);
     }
   };
 
@@ -62,6 +103,10 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    dispatch(setSonglist(playlistSongs));
+  }, [playlistSongs.length]);
 
   return (
     <>
@@ -85,7 +130,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             publishTime={playlistInfo?.createTime}
             songs={playlistInfo?.trackCount}
             description={playlistInfo?.description}
-            onDescriptionClick={() => setVisible(true)}
+            onDescriptionClick={() => setModalVisible(true)}
             onPlayAllClick={() => handlePlayAll()}
           />
         </PlaylistInfo>
@@ -95,9 +140,13 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
             <PlaylistItemCard
               key={song.id}
               itemType={
-                // index === 0 ? "active" : index === 3 ? "disabled" : "default"
-                currentSong?.id === song.id ? "active" : "default"
+                song.playable
+                  ? currentSong?.id === song.id
+                    ? "active"
+                    : "default"
+                  : "disabled"
               }
+              title={song.reason}
               coverPath={song.al.picUrl + "?param=100y100"}
               index={index + 1}
               name={song.name}
@@ -105,7 +154,9 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
               album={song.al.name}
               albumId={song.al.id}
               duration={song.dt}
-              isLike={false}
+              isLike={likedList?.includes(song.id)}
+              onDblClick={() => handleOnDblClick(song)}
+              onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />
           ))}
 
@@ -118,12 +169,21 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
       </Container>
 
       {playlistInfo && (
-        <Modal visible={visivle} onClose={() => setVisible(false)}>
+        <Modal visible={modalVisivle} onClose={() => setModalVisible(false)}>
           <ModalContentContainer>
             <ModalTitle bold>{playlistInfo?.name}</ModalTitle>
             <ModalDescription>{playlistInfo?.description}</ModalDescription>
           </ModalContentContainer>
         </Modal>
+      )}
+
+      {selectedSong?.id && (
+        <MoreActionMenu
+          visible={moreActionMenuVisible}
+          onClose={() => setMoreActionMenuVisible(false)}
+          song={selectedSong}
+          position={moreActionMenuPosition}
+        />
       )}
     </>
   );

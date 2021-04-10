@@ -3,10 +3,12 @@ import { useQuery } from "react-query";
 import request from "../lib/request";
 import { toast } from "../lib/toast";
 import {
+  QUERY_LIKED_LIST,
   QUERY_PERSONALIZED_PLAYLIST,
   QUERY_PLAYLIST_DETAIL,
 } from "../lib/const";
 import { useSong } from "./index";
+import { isTrackPlayable } from "../lib/util";
 
 interface QueryPersonalizedPlaylistResponse {
   code?: number;
@@ -27,6 +29,11 @@ interface QueryPlaylistDetailParams {
   limit?: number;
 }
 
+interface QueryLikedListResponse {
+  code?: number;
+  checkPoint?: number;
+  ids?: any[];
+}
 interface BaseQueryParams {
   limit?: number;
   offset?: number;
@@ -113,7 +120,14 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
   const { songs, isLoading: isPlaylistSongsLoading } = useSong(songIds);
 
   useEffect(() => {
-    setPlaylistSongs((value) => [...value, ...songs]);
+    const formatSongs = songs.map((song) => {
+      return {
+        ...song,
+        ...isTrackPlayable(song),
+      };
+    });
+
+    setPlaylistSongs((value) => [...value, ...formatSongs]);
   }, [songs]);
 
   return {
@@ -123,6 +137,38 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
     setPlaylistSongs,
     isPlaylistSongsLoading,
     errorMsg,
+    data,
+    ...queryProps,
+  };
+};
+
+export const useQueryLikedList = (uid?: string | number) => {
+  return useQuery<QueryLikedListResponse>(
+    [QUERY_LIKED_LIST.KEY, { uid }],
+    () => request.get(QUERY_LIKED_LIST.URL, { params: uid }),
+    {
+      enabled: Boolean(uid),
+    }
+  );
+};
+
+export const useLikedList = (uid?: string | number) => {
+  const [likedList, setLikedList] = useState([]);
+
+  const { data, ...queryProps } = useQueryLikedList(uid);
+
+  useEffect(() => {
+    if (data) {
+      const { code, ids } = data;
+      if (code === 200) {
+        setLikedList(ids);
+      }
+    }
+  }, [data, setLikedList]);
+
+  return {
+    likedList,
+    setLikedList,
     data,
     ...queryProps,
   };

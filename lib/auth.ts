@@ -5,7 +5,7 @@ export const AUTH_COOKIE_KEY = "MUSIC_U";
 
 export const isLoginByAccount = () => {
   const localUser = getLocalUser();
-  console.log(localUser);
+
   return Boolean(
     localUser?.user && localUser?.loginMode === "account" && getAuthCookie()
   );

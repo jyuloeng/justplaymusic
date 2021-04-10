@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { AxiosError } from "axios";
 import request from "./../lib/request";
 import { toast } from "../lib/toast";
 import {
@@ -7,11 +8,15 @@ import {
   QUERY_PERSONALIZED_NEWSONG,
   QUERY_RECOMMEND_SONGS,
   QUERY_SONG_DETAIL,
+  MUTATE_LIKED_LIST,
+  QUERY_LYRIC,
 } from "../lib/const";
 import { isLoginByAccount } from "../lib/auth";
-import { useAppDispatch } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { setCurrentSong } from "../store/slice/song.slice";
-import { QUERY_LIKE_SONG } from "./../lib/const";
+import { setLikedList, setRefreshTimestamp } from "../store/slice/user.slice";
+import { selectLikedList } from "./../store/slice/user.slice";
+import { lyricParser, lyricWithTranslation } from "./../lib/util";
 
 interface QuerySongResponse {
   code?: number;
@@ -39,10 +44,25 @@ interface QuerySongDetailResponse {
   data: any;
 }
 
-interface QueryLikeSongResponse {
+interface MutateLikeSongParams {
+  id?: number | string;
+  like?: boolean;
+}
+
+interface MutateLikeSongResponse {
   code?: number;
   playlistId?: number;
   songs?: any[];
+}
+
+interface QueryLyricResponse {
+  code?: number;
+  sgc?: boolean;
+  sfy?: boolean;
+  qfy?: boolean;
+  lrc?: any[];
+  klyric?: any[];
+  tlyric?: any[];
 }
 
 export const useQuerySong = (ids: number[]) => {
@@ -207,36 +227,80 @@ export const useSongDetail = (song?: any) => {
   }, [resData]);
 };
 
-export const useQueryLikeSong = (id?: number | string, like?: boolean) => {
-  return useQuery<QueryLikeSongResponse>(
-    [QUERY_LIKE_SONG, { id, like }],
-    () => request.get(QUERY_LIKE_SONG.URL, { params: { id, like } }),
+export const useMutateLikeSong = (params: MutateLikeSongParams) => {
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+
+  return useMutation<MutateLikeSongResponse, AxiosError, MutateLikeSongParams>(
+    (params) =>
+      request.post(MUTATE_LIKED_LIST.URL, undefined, {
+        params: {
+          ...params,
+          timestamp: new Date().getTime(),
+        },
+      }),
+    {
+      onSuccess(data) {
+        queryClient.invalidateQueries([MUTATE_LIKED_LIST.KEY, { ...params }]);
+        const { code } = data;
+        if (code === 200) {
+          dispatch(setRefreshTimestamp());
+        }
+      },
+      onError(error: any, newItem: any, context: any) {
+        queryClient.setQueryData(MUTATE_LIKED_LIST.KEY, context.previousItems);
+
+        if (error.message) {
+          toast(error.message);
+        }
+      },
+    }
+  );
+};
+
+export const useQueryLyric = (id?: string | number) => {
+  return useQuery<QueryLyricResponse>(
+    [QUERY_LYRIC.KEY, { id }],
+    () => request.get(QUERY_LYRIC.URL, { params: { id } }),
     {
       enabled: Boolean(id),
     }
   );
 };
 
-export const useLikeSong = (id?: number | string, like?: boolean) => {
+export const useLyric = (id?: string | number) => {
+  const [lyric, setLyric] = useState(null);
+  const [tlyric, setTlyric] = useState(null);
+  const [lyricWithTrans, setLyricWithTrans] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const { data, ...queryProps } = useQueryLikeSong(id, like);
+  const { data, ...queryProps } = useQueryLyric(id);
 
   useEffect(() => {
     if (data) {
       const { code } = data;
       if (code === 200) {
-        like
-          ? toast(`歌曲已添加到我喜欢的音乐中`)
-          : toast(`歌曲已从我喜欢的音乐中移除`);
+        const { lyric, tlyric } = lyricParser(data);
+        setLyric(lyric);
+        setTlyric(tlyric);
+        setLyricWithTrans(lyricWithTranslation({ lyric, tlyric }));
+        console.log(lyric);
+        console.log(tlyric);
+        console.log(lyricWithTranslation({ lyric, tlyric }));
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);
       }
     }
-  }, [data, setErrorMsg, toast]);
+  }, [data, setLyric, setTlyric, setLyricWithTrans]);
 
   return {
+    lyric,
+    setLyric,
+    tlyric,
+    setTlyric,
+    lyricWithTrans,
+    setLyricWithTrans,
     errorMsg,
     data,
     ...queryProps,

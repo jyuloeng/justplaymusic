@@ -3,12 +3,14 @@ import { useQuery } from "react-query";
 import request from "../lib/request";
 import { toast } from "../lib/toast";
 import {
-  QUERY_LIKED_LIST,
+  MUTATE_LIKED_LIST,
   QUERY_PERSONALIZED_PLAYLIST,
   QUERY_PLAYLIST_DETAIL,
 } from "../lib/const";
 import { useSong } from "./index";
 import { isTrackPlayable } from "../lib/util";
+import { useAppDispatch } from "../store";
+import { setLikedList } from "../store/slice/user.slice";
 
 interface QueryPersonalizedPlaylistResponse {
   code?: number;
@@ -25,15 +27,11 @@ interface QueryPlaylistDetailResponse {
   privileges?: any[];
 }
 interface QueryPlaylistDetailParams {
-  id?: string;
+  id?: string | number;
   limit?: number;
+  refreshTimestamp?: number;
 }
 
-interface QueryLikedListResponse {
-  code?: number;
-  checkPoint?: number;
-  ids?: any[];
-}
 interface BaseQueryParams {
   limit?: number;
   offset?: number;
@@ -72,15 +70,18 @@ export const usePersonalizedPlaylist = (params?: BaseQueryParams) => {
   };
 };
 
-export const useQueryPlaylistDetail = (id?: string) => {
+export const useQueryPlaylistDetail = (params: QueryPlaylistDetailParams) => {
   return useQuery<QueryPlaylistDetailResponse>(
-    [QUERY_PLAYLIST_DETAIL.KEY, { id }],
+    [
+      QUERY_PLAYLIST_DETAIL.KEY,
+      { id: params?.id, refreshTimestamp: params?.refreshTimestamp },
+    ],
     () =>
       request.get(QUERY_PLAYLIST_DETAIL.URL, {
-        params: { id, timestamp: new Date().getTime() },
+        params: { id: params?.id, timestamp: new Date().getTime() },
       }),
     {
-      enabled: Boolean(id),
+      enabled: Boolean(params?.id),
     }
   );
 };
@@ -93,7 +94,7 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
   const [oldLimit, setOldLimit] = useState(0);
   const [songIds, setSongIds] = useState([]);
 
-  const { data, ...queryProps } = useQueryPlaylistDetail(params?.id);
+  const { data, ...queryProps } = useQueryPlaylistDetail(params);
 
   useEffect(() => {
     if (data) {
@@ -137,38 +138,6 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
     setPlaylistSongs,
     isPlaylistSongsLoading,
     errorMsg,
-    data,
-    ...queryProps,
-  };
-};
-
-export const useQueryLikedList = (uid?: string | number) => {
-  return useQuery<QueryLikedListResponse>(
-    [QUERY_LIKED_LIST.KEY, { uid }],
-    () => request.get(QUERY_LIKED_LIST.URL, { params: uid }),
-    {
-      enabled: Boolean(uid),
-    }
-  );
-};
-
-export const useLikedList = (uid?: string | number) => {
-  const [likedList, setLikedList] = useState([]);
-
-  const { data, ...queryProps } = useQueryLikedList(uid);
-
-  useEffect(() => {
-    if (data) {
-      const { code, ids } = data;
-      if (code === 200) {
-        setLikedList(ids);
-      }
-    }
-  }, [data, setLikedList]);
-
-  return {
-    likedList,
-    setLikedList,
     data,
     ...queryProps,
   };

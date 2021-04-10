@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import tw, { styled, css } from "twin.macro";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../store";
@@ -21,7 +21,8 @@ import { isTrackPlayable } from "../../lib/util";
 import { Modal } from "../../components/controls";
 import { MoreActionMenu, ContextMenuPosition } from "../../components/menus";
 import { InfoText, MediumText } from "../../styles/typography";
-import { selectLikedList } from "../../store/slice/user.slice";
+import { selectLikedList, setLikedList } from "../../store/slice/user.slice";
+import { useMutateLikeSong } from "./../../hooks/song";
 
 export interface PlaylistIdProps {}
 
@@ -45,6 +46,11 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
   ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
   const [selectedSong, setSelectedSong] = useState(null);
 
+  const { mutateAsync } = useMutateLikeSong({
+    id: selectedSong?.id,
+    like: likedList?.includes(selectedSong?.id),
+  });
+
   const {
     playlistInfo,
     playlistSongs,
@@ -52,6 +58,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
     isPlaylistSongsLoading,
   } = usePlaylistDetail({
     id: query.id as string,
+    refreshTimestamp: 0,
     limit: songLimit,
   });
 
@@ -87,22 +94,39 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
     setMoreActionMenuVisible(true);
   };
 
-  const handleScroll = (e) => {
-    const { scrollHeight, clientHeight, scrollTop } = document.documentElement;
+  const handleLikeSong = (song) => {
+    setSelectedSong(song);
+    const like = !likedList?.includes(song.id);
+    mutateAsync({
+      id: song.id,
+      like,
+    });
+  };
 
-    if (scrollHeight - clientHeight > scrollTop + 28) {
-    } else {
-      setSongLimit((value) => value + 30);
-    }
+  const handleScroll = () => {
+    const { scrollHeight, clientHeight, scrollTop } = document.documentElement;
+    let timer = null;
+
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (scrollHeight - clientHeight > scrollTop + 56) {
+        } else {
+          if (playlistInfo?.trackCount - songLimit > 0) {
+            setSongLimit((value) => value + 30);
+          }
+        }
+      }, 1500);
+    };
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll());
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll());
     };
-  }, []);
+  }, [playlistInfo]);
 
   useEffect(() => {
     dispatch(setSonglist(playlistSongs));
@@ -155,6 +179,7 @@ const PlaylistId: React.FC<PlaylistIdProps> = () => {
               albumId={song.al.id}
               duration={song.dt}
               isLike={likedList?.includes(song.id)}
+              onLikeClick={() => handleLikeSong(song)}
               onDblClick={() => handleOnDblClick(song)}
               onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />

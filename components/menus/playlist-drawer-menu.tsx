@@ -13,6 +13,7 @@ import { setCurrent, setCurrentSong } from "../../store/slice/song.slice";
 export interface PlaylistDrawerMenuProps extends IDrawerProps {
   activeSong?: any;
   playlistSongs?: any[];
+  likedList?: any[];
   isPlaylistSongsLoading?: boolean;
   onLoadMore?: () => void;
 }
@@ -20,6 +21,7 @@ export interface PlaylistDrawerMenuProps extends IDrawerProps {
 const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
   activeSong,
   playlistSongs,
+  likedList,
   isPlaylistSongsLoading,
   open,
   onClose,
@@ -62,15 +64,21 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
     const drawerContent = document.querySelector(
       ".playlist-drawer .drawer-content"
     );
+    let timer = null;
 
-    if (drawerContent) {
-      const { scrollHeight, clientHeight, scrollTop } = drawerContent;
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (drawerContent) {
+          const { scrollHeight, clientHeight, scrollTop } = drawerContent;
 
-      if (scrollHeight - clientHeight > scrollTop + 28) {
-      } else {
-        onLoadMore && onLoadMore();
-      }
-    }
+          if (scrollHeight - clientHeight > scrollTop + 56) {
+          } else {
+            onLoadMore && onLoadMore();
+          }
+        }
+      }, 1600);
+    };
   }, []);
 
   useEffect(() => {
@@ -123,7 +131,7 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
               album={song?.song?.album?.name || song?.al?.name}
               albumId={song?.song?.album?.id || song?.al?.id}
               duration={song?.song?.duration || song?.dt}
-              isLike={false}
+              isLike={likedList?.includes(song.id)}
               onDblClick={() => handleOnDblClick(song)}
               onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />

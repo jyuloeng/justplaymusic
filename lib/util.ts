@@ -55,3 +55,65 @@ export const isTrackPlayable = (track) => {
 
   return result;
 };
+
+// copy from https://github.com/sl1673495/vue-netease-music/blob/master/src/utils/lrcparse.js
+
+export const lyricParser = (data) => {
+  return {
+    lyric: parseLyric(data?.lrc?.lyric || ""),
+    tlyric: parseLyric(data?.tlyric?.lyric || ""),
+  };
+};
+
+export const parseLyric = (lrc) => {
+  const lyrics = lrc.split("\n");
+  const lrcObj = [];
+  for (let i = 0; i < lyrics.length; i++) {
+    const lyric = decodeURIComponent(lyrics[i]);
+    const timeReg = /\[\d*:\d*((\.|:)\d*)*\]/g;
+    const timeRegExpArr = lyric.match(timeReg);
+    if (!timeRegExpArr) continue;
+    const content = lyric.replace(timeReg, "");
+    for (let k = 0, h = timeRegExpArr.length; k < h; k++) {
+      const t = timeRegExpArr[k];
+      const min = Number(String(t.match(/\[\d*/i)).slice(1));
+      const sec = Number(String(t.match(/:\d*/i)).slice(1));
+      const ms = Number(t.match(/\d*\]/i)[0].slice(0, 2)) / 100;
+      const time = min * 60 + sec + ms;
+      if (content !== "") {
+        lrcObj.push({ time: time, rawTime: timeRegExpArr[0], content });
+      }
+    }
+  }
+  return lrcObj;
+};
+
+export const lyricWithTranslation = ({ lyric, tlyric }) => {
+  let ret = [];
+  // 空内容的去除
+  const lyricFiltered = lyric.filter(({ content }) => Boolean(content));
+  // content统一转换数组形式
+  if (lyricFiltered.length) {
+    lyricFiltered.forEach((l) => {
+      const { rawTime, time, content } = l;
+      const lyricItem = { time, content, contents: [content] };
+      const sameTimeTLyric = tlyric.find(
+        ({ rawTime: tLyricRawTime }) => tLyricRawTime === rawTime
+      );
+      if (sameTimeTLyric) {
+        const { content: tLyricContent } = sameTimeTLyric;
+        if (content) {
+          lyricItem.contents.push(tLyricContent);
+        }
+      }
+      ret.push(lyricItem);
+    });
+  } else {
+    ret = lyricFiltered.map(({ time, content }) => ({
+      time,
+      content,
+      contents: [content],
+    }));
+  }
+  return ret;
+};

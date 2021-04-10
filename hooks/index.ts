@@ -31,8 +31,6 @@ export {
   usePersonalizedPlaylist,
   useQueryPlaylistDetail,
   usePlaylistDetail,
-  useQueryLikedList,
-  useLikedList,
 } from "./playlist";
 
 export { useQueryToplist, useToplist } from "./ranking";
@@ -56,8 +54,9 @@ export {
   useRecommendSong,
   useQuerySongDetail,
   useSongDetail,
-  useQueryLikeSong,
-  useLikeSong,
+  useMutateLikeSong,
+  useQueryLyric,
+  useLyric,
 } from "./song";
 
 export { useQueryPersonalizedMV, usePersonalizedMV } from "./mv";

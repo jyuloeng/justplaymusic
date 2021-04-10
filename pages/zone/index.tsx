@@ -16,7 +16,7 @@ import { CaptionText, H3, IntroText, SmallText } from "../../styles/typography";
 import { DarkModeTextColor } from "../../styles/colors";
 import { IconHeart, IconPlay } from "../../styles/icons";
 import { getSpecifiedArrayElements } from "../../lib/array";
-import { isLogin } from "../../lib/auth";
+import { getAuthCookie, isLogin } from "../../lib/auth";
 import {
   useUserPlaylist,
   useUserProfile,
@@ -24,8 +24,14 @@ import {
   usePlaylistDetail,
 } from "../../hooks";
 import { toast } from "./../../lib/toast";
-import { useAppSelector } from "./../../store";
-import { selectUser } from "../../store/slice/user.slice";
+import { useAppDispatch, useAppSelector } from "./../../store";
+import { selectUser, selectLikedList } from "../../store/slice/user.slice";
+import {
+  selectCurrentSong,
+  selectSonglist,
+  setCurrent,
+  setCurrentSong,
+} from "../../store/slice/song.slice";
 import {
   ArtistsLoadingContainer,
   BaseSkeletonStyles,
@@ -33,6 +39,8 @@ import {
   PlaylistItemsLoadingContainer,
   PlaylistsLoadingContainer,
 } from "../../components/containers";
+import { ContextMenuPosition, MoreActionMenu } from "../../components/menus";
+import { setAutoCacheSong } from "../../store/slice/settings.slice";
 
 export interface ZoneProps {}
 type commonLikedRes = {
@@ -43,12 +51,15 @@ type commonLikedRes = {
   paidCount?: number;
 };
 
-const cookie = `MUSIC_U%3Dac2ca8ce9ac4408d61fd56742d80bf7d560b058dc10be820f632b99b1162dfc933a649814e309366%3B`;
-
 const Zone: React.FC<ZoneProps> = () => {
   const { t } = useTranslation("zone");
   const router = useRouter();
+
+  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const likedList = useAppSelector(selectLikedList);
+  const songlist = useAppSelector(selectSonglist);
+  const currentSong = useAppSelector(selectCurrentSong);
 
   // if (!isLogin()) {
   //   toast("请先登录");
@@ -77,8 +88,15 @@ const Zone: React.FC<ZoneProps> = () => {
 
   const [activeTabKey, setActiveTabKey] = useState(tabsMenu[0].key);
 
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [selectedSong, setSelectedSong] = useState(null);
+
   const { userProfile, isLoading: isUserProfileLoading } = useUserProfile(
-    cookie
+    getAuthCookie()
   );
 
   const {
@@ -103,241 +121,279 @@ const Zone: React.FC<ZoneProps> = () => {
     setActiveTabKey(key);
   };
 
+  const handleOnDblClick = (song) => {
+    const current = songlist.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
+  };
+
   return (
-    <Container>
-      {isUserProfileLoading && !userProfile ? (
-        <Info>
-          <AvatarContainer />
-          <LoadingInfoTitle />
-        </Info>
-      ) : (
-        <Info>
-          <AvatarContainer>
-            <Avatar src={userProfile?.avatarUrl + "?param=256y256"} />
-          </AvatarContainer>
-          <InfoText>
-            <H3>{userProfile?.nickname}</H3>
-            <IntroText bold>{t("user-zone")}</IntroText>
-          </InfoText>
-        </Info>
-      )}
-
-      <MobileInfo>
-        <ArtistCard
-          isLoading={isUserProfileLoading && !userProfile}
-          id={userProfile?.id}
-          src={userProfile?.avatarUrl + "?param=256y256"}
-          title={userProfile?.nickname}
-          isShowCollect={false}
-        />
-      </MobileInfo>
-
-      <FavoriteMusicWrapper>
-        {isSongsLoading || !playlistSongs[0] ? (
-          <LoadingCover
-            src={"/images/cover-placeholder.webp"}
-            layout="responsive"
-            width={280}
-            height={210}
-          />
+    <>
+      <Container>
+        {isUserProfileLoading && !userProfile ? (
+          <Info>
+            <AvatarContainer />
+            <LoadingInfoTitle />
+          </Info>
         ) : (
-          playlistSongs[0] && (
-            <FavoriteMusicCoverContainer>
-              <FavoriteMusicCover
-                src={playlistSongs[0].al.picUrl + "?param=560y420"}
-                layout="responsive"
-                width={280}
-                height={210}
-              />
-
-              <GlassButtonContainer>
-                <GlassButton>
-                  <IconPlay fill={DarkModeTextColor} />
-                </GlassButton>
-              </GlassButtonContainer>
-
-              <GlassTitleContainer>
-                <IconHeart fill={DarkModeTextColor} />
-                <CaptionText bold>{t("my-favourite-music")}</CaptionText>
-              </GlassTitleContainer>
-
-              <PlayCountContainer>
-                <PlayCountCard count="860 thousand, 249 songs" />
-              </PlayCountContainer>
-            </FavoriteMusicCoverContainer>
-          )
+          <Info>
+            <AvatarContainer>
+              <Avatar src={userProfile?.avatarUrl + "?param=256y256"} />
+            </AvatarContainer>
+            <InfoText>
+              <H3>{userProfile?.nickname}</H3>
+              <IntroText bold>{t("user-zone")}</IntroText>
+            </InfoText>
+          </Info>
         )}
 
-        <FavoriteMusicContainer>
-          {isSongsLoading || !playlistSongs ? (
-            <PlaylistItemsLoadingContainer />
-          ) : (
-            <FavoriteMusic>
-              {playlistSongs?.map((song, index) => (
-                <PlaylistItemCard
-                  key={song.id}
-                  itemType={
-                    index === 0
-                      ? "active"
-                      : index === 3
-                      ? "disabled"
-                      : "default"
-                  }
-                  coverPath={song.al.picUrl + "?param=100y100"}
-                  index={index + 1}
-                  name={song.name}
-                  artists={song.ar}
-                  album={song.al.name}
-                  albumId={song.al.id}
-                  duration={song.dt}
-                  isLike={false}
-                  onDblClick={(e, id) => console.log(e, id)}
-                />
-              ))}
-            </FavoriteMusic>
-          )}
-        </FavoriteMusicContainer>
-      </FavoriteMusicWrapper>
+        <MobileInfo>
+          <ArtistCard
+            isLoading={isUserProfileLoading && !userProfile}
+            id={userProfile?.id}
+            src={userProfile?.avatarUrl + "?param=256y256"}
+            title={userProfile?.nickname}
+            isShowCollect={false}
+          />
+        </MobileInfo>
 
-      <MobileFavoriteMusicWrapper>
-        {isSongsLoading || !playlistSongs[0] ? (
-          <>
-            <MobileFavoriteMuiscLoadingCover
+        <FavoriteMusicWrapper>
+          {isSongsLoading || !playlistSongs[0] ? (
+            <LoadingCover
               src={"/images/cover-placeholder.webp"}
               layout="responsive"
-              width={60}
-              height={60}
+              width={280}
+              height={210}
             />
-            <MobileFavoriteMuiscLoadingTitleContianer>
-              <MobileFavoriteMuiscLoadingTitle />
-              <MobileFavoriteMuiscLoadingCaption />
-            </MobileFavoriteMuiscLoadingTitleContianer>
-            <MobileFavoriteMuiscLoadingCount />
-          </>
-        ) : (
-          <>
-            <MobileFavoriteMusicCoverContainer>
-              <MobileFavoriteMusicCover
-                src={playlistSongs[0].al.picUrl + "?param=100y100"}
+          ) : (
+            playlistSongs[0] && (
+              <FavoriteMusicCoverContainer>
+                <FavoriteMusicCover
+                  src={playlistSongs[0].al.picUrl + "?param=560y420"}
+                  layout="responsive"
+                  width={280}
+                  height={210}
+                />
+
+                <GlassButtonContainer>
+                  <GlassButton>
+                    <IconPlay fill={DarkModeTextColor} />
+                  </GlassButton>
+                </GlassButtonContainer>
+
+                <GlassTitleContainer>
+                  <IconHeart fill={DarkModeTextColor} />
+                  <CaptionText bold>{t("my-favourite-music")}</CaptionText>
+                </GlassTitleContainer>
+
+                <PlayCountContainer>
+                  <PlayCountCard count="860 thousand, 249 songs" />
+                </PlayCountContainer>
+              </FavoriteMusicCoverContainer>
+            )
+          )}
+
+          <FavoriteMusicContainer>
+            {isSongsLoading || !playlistSongs ? (
+              <PlaylistItemsLoadingContainer />
+            ) : (
+              <FavoriteMusic>
+                {playlistSongs?.map((song, index) => (
+                  <PlaylistItemCard
+                    key={song.id}
+                    title={song.reason}
+                    itemType={
+                      song.playable
+                        ? currentSong?.id === song.id
+                          ? "active"
+                          : "default"
+                        : "disabled"
+                    }
+                    coverPath={song.al.picUrl + "?param=100y100"}
+                    index={index + 1}
+                    name={song.name}
+                    artists={song.ar}
+                    album={song.al.name}
+                    albumId={song.al.id}
+                    duration={song.dt}
+                    isLike={likedList?.includes(song.id)}
+                    onDblClick={() => handleOnDblClick(song)}
+                    onContextMenuClick={(e) =>
+                      handleOnContextMenuClick(e, song)
+                    }
+                  />
+                ))}
+              </FavoriteMusic>
+            )}
+          </FavoriteMusicContainer>
+        </FavoriteMusicWrapper>
+
+        <MobileFavoriteMusicWrapper>
+          {isSongsLoading || !playlistSongs[0] ? (
+            <>
+              <MobileFavoriteMuiscLoadingCover
+                src={"/images/cover-placeholder.webp"}
                 layout="responsive"
                 width={60}
                 height={60}
               />
-
-              <MobileFavoriteMusicIconContainer>
-                <IconHeart fill={DarkModeTextColor} />
-              </MobileFavoriteMusicIconContainer>
-            </MobileFavoriteMusicCoverContainer>
-            <MobileFavoriteMusicInfo>
-              <InfoText>{t("my-favourite-music")}</InfoText>
-              <SmallText>{t("songs-count", { count: 249 })}</SmallText>
-            </MobileFavoriteMusicInfo>
-
-            <MobileFavoriteMusicCount>
-              <PlayCountCard count="860 thousand" cardType="solid" />
-            </MobileFavoriteMusicCount>
-          </>
-        )}
-      </MobileFavoriteMusicWrapper>
-
-      <CaptionBoardContainer>
-        {tabsMenu.map((tab) => (
-          <Button
-            key={tab.key}
-            btnType={activeTabKey === tab.key ? "primary" : "default"}
-            onClick={() => handleTabClick(tab.key)}
-          >
-            <CaptionText bold>{tab.name}</CaptionText>
-          </Button>
-        ))}
-      </CaptionBoardContainer>
-
-      {activeTabKey === "playlist" &&
-        (isPlaylistsLoading ? (
-          <PlaylistsLoadingContainer isOverflow={false} />
-        ) : (
-          <PlaylistContainer>
-            {userPlaylistRes?.playlist?.map((playlist, index) => {
-              return (
-                index !== 0 && (
-                  <MediaCard
-                    key={playlist.id}
-                    href={`/playlist/${playlist.id}`}
-                    cardType="album"
-                    coverPath={playlist.coverImgUrl + "?param=512y512"}
-                    title={playlist.name}
-                    caption={playlist.description}
-                    playCount={playlist.playCount}
-                    isCanCaptionClick={false}
-                  />
-                )
-              );
-            })}
-          </PlaylistContainer>
-        ))}
-
-      {activeTabKey === "album" &&
-        (isLikedChangeLoading ? (
-          <PlaylistsLoadingContainer isOverflow={false} />
-        ) : (
-          <PlaylistContainer>
-            {likedAlbumsRes?.data?.map((album) => {
-              return (
-                <MediaCard
-                  key={album.id}
-                  href={`/album/${album.id}`}
-                  cardType="album"
-                  coverPath={album.picUrl + "?param=512y512"}
-                  title={album.name}
-                  caption={album.artists[0].name}
-                  isCanCaptionClick={false}
-                  isShowPlayCount={false}
+              <MobileFavoriteMuiscLoadingTitleContianer>
+                <MobileFavoriteMuiscLoadingTitle />
+                <MobileFavoriteMuiscLoadingCaption />
+              </MobileFavoriteMuiscLoadingTitleContianer>
+              <MobileFavoriteMuiscLoadingCount />
+            </>
+          ) : (
+            <>
+              <MobileFavoriteMusicCoverContainer>
+                <MobileFavoriteMusicCover
+                  src={playlistSongs[0].al.picUrl + "?param=100y100"}
+                  layout="responsive"
+                  width={60}
+                  height={60}
                 />
-              );
-            })}
-          </PlaylistContainer>
-        ))}
 
-      {activeTabKey === "artist" &&
-        (isLikedChangeLoading ? (
-          <ArtistsLoadingContainer
-            rows={2}
-            isOverflow={false}
-            cols={5}
-            isNeedMarginX
-          />
-        ) : (
-          <ArtistsConntainer>
-            {likedArtistsRes?.data?.map((artist) => (
-              <AvatarCard
-                key={artist.id}
-                id={artist.id}
-                src={artist.picUrl + "?param=512y512"}
-                caption={artist.name}
-              />
-            ))}
-          </ArtistsConntainer>
-        ))}
+                <MobileFavoriteMusicIconContainer>
+                  <IconHeart fill={DarkModeTextColor} />
+                </MobileFavoriteMusicIconContainer>
+              </MobileFavoriteMusicCoverContainer>
+              <MobileFavoriteMusicInfo>
+                <InfoText>{t("my-favourite-music")}</InfoText>
+                <SmallText>{t("songs-count", { count: 249 })}</SmallText>
+              </MobileFavoriteMusicInfo>
 
-      {activeTabKey === "mv" &&
-        (isLikedChangeLoading ? (
-          <MVsLoadingContainer isOverflow={false} cols={2} mdCols={4} />
-        ) : (
-          <MvsContainer>
-            {likedMvsRes?.data?.map((mv) => (
-              <MediaCard
-                key={mv.id}
-                href={`/mv/${mv.id}`}
-                cardType="mv"
-                coverPath={mv.coverUrl + "?param=464y260"}
-                title={mv.title}
-                caption={mv.type === 0 ? mv.creator[0].userName : ""}
-                playCount={mv.playTime}
-              />
-            ))}
-          </MvsContainer>
-        ))}
-    </Container>
+              <MobileFavoriteMusicCount>
+                <PlayCountCard count="860 thousand" cardType="solid" />
+              </MobileFavoriteMusicCount>
+            </>
+          )}
+        </MobileFavoriteMusicWrapper>
+
+        <CaptionBoardContainer>
+          {tabsMenu.map((tab) => (
+            <Button
+              key={tab.key}
+              btnType={activeTabKey === tab.key ? "primary" : "default"}
+              onClick={() => handleTabClick(tab.key)}
+            >
+              <CaptionText bold>{tab.name}</CaptionText>
+            </Button>
+          ))}
+        </CaptionBoardContainer>
+
+        {activeTabKey === "playlist" &&
+          (isPlaylistsLoading ? (
+            <PlaylistsLoadingContainer isOverflow={false} />
+          ) : (
+            <PlaylistContainer>
+              {userPlaylistRes?.playlist?.map((playlist, index) => {
+                return (
+                  index !== 0 && (
+                    <MediaCard
+                      key={playlist.id}
+                      href={`/playlist/${playlist.id}`}
+                      cardType="album"
+                      coverPath={playlist.coverImgUrl + "?param=512y512"}
+                      title={playlist.name}
+                      caption={playlist.description}
+                      playCount={playlist.playCount}
+                      isCanCaptionClick={false}
+                    />
+                  )
+                );
+              })}
+            </PlaylistContainer>
+          ))}
+
+        {activeTabKey === "album" &&
+          (isLikedChangeLoading ? (
+            <PlaylistsLoadingContainer isOverflow={false} />
+          ) : (
+            <PlaylistContainer>
+              {likedAlbumsRes?.data?.map((album) => {
+                return (
+                  <MediaCard
+                    key={album.id}
+                    href={`/album/${album.id}`}
+                    cardType="album"
+                    coverPath={album.picUrl + "?param=512y512"}
+                    title={album.name}
+                    caption={album.artists[0].name}
+                    isCanCaptionClick={false}
+                    isShowPlayCount={false}
+                  />
+                );
+              })}
+            </PlaylistContainer>
+          ))}
+
+        {activeTabKey === "artist" &&
+          (isLikedChangeLoading ? (
+            <ArtistsLoadingContainer
+              rows={2}
+              isOverflow={false}
+              cols={5}
+              isNeedMarginX
+            />
+          ) : (
+            <ArtistsConntainer>
+              {likedArtistsRes?.data?.map((artist) => (
+                <AvatarCard
+                  key={artist.id}
+                  id={artist.id}
+                  src={artist.picUrl + "?param=512y512"}
+                  caption={artist.name}
+                />
+              ))}
+            </ArtistsConntainer>
+          ))}
+
+        {activeTabKey === "mv" &&
+          (isLikedChangeLoading ? (
+            <MVsLoadingContainer isOverflow={false} cols={2} mdCols={4} />
+          ) : (
+            <MvsContainer>
+              {likedMvsRes?.data?.map((mv) => (
+                <MediaCard
+                  key={mv.id}
+                  href={`/mv/${mv.id}`}
+                  cardType="mv"
+                  coverPath={mv.coverUrl + "?param=464y260"}
+                  title={mv.title}
+                  caption={mv.type === 0 ? mv.creator[0].userName : ""}
+                  playCount={mv.playTime}
+                />
+              ))}
+            </MvsContainer>
+          ))}
+      </Container>
+
+      {selectedSong?.id && (
+        <MoreActionMenu
+          visible={moreActionMenuVisible}
+          onClose={() => setMoreActionMenuVisible(false)}
+          song={selectedSong}
+          position={moreActionMenuPosition}
+        />
+      )}
+    </>
   );
 };
 

@@ -209,6 +209,30 @@
   /* margin-bottom: 68px; */
 }
 
+.lyric-drawer {
+  transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+.lyric-drawer.drawer-open {
+  margin-bottom: 132px;
+}
+
+@media (min-width: 768px) {
+  .lyric-drawer.drawer-open {
+    margin-bottom: 80px;
+  }
+}
+
+.lyric-drawer .drawer-content-wrapper {
+  height: calc(100% - 132px);
+}
+
+@media (min-width: 768px) {
+  .lyric-drawer .drawer-content-wrapper {
+    height: calc(100% - 80px);
+  }
+}
+
 .slide-menu {
   margin-top: 64px;
 }

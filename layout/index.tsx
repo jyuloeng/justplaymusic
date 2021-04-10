@@ -11,9 +11,9 @@ import {
   setLoginMode,
   setLikedList,
   selectUser,
+  selectRefreshTimestamp,
 } from "../store/slice/user.slice";
-import { useUserProfile } from "../hooks/user";
-import { useLikedList } from "../hooks";
+import { usePlaylistDetail, useUserPlaylist, useUserProfile } from "../hooks";
 
 export interface LayoutProps {
   children?: ReactNode;
@@ -24,15 +24,22 @@ const Layout: React.FC<LayoutProps> = ({
   children,
   title = "JustPlayMusic",
 }) => {
-  // useAppSelector()
-
   const dispatch = useAppDispatch();
 
   const user = useAppSelector(selectUser);
+  const refreshTimestamp = useAppSelector(selectRefreshTimestamp);
 
   const { userProfile } = useUserProfile(getAuthCookie());
 
-  const { likedList } = useLikedList(user?.userId);
+  const { userPlaylistRes } = useUserPlaylist({
+    uid: user?.userId,
+  });
+
+  const { playlistInfo } = usePlaylistDetail({
+    id: userPlaylistRes?.playlist[0]?.id,
+    limit: 16,
+    refreshTimestamp,
+  });
 
   useEffect(() => {
     const localUser = getLocalUser();
@@ -65,11 +72,10 @@ const Layout: React.FC<LayoutProps> = ({
   ]);
 
   useEffect(() => {
-    console.log(likedList);
-    if (likedList?.length > 0) {
-      dispatch(setLikedList(likedList));
+    if (playlistInfo?.trackIds?.length > 0) {
+      dispatch(setLikedList(playlistInfo?.trackIds?.map((item) => item.id)));
     }
-  }, [likedList]);
+  }, [playlistInfo]);
 
   return (
     <Wrapper>

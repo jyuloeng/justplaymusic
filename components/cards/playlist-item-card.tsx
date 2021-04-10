@@ -172,7 +172,7 @@ const Duration = styled.div(({ itemType }: { itemType: PlaylistItemType }) => [
 
 const More = styled.div(() => [
   baseControlsIconStyles,
-  tw`md:mr-3 md:invisible`,
+  tw`block md:hidden md:mr-3 md:invisible`,
 ]);
 
 const Like = styled.div(() => [

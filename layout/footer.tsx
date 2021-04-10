@@ -18,6 +18,6 @@ const Container = styled.footer(() => [
   tw`fixed bottom-0 w-full
   bg-neutral-light dark:bg-neutral-dark`,
   css`
-    z-index: 999;
+    z-index: 10000;
   `,
 ]);

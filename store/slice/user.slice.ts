@@ -16,6 +16,7 @@ type LoginModeType = typeof LoginModeTypes[number];
 interface UserState {
   user?: User | null;
   likedList?: any[];
+  refreshTimestamp?: number;
   token?: string;
   cookie?: string;
   loginMode?: LoginModeType;
@@ -24,6 +25,7 @@ interface UserState {
 const initialState: UserState = {
   user: null,
   likedList: [],
+  refreshTimestamp: new Date().getTime(),
   token: "",
   cookie: "",
   loginMode: "",
@@ -43,6 +45,12 @@ export const userSlice = createSlice({
       return {
         ...state,
         likedList: action.payload,
+      };
+    },
+    setRefreshTimestamp: (state) => {
+      return {
+        ...state,
+        refreshTimestamp: new Date().getTime(),
       };
     },
     setToken: (state, action: PayloadAction<string>) => {
@@ -69,6 +77,7 @@ export const userSlice = createSlice({
 export const {
   setUser,
   setLikedList,
+  setRefreshTimestamp,
   setToken,
   setCookie,
   setLoginMode,
@@ -77,6 +86,8 @@ export const {
 export const selectUser = (state: RootState) => state.userReducer.user;
 export const selectLikedList = (state: RootState) =>
   state.userReducer.likedList;
+export const selectRefreshTimestamp = (state: RootState) =>
+  state.userReducer.refreshTimestamp;
 export const selectToken = (state: RootState) => state.userReducer.token;
 export const selectCookie = (state: RootState) => state.userReducer.cookie;
 export const selectLoginMode = (state: RootState) =>

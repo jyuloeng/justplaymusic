@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import Link from "next/link";
 import Image from "next/image";
-import { Slider, VolumeControl, VolumeIcon } from ".";
+import { Slider, VolumeControl, VolumeIcon, Lyric } from "./";
 import { Button } from "../buttons";
 import { PlaylistDrawerMenu } from "../menus";
 import { useAppDispatch, useAppSelector } from "../../store";
@@ -27,9 +27,16 @@ import {
   selectSonglistInfo,
   setSonglist,
 } from "../../store/slice/song.slice";
-import { useSongDetail, usePlaylistDetail } from "../../hooks";
+import { selectLikedList } from "../../store/slice/user.slice";
+import {
+  useSongDetail,
+  usePlaylistDetail,
+  useMutateLikeSong,
+  useLyric,
+} from "../../hooks";
 import { formatDuration, formatAudioCurrentTime } from "../../lib/format";
 import { tuple } from "../../lib/type";
+import { toast } from "../../lib/toast";
 import {
   IconHeartThread,
   IconShuffle,
@@ -40,9 +47,10 @@ import {
   IconPlay,
   IconPause,
   IconMusicList,
+  IconHeart,
 } from "../../styles/icons";
 import { CaptionText, SmallText } from "../../styles/typography";
-import { toast } from "../../lib/toast";
+import { PrimaryColor } from "../../styles/colors";
 
 const PlayStatusTypes = tuple("play", "pause");
 type PlayStatusType = typeof PlayStatusTypes[number];
@@ -69,6 +77,7 @@ const Player: React.FC<PlayerProps> = ({}) => {
   const volume = useAppSelector(selectVolume);
   const volumeBeforeMute = useAppSelector(selectVolumeBeforeMute);
   const mute = useAppSelector(selectMute);
+  const likedList = useAppSelector(selectLikedList);
 
   const [songLimit, setSongLimit] = useState(30);
   const [canPlay, setCanPlay] = useState(false);
@@ -76,6 +85,7 @@ const Player: React.FC<PlayerProps> = ({}) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [volumeControlVisible, setVolumeControlVisible] = useState(false);
   const [playlistDrawerMenuOpen, setPlaylistDrawerMenuOpen] = useState(false);
+  const [lyricOpen, setLyricOpen] = useState(false);
 
   const { playlistSongs, isPlaylistSongsLoading } = usePlaylistDetail({
     id: songlistInfo.id as string,
@@ -83,6 +93,12 @@ const Player: React.FC<PlayerProps> = ({}) => {
   });
 
   useSongDetail(currentSong);
+  const { lyricWithTrans } = useLyric(currentSong?.id);
+
+  const { mutateAsync } = useMutateLikeSong({
+    id: currentSong?.id,
+    like: likedList?.includes(currentSong?.id),
+  });
 
   const handleSetCurrentSong = (index?: number) => {
     setCanPlay(false);
@@ -188,7 +204,13 @@ const Player: React.FC<PlayerProps> = ({}) => {
     handleSetCurrentSong(nextIndex);
   };
 
-  const handleLyric = () => {};
+  const handleLikeSong = () => {
+    const like = !likedList?.includes(currentSong?.id);
+    mutateAsync({
+      id: currentSong?.id,
+      like,
+    });
+  };
 
   const handleShowVolumeControl = () => {
     setVolumeControlVisible((value) => !value);
@@ -223,6 +245,16 @@ const Player: React.FC<PlayerProps> = ({}) => {
     setCurrentTime(audioRef.current.currentTime);
   };
 
+  const handleLoadMore = () => {
+    if (songlistInfo?.trackCount - songLimit > 0) {
+      setSongLimit((value) => value + 30);
+    }
+  };
+
+  const handleLyric = () => {
+    setLyricOpen((value) => !value);
+  };
+
   useEffect(() => {
     audioRef.current.volume = volume;
   }, []);
@@ -243,8 +275,16 @@ const Player: React.FC<PlayerProps> = ({}) => {
   }, [currentTime, currentSong]);
 
   useEffect(() => {
-    dispatch(setSonglist(playlistSongs));
+    if (playlistSongs.length > 0) {
+      dispatch(setSonglist(playlistSongs));
+    }
   }, [playlistSongs.length]);
+
+  useEffect(() => {
+    if (songlistInfo) {
+      setSongLimit(0);
+    }
+  }, [songlistInfo]);
 
   return (
     <>
@@ -332,7 +372,17 @@ const Player: React.FC<PlayerProps> = ({}) => {
                 ))}
               </Artists>
             </Info>
-            <Button icon={<IconHeartThread {...baseIconSize} />} />
+
+            <Button
+              icon={
+                likedList?.includes(currentSong?.id) ? (
+                  <IconHeart {...baseIconSize} fill={PrimaryColor} />
+                ) : (
+                  <IconHeartThread {...baseIconSize} />
+                )
+              }
+              onClick={handleLikeSong}
+            />
           </InfoContainer>
 
           <Control>
@@ -407,7 +457,10 @@ const Player: React.FC<PlayerProps> = ({}) => {
                 {formatDuration(currentSong.dt)}
               </CaptionText>
             </Duration>
-            <Button icon={<IconLyric {...baseIconSize} />} />
+            <Button
+              icon={<IconLyric {...baseIconSize} />}
+              onClick={handleLyric}
+            />
             <Button
               icon={<IconMusicList {...baseIconSize} />}
               marginX={2}
@@ -425,7 +478,17 @@ const Player: React.FC<PlayerProps> = ({}) => {
         activeSong={currentSong}
         isPlaylistSongsLoading={isPlaylistSongsLoading}
         playlistSongs={songlist}
-        onLoadMore={() => setSongLimit((value) => value + 30)}
+        likedList={likedList}
+        onLoadMore={() => handleLoadMore()}
+      />
+
+      <Lyric
+        open={lyricOpen}
+        currentSong={currentSong}
+        currentTime={currentTime}
+        lyricWithTranslation={lyricWithTrans}
+        onClose={() => setLyricOpen(false)}
+        onLyricClick={handleOnTimeUpdate}
       />
     </>
   );

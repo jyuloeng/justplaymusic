@@ -118,12 +118,12 @@ export const QUERY_SONG_DETAIL = {
   URL: "/song/url",
 };
 
-export const QUERY_LIKE_SONG = {
-  KEY: "QUERY_LIKE_SONG",
+export const MUTATE_LIKED_LIST = {
+  KEY: "MUTATE_LIKED_LIST",
   URL: "/like",
 };
 
-export const QUERY_LIKED_LIST = {
-  KEY: "QUERY_LIKED_LIST",
-  URL: "/likelist",
+export const QUERY_LYRIC = {
+  KEY: "QUERY_LYRIC",
+  URL: "/lyric",
 };

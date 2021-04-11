@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/css/rc-drawer.css";
 import "rc-dialog/assets/index.css";
+import 'plyr/dist/plyr.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {

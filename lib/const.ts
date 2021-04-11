@@ -127,3 +127,23 @@ export const QUERY_LYRIC = {
   KEY: "QUERY_LYRIC",
   URL: "/lyric",
 };
+
+export const QUERY_MV_DETAIL = {
+  KEY: "QUERY_MV_DETAIL",
+  URL: "/mv/detail",
+};
+
+export const QUERY_MV_URL = {
+  KEY: "QUERY_MV_URL",
+  URL: "/mv/url",
+};
+
+export const QUERY_VIDEO_DETAIL = {
+  KEY: "QUERY_VIDEO_DETAIL",
+  URL: "/video/detail",
+};
+
+export const QUERY_VIDEO_URL = {
+  KEY: "QUERY_VIDEO_URL",
+  URL: "/video/url",
+};

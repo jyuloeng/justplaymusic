@@ -8,13 +8,13 @@ export type LanguageType = typeof LanguageTypes[number];
 const StyleTypes = tuple("auto", "light", "dark");
 export type StyleType = typeof StyleTypes[number];
 
-const QualityTypes = tuple("128", "192", "320", "flac");
+const QualityTypes = tupleNum(128000, 192000, 320000, 999000);
 export type QualityType = typeof QualityTypes[number];
 
 const LyricsBackgroundTypes = tuple("auto", "blur");
 export type LyricsBackgroundType = typeof LyricsBackgroundTypes[number];
 
-const LyricsSizeTypes = tupleNum(17, 20, 24, 30);
+const LyricsSizeTypes = tupleNum(13, 17, 20, 24);
 export type LyricsSizeType = typeof LyricsSizeTypes[number];
 
 interface SettingsState {
@@ -30,10 +30,10 @@ interface SettingsState {
 const initialState: SettingsState = {
   language: "zh",
   style: "auto",
-  quality: "192",
+  quality: 192000,
   lyricsTranslation: false,
   lyricsBackground: "auto",
-  lyricsSize: 20,
+  lyricsSize: 17,
   autoCacheSong: false,
 };
 

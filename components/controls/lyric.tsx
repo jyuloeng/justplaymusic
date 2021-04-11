@@ -1,4 +1,4 @@
-import {} from "react";
+import { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +8,13 @@ import { Button } from "../buttons";
 import { IconBottomArrow } from "../../styles/icons";
 import { IntroText, InfoText } from "./../../styles/typography/index";
 import { useAppSelector } from "./../../store/index";
-import { selectLyricsTranslation } from "./../../store/slice/settings.slice";
+import {
+  LyricsBackgroundType,
+  LyricsSizeType,
+  selectLyricsBackground,
+  selectLyricsSize,
+  selectLyricsTranslation,
+} from "./../../store/slice/settings.slice";
 import { scrollbarHiddenStyles } from "../../pages";
 
 export interface LyricProps extends IDrawerProps {
@@ -26,11 +32,36 @@ const Lyric: React.FC<LyricProps> = ({
   lyricWithTranslation,
   onLyricClick,
 }) => {
+  const lyricsBackground = useAppSelector(selectLyricsBackground);
   const lyricsTranslation = useAppSelector(selectLyricsTranslation);
+  const LyricsSize = useAppSelector(selectLyricsSize);
+
+  const [activeLine, setActiveLine] = useState(0);
 
   const handleLyricClick = (line) => {
     onLyricClick && onLyricClick(line?.time);
   };
+
+  useEffect(() => {
+    if (currentTime < 1) return setActiveLine(0);
+    for (let i = 0, len = lyricWithTranslation.length; i < len; i++) {
+      const line = lyricWithTranslation[i];
+      const time = Math.floor(line.time);
+      if (time === Math.floor(currentTime)) {
+        setActiveLine(i);
+      }
+    }
+  }, [lyricWithTranslation, currentTime, setActiveLine]);
+
+  useEffect(() => {
+    // console.log(activeLine);
+    const el = document.getElementById(`line-${activeLine}`);
+    if (el)
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+  }, [activeLine]);
 
   return (
     <RcDrawer
@@ -41,7 +72,7 @@ const Lyric: React.FC<LyricProps> = ({
       placement="bottom"
       className="lyric-drawer"
     >
-      <Container>
+      <Container backgroundType={lyricsBackground}>
         <Control>
           <Button icon={<IconBottomArrow />} onClick={onClose} />
         </Control>
@@ -93,8 +124,11 @@ const Lyric: React.FC<LyricProps> = ({
             <LyricInfo>
               {lyricWithTranslation?.map((line, index) => (
                 <LyricContent
+                  id={`line-${index}`}
                   key={index}
                   onClick={() => handleLyricClick(line)}
+                  isActive={activeLine === index}
+                  fontSize={LyricsSize}
                 >
                   <LyricText>{line.contents[0]}</LyricText>
                   {lyricsTranslation && line?.contents[1] && (
@@ -105,6 +139,11 @@ const Lyric: React.FC<LyricProps> = ({
             </LyricInfo>
           </LyricContainer>
         </LyricWrapper>
+
+        <Background
+          backgroundType={lyricsBackground}
+          backgroundImage={currentSong?.al?.picUrl}
+        />
       </Container>
     </RcDrawer>
   );
@@ -116,9 +155,17 @@ const LyricTranslation = styled.div(() => [tw`text-center`]);
 
 const LyricText = styled.div(() => [tw`text-center`]);
 
-const LyricContent = styled.div(() => [
-  tw`p-2 mb-2 rounded-lg hover:bg-background cursor-pointer`,
-]);
+const LyricContent = styled.div(
+  ({ isActive, fontSize }: { isActive: boolean; fontSize: LyricsSizeType }) => [
+    tw`p-2 mb-2 rounded-lg cursor-pointer`,
+    css`
+      font-size: ${fontSize}px;
+    `,
+    isActive
+      ? tw`text-primary2 hover:bg-primary-background`
+      : tw`text-light-mode-text hover:bg-background`,
+  ]
+);
 
 const LyricInfo = styled.div(() => [
   scrollbarHiddenStyles,
@@ -138,18 +185,13 @@ const Artist = styled.a(() => [
 
 const Album = styled(Artist)(() => [tw``]);
 
-const ArtistContainer = styled.span(() => []);
+const ArtistContainer = styled.span(() => [tw`flex`]);
 
 const Artists = styled.div(() => [
   css`
     height: 22px;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
   `,
-  tw`text-light-mode-text`,
+  tw`flex text-light-mode-text`,
 ]);
 
 const InfoItem = styled.div(() => [
@@ -169,19 +211,50 @@ const CoverContainer = styled.div(() => [
 ]);
 
 const LyricWrapper = styled.div(() => [
-  tw`grid items-center`,
+  tw`grid items-center z-10`,
   css`
     @media (min-width: 768px) {
       grid-template-columns: 44% 56%;
     }
+
+    @media (min-width: 1280px) {
+      grid-template-columns: 40% 60%;
+    }
   `,
 ]);
 
-const Control = styled.div(() => [tw``]);
+const Control = styled.div(() => [tw`z-10`]);
 
-const Container = styled.div(() => [
-  tw`h-full grid px-3 py-3 lg:px-8 lg:py-8`,
-  css`
-    grid-template-rows: max-content;
-  `,
-]);
+const Background = styled.div(
+  ({
+    backgroundType,
+    backgroundImage,
+  }: {
+    backgroundType?: LyricsBackgroundType;
+    backgroundImage?: string;
+  }) => [
+    tw`absolute top-0 left-0 right-0 bottom-0 bg-contain md:bg-cover bg-no-repeat z-0`,
+    backgroundType === "auto"
+      ? tw``
+      : css`
+          filter: blur(36px) opacity(0.6) contrast(75%) brightness(150%);
+        `,
+    backgroundType === "blur" &&
+      backgroundImage &&
+      css`
+        background-image: url(${backgroundImage});
+      `,
+  ]
+);
+
+const Container = styled.div(
+  ({ backgroundType }: { backgroundType: LyricsBackgroundType }) => [
+    tw`relative h-full grid px-3 py-3 lg:px-8 lg:py-8`,
+    backgroundType === "auto"
+      ? tw`text-light-mode-text`
+      : tw`text-light-mode-text`,
+    css`
+      grid-template-rows: max-content;
+    `,
+  ]
+);

@@ -16,6 +16,7 @@ export interface PlaylistDrawerMenuProps extends IDrawerProps {
   likedList?: any[];
   isPlaylistSongsLoading?: boolean;
   onLoadMore?: () => void;
+  onLikeClick?: (id?: number | string) => void;
 }
 
 const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
@@ -26,6 +27,7 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
   open,
   onClose,
   onLoadMore,
+  onLikeClick,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -131,7 +133,8 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
               album={song?.song?.album?.name || song?.al?.name}
               albumId={song?.song?.album?.id || song?.al?.id}
               duration={song?.song?.duration || song?.dt}
-              isLike={likedList?.includes(song.id)}
+              isLike={likedList?.includes(song?.id)}
+              onLikeClick={() => onLikeClick(song?.id)}
               onDblClick={() => handleOnDblClick(song)}
               onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />
@@ -164,5 +167,5 @@ const CaptionBoardContainer = styled.div(() => [
 ]);
 
 const Container = styled.div(() => [
-  tw`relative container mx-auto py-1 md:pb-6`,
+  tw`relative container mx-auto py-1 pb-36 md:pb-24`,
 ]);

@@ -82,19 +82,19 @@ const Settings: React.FC<SettingsProps> = () => {
     title: string;
   }> = [
     {
-      value: "128",
+      value: 128000,
       title: t("quality-option-128"),
     },
     {
-      value: "192",
+      value: 192000,
       title: t("quality-option-192"),
     },
     {
-      value: "320",
+      value: 320000,
       title: t("quality-option-320"),
     },
     {
-      value: "flac",
+      value: 999000,
       title: t("quality-option-flac"),
     },
   ];
@@ -118,19 +118,19 @@ const Settings: React.FC<SettingsProps> = () => {
     title: string;
   }> = [
     {
-      value: 17,
+      value: 13,
       title: t("lyrics-size-option-small"),
     },
     {
-      value: 20,
+      value: 17,
       title: t("lyrics-size-option-medium"),
     },
     {
-      value: 24,
+      value: 20,
       title: t("lyrics-size-option-large"),
     },
     {
-      value: 30,
+      value: 24,
       title: t("lyrics-size-option-oversize"),
     },
   ];

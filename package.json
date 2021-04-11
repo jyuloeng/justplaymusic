@@ -24,6 +24,7 @@
     "next": "10.0.7",
     "next-translate": "^1.0.4",
     "nprogress": "^0.2.0",
+    "plyr": "^3.6.4",
     "qs": "^6.9.6",
     "rc-dialog": "^8.5.2",
     "rc-drawer": "^4.3.1",

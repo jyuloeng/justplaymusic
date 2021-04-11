@@ -17,6 +17,7 @@ import { setCurrentSong } from "../store/slice/song.slice";
 import { setLikedList, setRefreshTimestamp } from "../store/slice/user.slice";
 import { selectLikedList } from "./../store/slice/user.slice";
 import { lyricParser, lyricWithTranslation } from "./../lib/util";
+import { QualityType, selectQuality } from "../store/slice/settings.slice";
 
 interface QuerySongResponse {
   code?: number;
@@ -37,6 +38,11 @@ interface QueryRecommendSongResponse {
     orderSongs?: any[];
     recommendReasons?: any[];
   };
+}
+
+interface QuerySongDetailParams {
+  id?: string | number;
+  br?: QualityType;
 }
 
 interface QuerySongDetailResponse {
@@ -185,23 +191,27 @@ export const useRecommendSong = () => {
   };
 };
 
-export const useQuerySongDetail = (id?: number | string) => {
+export const useQuerySongDetail = (params: QuerySongDetailParams) => {
   return useQuery<QuerySongDetailResponse>(
-    [QUERY_SONG_DETAIL.KEY, { id }],
-    () => request.get(QUERY_SONG_DETAIL.URL, { params: { id } }),
-    { enabled: Boolean(id) }
+    [QUERY_SONG_DETAIL.KEY, { params }],
+    () => request.get(QUERY_SONG_DETAIL.URL, { params }),
+    { enabled: Boolean(params?.id) }
   );
 };
 
 export const useSongDetail = (song?: any) => {
   const dispatch = useAppDispatch();
+  const br = useAppSelector(selectQuality);
 
-  const { data: resData, ...queryProps } = useQuerySongDetail(song?.id);
+  const { data: resData, ...queryProps } = useQuerySongDetail({
+    id: song?.id,
+    br,
+  });
 
   const handleSetCurrentSongUrl = () => {
     const newCurrentSong = {
       ...song,
-      url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3`,
+      url: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3&br=${br}`,
     };
     dispatch(setCurrentSong(newCurrentSong));
   };
@@ -284,9 +294,9 @@ export const useLyric = (id?: string | number) => {
         setLyric(lyric);
         setTlyric(tlyric);
         setLyricWithTrans(lyricWithTranslation({ lyric, tlyric }));
-        console.log(lyric);
-        console.log(tlyric);
-        console.log(lyricWithTranslation({ lyric, tlyric }));
+        // console.log(lyric);
+        // console.log(tlyric);
+        // console.log(lyricWithTranslation({ lyric, tlyric }));
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);

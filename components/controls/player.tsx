@@ -95,7 +95,7 @@ const Player: React.FC<PlayerProps> = ({}) => {
   useSongDetail(currentSong);
   const { lyricWithTrans } = useLyric(currentSong?.id);
 
-  const { mutateAsync } = useMutateLikeSong({
+  const { mutateAsync: mutateLikeSongAsync } = useMutateLikeSong({
     id: currentSong?.id,
     like: likedList?.includes(currentSong?.id),
   });
@@ -204,10 +204,10 @@ const Player: React.FC<PlayerProps> = ({}) => {
     handleSetCurrentSong(nextIndex);
   };
 
-  const handleLikeSong = () => {
-    const like = !likedList?.includes(currentSong?.id);
-    mutateAsync({
-      id: currentSong?.id,
+  const handleLikeSong = (id) => {
+    const like = !likedList?.includes(id);
+    mutateLikeSongAsync({
+      id,
       like,
     });
   };
@@ -381,7 +381,7 @@ const Player: React.FC<PlayerProps> = ({}) => {
                   <IconHeartThread {...baseIconSize} />
                 )
               }
-              onClick={handleLikeSong}
+              onClick={() => handleLikeSong(currentSong?.id)}
             />
           </InfoContainer>
 
@@ -480,6 +480,7 @@ const Player: React.FC<PlayerProps> = ({}) => {
         playlistSongs={songlist}
         likedList={likedList}
         onLoadMore={() => handleLoadMore()}
+        onLikeClick={(id) => handleLikeSong(id)}
       />
 
       <Lyric

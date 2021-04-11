@@ -373,11 +373,15 @@ const Zone: React.FC<ZoneProps> = () => {
               {likedMvsRes?.data?.map((mv) => (
                 <MediaCard
                   key={mv.id}
-                  href={`/mv/${mv.id}`}
+                  href={`/mv/${mv?.vid}`}
                   cardType="mv"
                   coverPath={mv.coverUrl + "?param=464y260"}
                   title={mv.title}
                   caption={mv.type === 0 ? mv.creator[0].userName : ""}
+                  onTitleClick={() => router.push(`/mv/${mv?.vid}`)}
+                  onCaptionClick={() =>
+                    router.push(`/artist/${mv?.creator[0]?.userId}`)
+                  }
                   playCount={mv.playTime}
                 />
               ))}

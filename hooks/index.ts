@@ -59,7 +59,14 @@ export {
   useLyric,
 } from "./song";
 
-export { useQueryPersonalizedMV, usePersonalizedMV } from "./mv";
+export {
+  useQueryPersonalizedMV,
+  usePersonalizedMV,
+  useQueryMVorVideoDetail,
+  useMVorVideoDetail,
+  useQueryMVorVideoUrl,
+  useMVorVideoUrl,
+} from "./mv";
 
 export {
   useQueryUserSublist,

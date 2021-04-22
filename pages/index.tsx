@@ -43,9 +43,6 @@ const Home = () => {
   const [playlistDrawerMenuOpen, setPlaylistDrawerMenuOpen] = useState(false);
   const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
     visible: false,
-    name: "",
-    artists: [],
-    coverPath: "",
     position: {
       left: 0,
       top: 0,
@@ -58,7 +55,6 @@ const Home = () => {
     item: PlaylistItemCardProps
   ) => {
     let { pageX, pageY } = e;
-    const { name, artists, coverPath } = item;
 
     if (document.body.clientWidth - pageX < 196) {
       pageX = pageX - 196;
@@ -66,9 +62,7 @@ const Home = () => {
 
     setContextMenuInfo({
       visible: true,
-      name,
-      artists,
-      coverPath,
+      song: item,
       position: {
         left: pageX,
         top: pageY,
@@ -256,8 +250,8 @@ const Home = () => {
                     albumId={song?.song?.album?.id || song?.al?.id}
                     duration={song?.song?.duration || song?.dt}
                     isLike={false}
-                    onDblClick={(e, id) => console.log(e, id)}
-                    onContextMenuClick={handleContextMenuClick}
+                    // onDblClick={(e, id) => console.log(e, id)}
+                    // onContextMenuClick={handleContextMenuClick}
                   />
                 ))
               )}

@@ -9,6 +9,8 @@ import { tuple } from "./../../lib/type";
 import {
   InfoText,
   IntroText,
+  MainText,
+  MediumText,
   SmallText,
 } from "./../../styles/typography/index";
 import { formatDate } from "../../lib/format";
@@ -150,7 +152,12 @@ const MVId: React.FC<MVIdProps> = () => {
         </Title>
         <Meta>
           {playerInfo?.type === "mv" && (
-            <Artist>{playerInfo?.artist?.name}</Artist>
+            <Artist
+              bold
+              onClick={() => router.push(`/artist/${playerInfo?.artist?.id}`)}
+            >
+              {playerInfo?.artist?.name}
+            </Artist>
           )}
           {playerInfo?.type === "video" && (
             <Creator>
@@ -205,7 +212,7 @@ const Creator = styled.div(() => [
   `,
 ]);
 
-const Artist = styled.div(() => [tw``]);
+const Artist = styled(InfoText)(() => [tw`cursor-pointer hover:underline`]);
 
 const Meta = styled.div(() => [
   tw`grid gap-2 md:gap-3 items-center mt-2 md:mt-3`,

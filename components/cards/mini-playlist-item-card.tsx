@@ -6,6 +6,7 @@ import { CaptionText, SmallText } from "../../styles/typography";
 
 export interface MiniPlaylistItemCardProps {
   itemType?: PlaylistItemType;
+  title?: string;
   coverPath?: string;
   name?: string;
   artists?: any[];
@@ -19,6 +20,7 @@ export interface MiniPlaylistItemCardProps {
 
 const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
   itemType = "default",
+  title,
   coverPath,
   name,
   artists,
@@ -47,6 +49,7 @@ const MiniPlaylistItemCard: React.FC<MiniPlaylistItemCardProps> = ({
 
   return (
     <Container
+      title={title}
       itemType={itemType}
       isShowHover={isShowHover}
       onContextMenu={handleOnContextMenuClick}

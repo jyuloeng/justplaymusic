@@ -20,12 +20,31 @@ import {
   useArtistMV,
   useSimiArtist,
 } from "./../../../hooks/artist";
+import {
+  selectCurrentSong,
+  selectSonglist,
+  setCurrent,
+  setCurrentSong,
+} from "../../../store/slice/song.slice";
+import { ContextMenuPosition, MoreActionMenu } from "../../../components/menus";
+import { useAppDispatch, useAppSelector } from "../../../store";
 
 export interface ArtistIdProps {}
 
 const ArtistId: React.FC<ArtistIdProps> = () => {
   const { t } = useTranslation("artist");
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const songlist = useAppSelector(selectSonglist);
+  const currentSong = useAppSelector(selectCurrentSong);
+
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [selectedSong, setSelectedSong] = useState(null);
 
   const [isShowingMoreHotSons, setIsShowingMoreHotSons] = useState<boolean>(
     false
@@ -49,7 +68,28 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
   const handleAllMoives = () => {
     router.push(`/artist/${router.query.id}/mvs`);
   };
-  const handleOnContextMenuClick = () => {};
+  const handleOnDblClick = (song) => {
+    const current = songlist.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
+  };
 
   const handleMoreHotSongs = () => {
     setIsShowingMoreHotSons((value) => !value);
@@ -90,176 +130,192 @@ const ArtistId: React.FC<ArtistIdProps> = () => {
   );
 
   return (
-    <Container>
-      <ArtistCardContainer>
-        <ArtistCard
-          isLoading={isArtistLoading}
-          id={artist?.id}
-          src={artist?.picUrl + "?param=512y512"}
-          title={artist?.name}
-          caption={artist?.alias?.join(", ")}
-          songs={artist?.musicSize}
-          albums={artist?.albumSize}
-          mvs={artist?.mvSize}
-        />
-      </ArtistCardContainer>
+    <>
+      <Container>
+        <ArtistCardContainer>
+          <ArtistCard
+            isLoading={isArtistLoading}
+            id={artist?.id}
+            src={artist?.picUrl + "?param=512y512"}
+            title={artist?.name}
+            caption={artist?.alias?.join(", ")}
+            songs={artist?.musicSize}
+            albums={artist?.albumSize}
+            mvs={artist?.mvSize}
+          />
+        </ArtistCardContainer>
 
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("hot-songs")}
-          moreText={isShowingMoreHotSons ? t("collapse") : t("more")}
-          onMoreClick={handleMoreHotSongs}
-        />
-      </CaptionBoardContainer>
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("hot-songs")}
+            moreText={isShowingMoreHotSons ? t("collapse") : t("more")}
+            onMoreClick={handleMoreHotSongs}
+          />
+        </CaptionBoardContainer>
 
-      <HotSongsContainer>
-        {isArtistLoading || !hotSongs ? (
-          <MiniPlaylistItemsLoadingContainer />
+        <HotSongsContainer>
+          {isArtistLoading || !hotSongs ? (
+            <MiniPlaylistItemsLoadingContainer />
+          ) : (
+            <HotSongs>
+              {getSpecifiedArrayElements(
+                hotSongs,
+                isShowingMoreHotSons ? 24 : 12
+              )?.map((song) => (
+                <MiniPlaylistItemCard
+                  key={song.id}
+                  title={song.reason}
+                  itemType={
+                    song.playable
+                      ? currentSong?.id === song.id
+                        ? "active"
+                        : "default"
+                      : "disabled"
+                  }
+                  coverPath={song.al.picUrl + "?param=100y100"}
+                  name={song.name}
+                  artists={song.ar}
+                  isShowHover={true}
+                  onDblClick={() => handleOnDblClick(song)}
+                  onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
+                />
+              ))}
+            </HotSongs>
+          )}
+        </HotSongsContainer>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("ep-single")}
+            moreText={isShowingMoreSingleAlbums ? t("collapse") : t("more")}
+            onMoreClick={handleMoreSingleAlbums}
+          />
+        </CaptionBoardContainer>
+
+        {isArtistAlbumsLoading ? (
+          <PlaylistsLoadingContainer />
         ) : (
-          <HotSongs>
-            {getSpecifiedArrayElements(
-              hotSongs,
-              isShowingMoreHotSons ? 24 : 12
-            )?.map((song, index) => (
-              <MiniPlaylistItemCard
-                key={song.id}
-                itemType={
-                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
-                }
-                coverPath={song.al.picUrl + "?param=100y100"}
-                name={song.name}
-                artists={song.ar}
-                isShowHover={true}
-                onDblClick={(e, id) => console.log(e, id)}
-                onContextMenuClick={handleOnContextMenuClick}
-              />
-            ))}
-          </HotSongs>
+          <PlaylistWrapper>
+            <PlaylistContainer>
+              {getSpecifiedArrayElements(
+                singleAlbums,
+                isShowingMoreSingleAlbums ? singleAlbums.length : 10
+              )?.map((album) => (
+                <MediaCard
+                  key={album.id}
+                  href={`/album/${album.id}`}
+                  cardType="album"
+                  coverPath={album.picUrl + "?param=512y512"}
+                  title={album.name}
+                  caption={album.type + " - " + formatDate(album.publishTime)}
+                  isShowPlayCount={false}
+                  isCanCaptionClick={false}
+                  onTitleClick={() => router.push(`/album/${album.id}`)}
+                />
+              ))}
+            </PlaylistContainer>
+          </PlaylistWrapper>
         )}
-      </HotSongsContainer>
 
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("ep-single")}
-          moreText={isShowingMoreSingleAlbums ? t("collapse") : t("more")}
-          onMoreClick={handleMoreSingleAlbums}
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption="Music Video"
+            moreText={t("all")}
+            onMoreClick={handleAllMoives}
+          />
+        </CaptionBoardContainer>
+
+        {isMVsLoading ? (
+          <MVsLoadingContainer cols={5} />
+        ) : (
+          <RecommendMvsWrapper>
+            <RecommendMvsContainer>
+              {mvs?.map((mv) => (
+                <MediaCard
+                  key={mv.id}
+                  href={`/mv/${mv.id}`}
+                  cardType="mv"
+                  coverPath={mv.imgurl16v9 + "?param=464y260"}
+                  title={mv.name}
+                  caption={mv.artistName}
+                  playCount={mv.playCount}
+                />
+              ))}
+            </RecommendMvsContainer>
+          </RecommendMvsWrapper>
+        )}
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("album")}
+            moreText={isShowingMoreDefaultalbums ? t("collapse") : t("more")}
+            onMoreClick={handleMoreDefaultalbums}
+          />
+        </CaptionBoardContainer>
+
+        {isArtistAlbumsLoading ? (
+          <PlaylistsLoadingContainer />
+        ) : (
+          <PlaylistWrapper>
+            <PlaylistContainer>
+              {getSpecifiedArrayElements(
+                defaultAlbums,
+                isShowingMoreDefaultalbums ? defaultAlbums.length : 10
+              )?.map((album) => (
+                <MediaCard
+                  key={album.id}
+                  href={`/album/${album.id}`}
+                  cardType="album"
+                  coverPath={album.picUrl + "?param=512y512"}
+                  title={album.name}
+                  caption={album.type + " - " + formatDate(album.publishTime)}
+                  isShowPlayCount={false}
+                  isCanCaptionClick={false}
+                  onTitleClick={() => router.push(`/album/${album.id}`)}
+                />
+              ))}
+            </PlaylistContainer>
+          </PlaylistWrapper>
+        )}
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("similar-singer")}
+            moreText={isShowingMoreSimilarArtists ? t("collapse") : t("more")}
+            onMoreClick={handleMoreMoreSimilarArtists}
+          />
+        </CaptionBoardContainer>
+
+        {isSimiArtistsLoading ? (
+          <ArtistsLoadingContainer />
+        ) : (
+          <ArtistsWrapper>
+            <ArtistsConntainer>
+              {getSpecifiedArrayElements(
+                similarArtists,
+                isShowingMoreSimilarArtists ? similarArtists.length : 12
+              )?.map((artist) => (
+                <AvatarCard
+                  key={artist.id}
+                  id={artist.id}
+                  src={artist.picUrl + "?param=512y512"}
+                  caption={artist.name}
+                />
+              ))}
+            </ArtistsConntainer>
+          </ArtistsWrapper>
+        )}
+      </Container>
+
+      {selectedSong?.id && (
+        <MoreActionMenu
+          visible={moreActionMenuVisible}
+          onClose={() => setMoreActionMenuVisible(false)}
+          song={selectedSong}
+          position={moreActionMenuPosition}
         />
-      </CaptionBoardContainer>
-
-      {isArtistAlbumsLoading ? (
-        <PlaylistsLoadingContainer />
-      ) : (
-        <PlaylistWrapper>
-          <PlaylistContainer>
-            {getSpecifiedArrayElements(
-              singleAlbums,
-              isShowingMoreSingleAlbums ? singleAlbums.length : 10
-            )?.map((album) => (
-              <MediaCard
-                key={album.id}
-                href={`/album/${album.id}`}
-                cardType="album"
-                coverPath={album.picUrl + "?param=512y512"}
-                title={album.name}
-                caption={album.type + " - " + formatDate(album.publishTime)}
-                isShowPlayCount={false}
-                isCanCaptionClick={false}
-                onTitleClick={() => router.push(`/album/${album.id}`)}
-              />
-            ))}
-          </PlaylistContainer>
-        </PlaylistWrapper>
       )}
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption="Music Video"
-          moreText={t("all")}
-          onMoreClick={handleAllMoives}
-        />
-      </CaptionBoardContainer>
-
-      {isMVsLoading ? (
-        <MVsLoadingContainer cols={5} />
-      ) : (
-        <RecommendMvsWrapper>
-          <RecommendMvsContainer>
-            {mvs?.map((mv) => (
-              <MediaCard
-                key={mv.id}
-                href={`/mv/${mv.id}`}
-                cardType="mv"
-                coverPath={mv.imgurl16v9 + "?param=464y260"}
-                title={mv.name}
-                caption={mv.artistName}
-                playCount={mv.playCount}
-              />
-            ))}
-          </RecommendMvsContainer>
-        </RecommendMvsWrapper>
-      )}
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("album")}
-          moreText={isShowingMoreDefaultalbums ? t("collapse") : t("more")}
-          onMoreClick={handleMoreDefaultalbums}
-        />
-      </CaptionBoardContainer>
-
-      {isArtistAlbumsLoading ? (
-        <PlaylistsLoadingContainer />
-      ) : (
-        <PlaylistWrapper>
-          <PlaylistContainer>
-            {getSpecifiedArrayElements(
-              defaultAlbums,
-              isShowingMoreDefaultalbums ? defaultAlbums.length : 10
-            )?.map((album) => (
-              <MediaCard
-                key={album.id}
-                href={`/album/${album.id}`}
-                cardType="album"
-                coverPath={album.picUrl + "?param=512y512"}
-                title={album.name}
-                caption={album.type + " - " + formatDate(album.publishTime)}
-                isShowPlayCount={false}
-                isCanCaptionClick={false}
-                onTitleClick={() => router.push(`/album/${album.id}`)}
-              />
-            ))}
-          </PlaylistContainer>
-        </PlaylistWrapper>
-      )}
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("similar-singer")}
-          moreText={isShowingMoreSimilarArtists ? t("collapse") : t("more")}
-          onMoreClick={handleMoreMoreSimilarArtists}
-        />
-      </CaptionBoardContainer>
-
-      {isSimiArtistsLoading ? (
-        <ArtistsLoadingContainer />
-      ) : (
-        <ArtistsWrapper>
-          <ArtistsConntainer>
-            {getSpecifiedArrayElements(
-              similarArtists,
-              isShowingMoreSimilarArtists ? similarArtists.length : 12
-            )?.map((artist) => (
-              <AvatarCard
-                key={artist.id}
-                id={artist.id}
-                src={artist.picUrl + "?param=512y512"}
-                caption={artist.name}
-              />
-            ))}
-          </ArtistsConntainer>
-        </ArtistsWrapper>
-      )}
-    </Container>
+    </>
   );
 };
 

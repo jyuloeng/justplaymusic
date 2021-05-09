@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from "react";
 import { LightModeTextColor } from "../colors";
 import { SvgProps } from "./index";
-function SvgComponent(props: React.SVGProps<SVGSVGElement>) {
+function SvgComponent(props: SvgProps) {
   return (
     <svg
       width={24}
@@ -16,7 +16,7 @@ function SvgComponent(props: React.SVGProps<SVGSVGElement>) {
         fill={props.fill || LightModeTextColor}
       />
     </svg>
-  )
+  );
 }
 
-export default SvgComponent
+export default SvgComponent;

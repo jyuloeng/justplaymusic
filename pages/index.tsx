@@ -15,6 +15,7 @@ import {
   MoreActionMenu,
   MoreActionMenuProps,
   PlaylistDrawerMenu,
+  ContextMenuPosition,
 } from "../components/menus";
 import { getRandomArrayElements } from "../lib/array";
 import "nprogress/nprogress.css";
@@ -25,6 +26,7 @@ import {
   usePersonalizedMV,
   useNewestAlbum,
   useRecommendSong,
+  useMutateLikeSong,
 } from "./../hooks";
 import {
   MiniPlaylistItemsLoadingContainer,
@@ -33,49 +35,34 @@ import {
   PlaylistsLoadingContainer,
 } from "../components/containers";
 import { isLoginByAccount } from "../lib/auth";
+import { useAppDispatch, useAppSelector } from "./../store/index";
+import {
+  selectCurrentSong,
+  selectSonglist,
+  setCurrent,
+  setCurrentSong,
+} from "./../store/slice/song.slice";
+import { selectLikedList } from "../store/slice/user.slice";
 
 const loginByAccount = isLoginByAccount();
 
 const Home = () => {
   const { t } = useTranslation("home");
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [playlistDrawerMenuOpen, setPlaylistDrawerMenuOpen] = useState(false);
-  const [contextMenuInfo, setContextMenuInfo] = useState<MoreActionMenuProps>({
-    visible: false,
-    position: {
-      left: 0,
-      top: 0,
-    },
-  });
-  const [disPlaySongs, setDisplaySongs] = useState([]);
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [displaySongs, setDisplaySongs] = useState([]);
+  const [selectedSong, setSelectedSong] = useState(null);
 
-  const handleContextMenuClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    item: PlaylistItemCardProps
-  ) => {
-    let { pageX, pageY } = e;
-
-    if (document.body.clientWidth - pageX < 196) {
-      pageX = pageX - 196;
-    }
-
-    setContextMenuInfo({
-      visible: true,
-      song: item,
-      position: {
-        left: pageX,
-        top: pageY,
-      },
-    });
-  };
-
-  const handleContextMenuClose = () => {
-    setContextMenuInfo((value) => ({
-      ...value,
-      visible: false,
-    }));
-  };
+  const songlist = useAppSelector(selectSonglist);
+  const currentSong = useAppSelector(selectCurrentSong);
+  const likedList = useAppSelector(selectLikedList);
 
   const {
     personalizedPlaylist,
@@ -139,6 +126,43 @@ const Home = () => {
       setDisplaySongs(personalizedSongs);
     }
   }, [personalizedSongs, recommendSongs, setDisplaySongs]);
+
+  const { mutateAsync } = useMutateLikeSong({
+    id: selectedSong?.id,
+    like: likedList?.includes(selectedSong?.id),
+  });
+
+  const handleLikeSong = (song) => {
+    setSelectedSong(song);
+    const like = !likedList?.includes(song.id);
+    mutateAsync({
+      id: song.id,
+      like,
+    });
+  };
+
+  const handleOnDblClick = (song) => {
+    const current = songlist.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
+  };
 
   return (
     <>
@@ -227,18 +251,19 @@ const Home = () => {
             <RecommendSongs>
               {isPersonalizedSongsLoading ||
               isRecommendSongsLoading ||
-              !disPlaySongs ? (
+              !displaySongs ? (
                 <PlaylistItemsLoadingContainer />
               ) : (
-                disPlaySongs?.map((song, index) => (
+                displaySongs?.map((song, index) => (
                   <PlaylistItemCard
                     key={song.id}
+                    title={song?.reason}
                     itemType={
-                      index === 0
-                        ? "active"
-                        : index === 3
-                        ? "disabled"
-                        : "default"
+                      song.playable
+                        ? currentSong?.id === song.id
+                          ? "active"
+                          : "default"
+                        : "disabled"
                     }
                     coverPath={
                       (song?.picUrl || song?.al?.picUrl) + "?param=100y100"
@@ -249,9 +274,12 @@ const Home = () => {
                     album={song?.song?.album?.name || song?.al?.name}
                     albumId={song?.song?.album?.id || song?.al?.id}
                     duration={song?.song?.duration || song?.dt}
-                    isLike={false}
-                    // onDblClick={(e, id) => console.log(e, id)}
-                    // onContextMenuClick={handleContextMenuClick}
+                    isLike={likedList?.includes(song.id)}
+                    onLikeClick={() => handleLikeSong(song)}
+                    onDblClick={() => handleOnDblClick(song)}
+                    onContextMenuClick={(e) =>
+                      handleOnContextMenuClick(e, song)
+                    }
                   />
                 ))
               )}
@@ -260,11 +288,11 @@ const Home = () => {
             <MobileRecommendSongsContainer>
               {isPersonalizedSongsLoading ||
               isRecommendSongsLoading ||
-              !disPlaySongs ? (
+              !displaySongs ? (
                 <MiniPlaylistItemsLoadingContainer />
               ) : (
                 <MobileRecommendSongs>
-                  {disPlaySongs?.map((song, index) => (
+                  {displaySongs?.map((song, index) => (
                     <MiniPlaylistItemCard
                       key={song.id}
                       itemType={
@@ -279,8 +307,8 @@ const Home = () => {
                       }
                       name={song.name}
                       artists={song?.song?.artists || song?.ar}
-                      onDblClick={(e, id) => console.log(e, id)}
-                      onContextMenuClick={handleContextMenuClick}
+                      // onDblClick={(e, id) => console.log(e, id)}
+                      // onContextMenuClick={handleContextMenuClick}
                     />
                   ))}
                 </MobileRecommendSongs>
@@ -342,11 +370,22 @@ const Home = () => {
       <PlaylistDrawerMenu
         open={playlistDrawerMenuOpen}
         onClose={() => setPlaylistDrawerMenuOpen(false)}
-        activeSong={disPlaySongs[0]}
-        playlistSongs={disPlaySongs}
+        activeSong={currentSong}
+        // isPlaylistSongsLoading={isPlaylistSongsLoading}
+        playlistSongs={displaySongs}
+        likedList={likedList}
+        // onLoadMore={() => handleLoadMore()}
+        onLikeClick={(id) => handleLikeSong(id)}
       />
 
-      <MoreActionMenu {...contextMenuInfo} onClose={handleContextMenuClose} />
+      {selectedSong?.id && (
+        <MoreActionMenu
+          visible={moreActionMenuVisible}
+          onClose={() => setMoreActionMenuVisible(false)}
+          song={selectedSong}
+          position={moreActionMenuPosition}
+        />
+      )}
     </>
   );
 };

@@ -4,13 +4,14 @@ import { toast } from "../lib/toast";
 import request from "../lib/request";
 import { QUERY_ALBUM, QUERY_ALBUM_NEWEST, QUERY_ALBUM_NEW } from "../lib/const";
 import { tuple } from "./../lib/type";
+import { isTrackPlayable } from "../lib/util";
 
 interface QueryAlbumResponse {
   code?: number;
   msg?: string;
   resourceState?: boolean;
   album?: object;
-  songs?: unknown[];
+  songs?: any[];
 }
 
 interface QueryAlbumNewestResponse {
@@ -59,8 +60,15 @@ export const useAlbum = (id?: string) => {
     if (data) {
       const { code, album, songs } = data;
       if (code === 200) {
+        const formatSongs = songs.map((song) => {
+          return {
+            ...song,
+            ...isTrackPlayable(song),
+          };
+        });
+
         setAlbumInfo(album);
-        setAlbumSongs(songs);
+        setAlbumSongs(formatSongs);
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);

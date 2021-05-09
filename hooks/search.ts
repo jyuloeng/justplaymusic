@@ -5,6 +5,7 @@ import { toast } from "../lib/toast";
 import { tupleNum } from "../lib/type";
 import { QUERY_SEARCH } from "../lib/const";
 import { useSong } from "./index";
+import { isTrackPlayable } from "../lib/util";
 
 const SearchTypes = tupleNum(
   1, //  单曲
@@ -117,10 +118,17 @@ export const useSearchSongs = (params: QuerySearchParams) => {
   }, [data, setSongIds, setSearchSongsRes, setErrorMsg, toast]);
 
   useEffect(() => {
+    const formatSongs = songs.map((song) => {
+      return {
+        ...song,
+        ...isTrackPlayable(song),
+      };
+    });
+
     setSearchSongsRes((value) => {
       return {
         ...value,
-        songs: songs,
+        songs: formatSongs,
       };
     });
   }, [songs, setSearchSongsRes]);

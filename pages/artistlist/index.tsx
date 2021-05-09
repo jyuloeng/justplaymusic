@@ -84,17 +84,23 @@ const ArtistList: React.FC<ArtistList> = () => {
 
   const router = useRouter();
 
+  const [limit, setLimit] = useState(20);
   const [searchKey, setSearchKey] = useState<ArtistListSearchKey>({
     area: areaList[0].key,
     type: typeList[0].key,
     initial: initialList[0].key,
   });
 
+  const handleMorePlaylistClick = () => {
+    setLimit((value) => (value += 20));
+  };
+
   const handleAreaTabClick = (key: string | number) => {
     setSearchKey({
       ...searchKey,
       area: key as number,
     });
+    setLimit(20);
 
     router.push(
       {
@@ -116,6 +122,7 @@ const ArtistList: React.FC<ArtistList> = () => {
       ...searchKey,
       type: key as number,
     });
+    setLimit(20);
 
     router.push(
       {
@@ -137,6 +144,7 @@ const ArtistList: React.FC<ArtistList> = () => {
       ...searchKey,
       initial: key as string,
     });
+    setLimit(20);
 
     router.push(
       {
@@ -153,7 +161,10 @@ const ArtistList: React.FC<ArtistList> = () => {
     );
   };
 
-  const { data: searchArtistsRes, isLoading } = useArtistList({ ...searchKey });
+  const { data: searchArtistsRes, isLoading } = useArtistList({
+    ...searchKey,
+    limit,
+  });
 
   return (
     <Container>
@@ -194,10 +205,11 @@ const ArtistList: React.FC<ArtistList> = () => {
         }
         isShowLoadMore={searchArtistsRes?.more}
         isNeedChildrenContainer={false}
+        onLoadMoreClick={() => handleMorePlaylistClick()}
         footer={
           <>
             {isLoading ? (
-              <ArtistsLoadingContainer rows={6} isHideUnderMd={true} />
+              <ArtistsLoadingContainer rows={2} isHideUnderMd={true} />
             ) : (
               <ArtistsContainer>
                 {searchArtistsRes?.artists?.map((artist) => (

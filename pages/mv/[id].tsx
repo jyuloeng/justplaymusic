@@ -118,21 +118,21 @@ const MVId: React.FC<MVIdProps> = () => {
       let sources = [];
       let sizes = [240, 480, 720];
 
-      for (let i = 0; i < 3; i++) {
-        sources.push({
-          src:
-            "http://vodkgeyttp9.vod.126.net/vodkgeyttp8/wgCbuRLG_154557790_shd.mp4?ts=1618146549&rid=20A39D147409D5D6B6E1E5DFDF100EF3&rl=3&rs=EaRqDrjXZdLuGAuQAWysBAQjpXukVYrD&sign=ba6deb9eead47174bcbef482952b189f&ext=nKtWu12k5Xv0IrVNxGs4VU0IIwhMwk%2FXe9nZUOpigVp%2FlXWdFQLSO7Ap9qSY0k%2BWSWdUxvuZJNdK%2FBiMuIDDrDQaaq4VCl%2BUPTvutxns3jkN3giJZ6lBuHfmtM7eZPmS5JwK8bYsuA1RnWR1%2BLTkGaVbUhwhf3BhKhMfmN8PW%2FVATZnre1jcPNYJcBiPpJS7%2FhMkJUcY%2B7Dr%2FWIen3rsRNkqLE32Xj07n5ihQi7g3kZT26u2y5vC5%2FpulcbKWzF9",
-          type: "video/mp4",
-          size: sizes[i],
-        });
-      }
+      // for (let i = 0; i < 3; i++) {
+      //   sources.push({
+      //     src:
+      //       "http://vodkgeyttp9.vod.126.net/vodkgeyttp8/wgCbuRLG_154557790_shd.mp4?ts=1618146549&rid=20A39D147409D5D6B6E1E5DFDF100EF3&rl=3&rs=EaRqDrjXZdLuGAuQAWysBAQjpXukVYrD&sign=ba6deb9eead47174bcbef482952b189f&ext=nKtWu12k5Xv0IrVNxGs4VU0IIwhMwk%2FXe9nZUOpigVp%2FlXWdFQLSO7Ap9qSY0k%2BWSWdUxvuZJNdK%2FBiMuIDDrDQaaq4VCl%2BUPTvutxns3jkN3giJZ6lBuHfmtM7eZPmS5JwK8bYsuA1RnWR1%2BLTkGaVbUhwhf3BhKhMfmN8PW%2FVATZnre1jcPNYJcBiPpJS7%2FhMkJUcY%2B7Dr%2FWIen3rsRNkqLE32Xj07n5ihQi7g3kZT26u2y5vC5%2FpulcbKWzF9",
+      //     type: "video/mp4",
+      //     size: sizes[i],
+      //   });
+      // }
 
-      player.source = {
-        type: "video",
-        title: "this.mv.data.name",
-        sources: sources,
-        poster: mvInfo?.cover,
-      };
+      // player.source = {
+      //   type: "video",
+      //   title: "this.mv.data.name",
+      //   sources: sources,
+      //   poster: mvInfo?.cover,
+      // };
     }
   }, [player]);
 

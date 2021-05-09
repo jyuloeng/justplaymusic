@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import tw, { styled, css } from "twin.macro";
 import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
@@ -22,12 +22,31 @@ import {
   MVsLoadingContainer,
   PlaylistsLoadingContainer,
 } from "../../../components/containers";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import {
+  selectCurrentSong,
+  selectSonglist,
+  setCurrent,
+  setCurrentSong,
+} from "../../../store/slice/song.slice";
+import { ContextMenuPosition, MoreActionMenu } from "../../../components/menus";
 
 export interface SearchKeywordProps {}
 
 const SearchKeyword: React.FC<SearchKeywordProps> = () => {
   const { t } = useTranslation("search");
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const songlist = useAppSelector(selectSonglist);
+  const currentSong = useAppSelector(selectCurrentSong);
+
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [selectedSong, setSelectedSong] = useState(null);
 
   const {
     searchArtistsRes,
@@ -62,190 +81,232 @@ const SearchKeyword: React.FC<SearchKeywordProps> = () => {
     limit: 12,
   });
 
+  const handleOnDblClick = (song) => {
+    const current = songlist.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
+  };
+
   return (
-    <Container>
-      <TitleBoardContainer>
-        <TitleBoard
-          type="search"
-          title={router.query.keyword}
-          searchPrevText={t("title")}
-          info={t("subtitle")}
+    <>
+      <Container>
+        <TitleBoardContainer>
+          <TitleBoard
+            type="search"
+            title={router.query.keyword}
+            searchPrevText={t("title")}
+            info={t("subtitle")}
+          />
+        </TitleBoardContainer>
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("artists")}
+            moreText={
+              searchArtistsRes?.hasMore
+                ? t("see-all-count-artists", {
+                    count: searchArtistsRes?.artistCount,
+                  })
+                : ""
+            }
+            onMoreClick={() =>
+              router.push(`/search/${router.query.keyword}/artists`)
+            }
+          />
+        </CaptionBoardContainer>
+
+        <SearchSimilarArtistsWrapper>
+          {isSearchArtistsLoading ? (
+            <ArtistsLoadingContainer rows={1} />
+          ) : (
+            <SearchSimilarArtistsContainer>
+              {searchArtistsRes?.artists?.map((artist) => (
+                <AvatarCard
+                  key={artist.id}
+                  id={artist.id}
+                  src={artist.img1v1Url + "?param=512y512"}
+                  caption={artist.name}
+                />
+              ))}
+            </SearchSimilarArtistsContainer>
+          )}
+        </SearchSimilarArtistsWrapper>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("albums")}
+            moreText={
+              searchAlbumsRes?.albumCount > 6
+                ? t("see-all-count-albums", {
+                    count: searchAlbumsRes?.albumCount,
+                  })
+                : ""
+            }
+            onMoreClick={() =>
+              router.push(`/search/${router.query.keyword}/albums`)
+            }
+          />
+        </CaptionBoardContainer>
+
+        <SearchPlaylistsWrapper>
+          {isSearchAlbumsLoading ? (
+            <PlaylistsLoadingContainer cols={6} />
+          ) : (
+            <SearchPlaylistsContainer>
+              {searchAlbumsRes?.albums?.map((album) => (
+                <MediaCard
+                  key={album.id}
+                  href={`/album/${album.id}`}
+                  cardType="album"
+                  coverPath={album.picUrl + "?param=512y512"}
+                  title={album.name}
+                  caption={album.artist.name}
+                  isShowPlayCount={false}
+                />
+              ))}
+            </SearchPlaylistsContainer>
+          )}
+        </SearchPlaylistsWrapper>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("songs")}
+            moreText={
+              searchSongsRes?.hasMore
+                ? t("see-all-count-songs", { count: searchSongsRes?.songCount })
+                : ""
+            }
+            onMoreClick={() =>
+              router.push(`/search/${router.query.keyword}/tracks`)
+            }
+          />
+        </CaptionBoardContainer>
+
+        <SearchSongsContainer>
+          {isSearchSongsLoading || !searchSongsRes ? (
+            <MiniPlaylistItemsLoadingContainer rows={4} />
+          ) : (
+            <SearchSongs>
+              {searchSongsRes?.songs?.map((song) => (
+                <MiniPlaylistItemCard
+                  key={song.id}
+                  title={song.reason}
+                  itemType={
+                    song.playable
+                      ? currentSong?.id === song.id
+                        ? "active"
+                        : "default"
+                      : "disabled"
+                  }
+                  coverPath={song.al.picUrl + "?param=100y100"}
+                  name={song.name}
+                  artists={song.ar}
+                  isShowHover={true}
+                  onDblClick={() => handleOnDblClick(song)}
+                  onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
+                />
+              ))}
+            </SearchSongs>
+          )}
+        </SearchSongsContainer>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption={t("playlists")}
+            moreText={
+              searchPlaylistsRes?.hasMore
+                ? t("see-all-count-playlists", {
+                    count: searchPlaylistsRes?.playlistCount,
+                  })
+                : ""
+            }
+            onMoreClick={() =>
+              router.push(`/search/${router.query.keyword}/playlists`)
+            }
+          />
+        </CaptionBoardContainer>
+
+        <SearchPlaylistsWrapper>
+          {isSearchPlaylistsLoading ? (
+            <PlaylistsLoadingContainer cols={6} />
+          ) : (
+            <SearchPlaylistsContainer>
+              {searchPlaylistsRes?.playlists?.map((playlist) => (
+                <MediaCard
+                  key={playlist.id}
+                  href={`/playlist/${playlist.id}`}
+                  cardType="album"
+                  coverPath={playlist.coverImgUrl + "?param=512y512"}
+                  title={playlist.name}
+                  caption={playlist.description}
+                  isShowPlayCount={false}
+                  isCanCaptionClick={false}
+                />
+              ))}
+            </SearchPlaylistsContainer>
+          )}
+        </SearchPlaylistsWrapper>
+
+        <CaptionBoardContainer>
+          <CaptionBoard
+            caption="Music Videos"
+            moreText={
+              searchMVsRes?.mvCount > 4
+                ? t("see-all-count-mvs", { count: searchMVsRes?.mvCount })
+                : ""
+            }
+            onMoreClick={() =>
+              router.push(`/search/${router.query.keyword}/mvs`)
+            }
+          />
+        </CaptionBoardContainer>
+
+        <SearchMvsWrapper>
+          {isSearchMVsLoading ? (
+            <MVsLoadingContainer />
+          ) : (
+            <SearchMvsContainer>
+              {searchMVsRes?.mvs?.map((mv) => (
+                <MediaCard
+                  key={mv.id}
+                  href={`/mv/${mv.id}`}
+                  cardType="mv"
+                  coverPath={mv.cover + "?param=464y260"}
+                  title={mv.name}
+                  caption={mv.artistName}
+                  playCount={mv.playCount}
+                />
+              ))}
+            </SearchMvsContainer>
+          )}
+        </SearchMvsWrapper>
+      </Container>
+
+      {selectedSong?.id && (
+        <MoreActionMenu
+          visible={moreActionMenuVisible}
+          onClose={() => setMoreActionMenuVisible(false)}
+          song={selectedSong}
+          position={moreActionMenuPosition}
         />
-      </TitleBoardContainer>
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("artists")}
-          moreText={
-            searchArtistsRes?.hasMore
-              ? t("see-all-count-artists", {
-                  count: searchArtistsRes?.artistCount,
-                })
-              : ""
-          }
-          onMoreClick={() =>
-            router.push(`/search/${router.query.keyword}/artists`)
-          }
-        />
-      </CaptionBoardContainer>
-
-      <SearchSimilarArtistsWrapper>
-        {isSearchArtistsLoading ? (
-          <ArtistsLoadingContainer rows={1} />
-        ) : (
-          <SearchSimilarArtistsContainer>
-            {searchArtistsRes?.artists?.map((artist) => (
-              <AvatarCard
-                key={artist.id}
-                id={artist.id}
-                src={artist.img1v1Url + "?param=512y512"}
-                caption={artist.name}
-              />
-            ))}
-          </SearchSimilarArtistsContainer>
-        )}
-      </SearchSimilarArtistsWrapper>
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("albums")}
-          moreText={
-            searchAlbumsRes?.albumCount > 6
-              ? t("see-all-count-albums", {
-                  count: searchAlbumsRes?.albumCount,
-                })
-              : ""
-          }
-          onMoreClick={() =>
-            router.push(`/search/${router.query.keyword}/albums`)
-          }
-        />
-      </CaptionBoardContainer>
-
-      <SearchPlaylistsWrapper>
-        {isSearchAlbumsLoading ? (
-          <PlaylistsLoadingContainer cols={6} />
-        ) : (
-          <SearchPlaylistsContainer>
-            {searchAlbumsRes?.albums?.map((album) => (
-              <MediaCard
-                key={album.id}
-                href={`/album/${album.id}`}
-                cardType="album"
-                coverPath={album.picUrl + "?param=512y512"}
-                title={album.name}
-                caption={album.artist.name}
-                isShowPlayCount={false}
-              />
-            ))}
-          </SearchPlaylistsContainer>
-        )}
-      </SearchPlaylistsWrapper>
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("songs")}
-          moreText={
-            searchSongsRes?.hasMore
-              ? t("see-all-count-songs", { count: searchSongsRes?.songCount })
-              : ""
-          }
-          onMoreClick={() =>
-            router.push(`/search/${router.query.keyword}/tracks`)
-          }
-        />
-      </CaptionBoardContainer>
-
-      <SearchSongsContainer>
-        {isSearchSongsLoading || !searchSongsRes ? (
-          <MiniPlaylistItemsLoadingContainer rows={4} />
-        ) : (
-          <SearchSongs>
-            {searchSongsRes?.songs?.map((song, index) => (
-              <MiniPlaylistItemCard
-                key={song.id}
-                itemType={
-                  index === 0 ? "active" : index === 3 ? "disabled" : "default"
-                }
-                coverPath={song.al.picUrl + "?param=100y100"}
-                name={song.name}
-                artists={song.ar}
-                isShowHover={true}
-                onDblClick={(e, id) => console.log(e, id)}
-              />
-            ))}
-          </SearchSongs>
-        )}
-      </SearchSongsContainer>
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption={t("playlists")}
-          moreText={
-            searchPlaylistsRes?.hasMore
-              ? t("see-all-count-playlists", {
-                  count: searchPlaylistsRes?.playlistCount,
-                })
-              : ""
-          }
-          onMoreClick={() =>
-            router.push(`/search/${router.query.keyword}/playlists`)
-          }
-        />
-      </CaptionBoardContainer>
-
-      <SearchPlaylistsWrapper>
-        {isSearchPlaylistsLoading ? (
-          <PlaylistsLoadingContainer cols={6} />
-        ) : (
-          <SearchPlaylistsContainer>
-            {searchPlaylistsRes?.playlists?.map((playlist) => (
-              <MediaCard
-                key={playlist.id}
-                href={`/playlist/${playlist.id}`}
-                cardType="album"
-                coverPath={playlist.coverImgUrl + "?param=512y512"}
-                title={playlist.name}
-                caption={playlist.description}
-                isShowPlayCount={false}
-                isCanCaptionClick={false}
-              />
-            ))}
-          </SearchPlaylistsContainer>
-        )}
-      </SearchPlaylistsWrapper>
-
-      <CaptionBoardContainer>
-        <CaptionBoard
-          caption="Music Videos"
-          moreText={
-            searchMVsRes?.mvCount > 4
-              ? t("see-all-count-mvs", { count: searchMVsRes?.mvCount })
-              : ""
-          }
-          onMoreClick={() => router.push(`/search/${router.query.keyword}/mvs`)}
-        />
-      </CaptionBoardContainer>
-
-      <SearchMvsWrapper>
-        {isSearchMVsLoading ? (
-          <MVsLoadingContainer />
-        ) : (
-          <SearchMvsContainer>
-            {searchMVsRes?.mvs?.map((mv) => (
-              <MediaCard
-                key={mv.id}
-                href={`/mv/${mv.id}`}
-                cardType="mv"
-                coverPath={mv.cover + "?param=464y260"}
-                title={mv.name}
-                caption={mv.artistName}
-                playCount={mv.playCount}
-              />
-            ))}
-          </SearchMvsContainer>
-        )}
-      </SearchMvsWrapper>
-    </Container>
+      )}
+    </>
   );
 };
 

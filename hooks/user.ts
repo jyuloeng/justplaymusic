@@ -10,6 +10,7 @@ import {
   QUERY_USER_PLAYLIST,
   MUTATE_USER_LOGIN_BY_EMAIL,
   MUTATE_USER_LOGIN_BY_PHONE,
+  MUTATE_USER_LOGOUT,
   QUERY_USER_DETAIL,
 } from "../lib/const";
 
@@ -263,5 +264,12 @@ export const useMutateUserLoginByEmail = () => {
         params,
       }),
     useMutateUserLoginConfig(MUTATE_USER_LOGIN_BY_EMAIL.KEY)
+  );
+};
+
+export const useMutateUserLogout = () => {
+  return useMutation(
+    () => request.post(MUTATE_USER_LOGOUT.URL, undefined, {}),
+    useMutateUserLoginConfig(MUTATE_USER_LOGOUT.KEY)
   );
 };

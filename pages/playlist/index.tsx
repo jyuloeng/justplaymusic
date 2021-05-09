@@ -9,6 +9,7 @@ import { MainText, CaptionText } from "../../styles/typography";
 import { IconLoading } from "../../styles/icons";
 import { usePersonalizedPlaylist } from "../../hooks";
 import { PlaylistsLoadingContainer } from "../../components/containers";
+import { useTopPlaylist } from "../../hooks/playlist";
 
 export interface PlaylistProps {}
 
@@ -17,27 +18,35 @@ const Playlist: React.FC<PlaylistProps> = () => {
 
   const hotPlaylistMenu = [
     {
+      cat: "推荐",
       name: t("recommended"),
     },
+    // {
+    //   cat: "精品",
+    //   name: t("boutique"),
+    // },
     {
-      name: t("boutique"),
-    },
-    {
+      cat: "官方",
       name: t("official"),
     },
     {
+      cat: "华语",
       name: t("chinese"),
     },
     {
+      cat: "流行",
       name: t("popular"),
     },
     {
+      cat: "摇滚",
       name: t("rock"),
     },
     {
+      cat: "民谣",
       name: t("ballad"),
     },
     {
+      cat: "电子",
       name: t("electronic"),
     },
   ];
@@ -45,16 +54,50 @@ const Playlist: React.FC<PlaylistProps> = () => {
   const router = useRouter();
 
   const [limit, setLimit] = useState(20);
+  const [searchCat, setSearchCat] = useState("全部");
+  const [displayPlaylist, setDisplayPlaylist] = useState([]);
+
   const handleMorePlaylistClick = () => {
     setLimit((value) => (value += 20));
+  };
+
+  const handleCatTabClick = (cat: string) => {
+    setSearchCat(cat);
+    setLimit(20);
+
+    router.push(
+      {
+        pathname: "/playlist",
+        query: {
+          cat: searchCat,
+        },
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
   const {
     personalizedPlaylist,
     setPersonalizedPlaylist,
-    isLoading,
+    isLoading: isPersonalPlaylistLoading,
     error,
   } = usePersonalizedPlaylist({ limit });
+
+  const { playlists, isLoading: isTopPlaylistLoading } = useTopPlaylist({
+    limit,
+    cat: searchCat,
+  });
+
+  useEffect(() => {
+    if (searchCat !== "推荐" && playlists) {
+      setDisplayPlaylist(playlists);
+    } else if (searchCat === "推荐" && personalizedPlaylist) {
+      setDisplayPlaylist(personalizedPlaylist);
+    }
+  }, [searchCat, personalizedPlaylist, playlists, setDisplayPlaylist]);
 
   return (
     <Container>
@@ -64,12 +107,15 @@ const Playlist: React.FC<PlaylistProps> = () => {
         </TitleBoardContainer>
 
         <CaptionBoardContainer>
-          <Button isShowHover={false}>
+          <Button isShowHover={false} onClick={() => handleCatTabClick("全部")}>
             <MainText bold>{t("all")}</MainText>
           </Button>
           <Buttons>
             {hotPlaylistMenu.map((menu) => (
-              <Button key={menu.name}>
+              <Button
+                key={menu.name}
+                onClick={() => handleCatTabClick(menu.cat)}
+              >
                 <CaptionText bold>{menu.name}</CaptionText>
               </Button>
             ))}
@@ -85,14 +131,16 @@ const Playlist: React.FC<PlaylistProps> = () => {
         </MobileCaptionBoardContainer>
 
         <PlaylistContainer>
-          {personalizedPlaylist?.map((playlist) => (
+          {displayPlaylist?.map((playlist) => (
             <MediaCard
               key={playlist.id}
               href={`/playlist/${playlist.id}`}
               cardType="album"
-              coverPath={playlist.picUrl + "?param=512y512"}
+              coverPath={
+                (playlist.picUrl || playlist.coverImgUrl) + "?param=512y512"
+              }
               title={playlist.name}
-              caption={playlist.copywriter}
+              caption={playlist.copywriter || playlist.description}
               playCount={playlist.playCount}
               isCanCaptionClick={false}
               onTitleClick={() => router.push(`/playlist/${playlist.id}`)}
@@ -100,7 +148,9 @@ const Playlist: React.FC<PlaylistProps> = () => {
           ))}
         </PlaylistContainer>
 
-        {isLoading && <PlaylistsLoadingContainer rows={4} isOverflow={false} />}
+        {(isPersonalPlaylistLoading || isTopPlaylistLoading) && (
+          <PlaylistsLoadingContainer rows={4} isOverflow={false} />
+        )}
 
         <LoadMoreContainer>
           <Button icon={<IconLoading />} onClick={handleMorePlaylistClick}>

@@ -79,6 +79,7 @@ export {
   useMutateUserLoginByEmail,
   useQueryUserDetail,
   useUserDetail,
+  useMutateUserLogout,
 } from "./user";
 
 export type { MutateUserLoginResponse } from "./user";

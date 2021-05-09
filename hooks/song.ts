@@ -16,7 +16,11 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { setCurrentSong } from "../store/slice/song.slice";
 import { setLikedList, setRefreshTimestamp } from "../store/slice/user.slice";
 import { selectLikedList } from "./../store/slice/user.slice";
-import { lyricParser, lyricWithTranslation } from "./../lib/util";
+import {
+  isTrackPlayable,
+  lyricParser,
+  lyricWithTranslation,
+} from "./../lib/util";
 import { QualityType, selectQuality } from "../store/slice/settings.slice";
 
 interface QuerySongResponse {
@@ -175,7 +179,16 @@ export const useRecommendSong = () => {
       const { code } = data;
       if (code === 200) {
         const { dailySongs } = data.data;
-        setRecommendSongs(dailySongs);
+
+        const formatSongs = dailySongs.map((song) => {
+          return {
+            ...song,
+            ...isTrackPlayable(song),
+          };
+        });
+
+        setRecommendSongs(formatSongs);
+        console.log(formatSongs);
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);

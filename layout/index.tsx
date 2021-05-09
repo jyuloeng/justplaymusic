@@ -101,6 +101,9 @@ const Wrapper = styled.div(() => [
   css`
     font-family: "Ubuntu", system-ui, -apple-system, BlinkMacSystemFont,
       segoe ui, Helvetica, PingFang SC, Microsoft YaHei, sans-serif !important;
+
+    --plyr-color-main: #f75684;
+    --plyr-video-background: #fee2e2;
   `,
 ]);
 

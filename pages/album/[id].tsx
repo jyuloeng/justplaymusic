@@ -5,17 +5,87 @@ import { PlaylistIntroCard, PlaylistItemCard } from "../../components/cards";
 import { PlaylistItemsLoadingContainer } from "../../components/containers";
 import { Modal } from "../../components/controls";
 import { InfoText, MediumText } from "../../styles/typography";
-import { useAlbum } from "../../hooks";
+import { useAlbum, useMutateLikeSong } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../store";
+import {
+  selectCurrentSong,
+  selectSonglist,
+  setCurrent,
+  setCurrentSong,
+  setSonglist,
+  setSonglistInfo,
+} from "../../store/slice/song.slice";
+import { selectLikedList } from "../../store/slice/user.slice";
+import { ContextMenuPosition } from "../../components/menus";
 
 export interface AlbumIdProps {}
 
 const AlbumId: React.FC<AlbumIdProps> = () => {
   const { query } = useRouter();
-  const [visivle, setVisible] = useState(false);
+
+  const dispatch = useAppDispatch();
+
+  const songlist = useAppSelector(selectSonglist);
+  const currentSong = useAppSelector(selectCurrentSong);
+  const likedList = useAppSelector(selectLikedList);
+
+  const [modalVisivle, setModalVisible] = useState(false);
+  const [moreActionMenuVisible, setMoreActionMenuVisible] = useState(false);
+  const [
+    moreActionMenuPosition,
+    setMoreActionMenuPostion,
+  ] = useState<ContextMenuPosition>({ top: 0, left: 0 });
+  const [selectedSong, setSelectedSong] = useState(null);
+
+  const { mutateAsync } = useMutateLikeSong({
+    id: selectedSong?.id,
+    like: likedList?.includes(selectedSong?.id),
+  });
 
   const { albumInfo, albumSongs, isLoading, errorMsg } = useAlbum(
     query.id as string
   );
+
+  const handlePlayAll = () => {
+    if (albumSongs.length > 0) {
+      dispatch(setSonglistInfo(albumInfo));
+      dispatch(setSonglist(albumSongs));
+      dispatch(setCurrent(0));
+      dispatch(setCurrentSong(albumSongs[0]));
+    }
+  };
+
+  const handleOnDblClick = (song) => {
+    const current = albumSongs.findIndex((item) => item.id === song.id);
+    dispatch(setCurrent(current));
+    dispatch(setCurrentSong(song));
+  };
+
+  const handleOnContextMenuClick = (
+    e: React.MouseEvent<HTMLOrSVGElement>,
+    song
+  ) => {
+    let { pageX, pageY } = e;
+
+    if (document.body.clientWidth - pageX < 196) {
+      pageX = pageX - 196;
+    }
+    setMoreActionMenuPostion({
+      left: pageX,
+      top: pageY,
+    });
+    setSelectedSong(song);
+    setMoreActionMenuVisible(true);
+  };
+
+  const handleLikeSong = (song) => {
+    setSelectedSong(song);
+    const like = !likedList?.includes(song.id);
+    mutateAsync({
+      id: song.id,
+      like,
+    });
+  };
 
   return (
     <>
@@ -36,7 +106,8 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
             songs={albumInfo?.size}
             publishTime={albumInfo?.publishTime}
             description={albumInfo?.description}
-            onDescriptionClick={() => setVisible(true)}
+            onDescriptionClick={() => setModalVisible(true)}
+            onPlayAllClick={() => handlePlayAll()}
           />
         </AlbumIntro>
 
@@ -53,6 +124,9 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
               album={song.al.name}
               albumId={song.al.id}
               duration={song.dt}
+              onLikeClick={() => handleLikeSong(song)}
+              onDblClick={() => handleOnDblClick(song)}
+              onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />
           ))}
           {(isLoading || !albumSongs) && <PlaylistItemsLoadingContainer />}
@@ -60,7 +134,7 @@ const AlbumId: React.FC<AlbumIdProps> = () => {
       </Container>
 
       {albumInfo && (
-        <Modal visible={visivle} onClose={() => setVisible(false)}>
+        <Modal visible={modalVisivle} onClose={() => setModalVisible(false)}>
           <ModalContentContainer>
             <ModalTitle bold>{albumInfo?.name}</ModalTitle>
             <ModalDescription>{albumInfo?.description}</ModalDescription>

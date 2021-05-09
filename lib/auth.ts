@@ -25,6 +25,10 @@ export const getAuthCookie = () => {
   return Cookies.get(AUTH_COOKIE_KEY) || "";
 };
 
+export const setAuthCookie = (value: string) => {
+  return Cookies.set(AUTH_COOKIE_KEY, value);
+};
+
 export const setCookies = (cookieString: string) => {
   const cookies = cookieString.split(";;");
   cookies.forEach((cookie) => (document.cookie = cookie));

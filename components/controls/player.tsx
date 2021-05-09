@@ -445,7 +445,9 @@ const Player: React.FC<PlayerProps> = ({}) => {
                 marginX={2}
                 onClick={handleShowSonglist}
               >
-                <SmallText bold>{songlistInfo.trackCount}</SmallText>
+                <SmallText bold>
+                  {songlistInfo.trackCount || songlistInfo.size}
+                </SmallText>
               </Button>
             </MobileSonglistButton>
           </Control>

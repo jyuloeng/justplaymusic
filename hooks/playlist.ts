@@ -6,17 +6,24 @@ import {
   MUTATE_LIKED_LIST,
   QUERY_PERSONALIZED_PLAYLIST,
   QUERY_PLAYLIST_DETAIL,
+  QUERY_TOP_PLAYLIST,
 } from "../lib/const";
 import { useSong } from "./index";
 import { isTrackPlayable } from "../lib/util";
-import { useAppDispatch } from "../store";
-import { setLikedList } from "../store/slice/user.slice";
 
 interface QueryPersonalizedPlaylistResponse {
   code?: number;
   category?: number;
   hasTaste?: boolean;
   result?: any[];
+}
+
+interface QueryTopPlaylistResponse {
+  code?: number;
+  cat?: string;
+  more?: boolean;
+  playlists?: any[];
+  total?: number;
 }
 
 interface QueryPlaylistDetailResponse {
@@ -26,6 +33,7 @@ interface QueryPlaylistDetailResponse {
   playlist?: any;
   privileges?: any[];
 }
+
 interface QueryPlaylistDetailParams {
   id?: string | number;
   limit?: number;
@@ -35,6 +43,11 @@ interface QueryPlaylistDetailParams {
 interface BaseQueryParams {
   limit?: number;
   offset?: number;
+}
+
+interface QueryTopPlaylistParams extends BaseQueryParams {
+  order?: string;
+  cat?: string;
 }
 
 export const useQueryPersonalizedPlaylist = (params?: BaseQueryParams) => {
@@ -57,7 +70,14 @@ export const usePersonalizedPlaylist = (params?: BaseQueryParams) => {
     if (data) {
       const { code, result } = data;
       if (code === 200) {
-        setPersonalizedPlaylist(result);
+        const formatSongs = result.map((song) => {
+          return {
+            ...song,
+            ...isTrackPlayable(song),
+          };
+        });
+
+        setPersonalizedPlaylist(formatSongs);
       }
     }
   }, [data, setPersonalizedPlaylist]);
@@ -65,6 +85,41 @@ export const usePersonalizedPlaylist = (params?: BaseQueryParams) => {
   return {
     personalizedPlaylist,
     setPersonalizedPlaylist,
+    data,
+    ...queryProps,
+  };
+};
+
+export const useQueryTopPlaylist = (params?: QueryTopPlaylistParams) => {
+  return useQuery<QueryTopPlaylistResponse>(
+    [QUERY_TOP_PLAYLIST.KEY, { params }],
+    () =>
+      request.get(QUERY_TOP_PLAYLIST.URL, {
+        params,
+      }),
+    {
+      enabled: Boolean(params.cat),
+    }
+  );
+};
+
+export const useTopPlaylist = (params?: QueryTopPlaylistParams) => {
+  const [playlists, setPlaylists] = useState([]);
+
+  const { data, ...queryProps } = useQueryTopPlaylist(params);
+
+  useEffect(() => {
+    if (data) {
+      const { code } = data;
+      if (code === 200) {
+        setPlaylists(data.playlists);
+      }
+    }
+  }, [data, setPlaylists]);
+
+  return {
+    playlists,
+    setPlaylists,
     data,
     ...queryProps,
   };
@@ -129,7 +184,7 @@ export const usePlaylistDetail = (params: QueryPlaylistDetailParams) => {
     });
 
     setPlaylistSongs((value) => [...value, ...formatSongs]);
-  }, [songs]);
+  }, [songs, setPlaylistSongs]);
 
   return {
     playlistInfo,

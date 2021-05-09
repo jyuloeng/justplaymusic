@@ -43,3 +43,6 @@ export { default as IconPhone } from "./phone";
 export { default as IconEarth } from "./earth";
 export { default as IconClose } from "./close";
 export { default as IconLyric } from "./lyric";
+export { default as IconSignIn } from "./signin";
+export { default as IconSignOut } from "./signout";
+export { default as IconZone } from "./zone";

@@ -10,10 +10,27 @@ import {
   ContextMenuItem,
   ContextMenuPosition,
 } from "../components/menus";
-import { useAppSelector } from "../store";
-import { selectUser } from "../store/slice/user.slice";
-import { IconGithub, IconSetting } from "../styles/icons";
-import { isLogin } from "../lib/auth";
+import { useAppDispatch, useAppSelector } from "../store";
+import {
+  selectUser,
+  setLoginMode,
+  setToken,
+  setUser,
+} from "../store/slice/user.slice";
+import {
+  IconGithub,
+  IconSetting,
+  IconSignIn,
+  IconSignOut,
+  IconZone,
+} from "../styles/icons";
+import {
+  isLogin,
+  removeLocalUser,
+  setAuthCookie,
+  setLocalUser,
+} from "../lib/auth";
+import { useMutateUserLogout } from "../hooks";
 
 export interface HeaderProps {}
 
@@ -22,6 +39,9 @@ const islogin = isLogin();
 const Header: React.FC<HeaderProps> = () => {
   const { t } = useTranslation("common");
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const { mutateAsync: mutateAsyncLogout } = useMutateUserLogout();
 
   const menu: MenuItem[] = [
     {
@@ -56,7 +76,7 @@ const Header: React.FC<HeaderProps> = () => {
       ? {
           key: "zone",
           title: "空间",
-          icon: <IconSetting />,
+          icon: <IconZone />,
           onClick: () => {
             setContextMenuVisible(false);
             router.push("/zone");
@@ -66,14 +86,33 @@ const Header: React.FC<HeaderProps> = () => {
     {
       key: islogin ? "logout" : "login",
       title: islogin ? "登出" : "登录",
-      icon: <IconSetting />,
-      onClick: () => console.log("login"),
+      icon: islogin ? <IconSignOut /> : <IconSignIn />,
+      onClick: () => {
+        setContextMenuVisible(false);
+        if (islogin) {
+          mutateAsyncLogout({});
+          dispatch(setUser(null));
+          dispatch(setToken(""));
+          dispatch(setLoginMode(""));
+          removeLocalUser();
+          setAuthCookie("");
+          router.push("/");
+        } else {
+          router.push("/login");
+        }
+      },
     },
     {
       key: "github",
       title: "Github",
       icon: <IconGithub />,
-      onClick: () => console.log("github"),
+      onClick: () => {
+        setContextMenuVisible(false);
+        const a = document.createElement("a");
+        a.href = "https://github.com/oddii";
+        a.target = "_blank";
+        a.click();
+      },
     },
   ];
 

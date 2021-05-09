@@ -53,7 +53,7 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
     if (document.body.clientWidth - pageX < 196) {
       pageX = pageX - 196;
     }
-    pageY = pageY - 200;
+    pageY = pageY - 800;
     setMoreActionMenuPostion({
       left: pageX,
       top: pageY,
@@ -133,8 +133,8 @@ const PlaylistDrawerMenu: React.FC<PlaylistDrawerMenuProps> = ({
               album={song?.song?.album?.name || song?.al?.name}
               albumId={song?.song?.album?.id || song?.al?.id}
               duration={song?.song?.duration || song?.dt}
-              isLike={likedList?.includes(song?.id)}
-              onLikeClick={() => onLikeClick(song?.id)}
+              isLike={likedList?.includes(song.id)}
+              onLikeClick={() => onLikeClick(song.id)}
               onDblClick={() => handleOnDblClick(song)}
               onContextMenuClick={(e) => handleOnContextMenuClick(e, song)}
             />

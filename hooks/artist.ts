@@ -10,6 +10,7 @@ import {
   QUERY_SIMI_ARTIST,
   QUERY_TOP_ARTISTS,
 } from "../lib/const";
+import { isTrackPlayable } from "../lib/util";
 
 interface BaseQueryParams {
   id?: string;
@@ -27,7 +28,7 @@ interface QueryArtistResponse {
   code?: number;
   artist?: object;
   more?: boolean;
-  hotSongs?: unknown[];
+  hotSongs?: any[];
 }
 
 interface QueryArtistMVResponse {
@@ -82,8 +83,15 @@ export const useArtist = (id?: string) => {
     if (data) {
       const { code, artist, hotSongs } = data;
       if (code === 200) {
+        const formatSongs = hotSongs.map((song) => {
+          return {
+            ...song,
+            ...isTrackPlayable(song),
+          };
+        });
+
         setArtist(artist);
-        setHotSongs(hotSongs);
+        setHotSongs(formatSongs);
       } else {
         setErrorMsg(data);
         toast(`🦄 ${data}`);

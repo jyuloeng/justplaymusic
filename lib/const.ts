@@ -53,6 +53,11 @@ export const QUERY_SONG = {
   URL: "/song/detail",
 };
 
+export const QUERY_TOP_PLAYLIST = {
+  KEY: "QUERY_TOP_PLAYLIST",
+  URL: "/top/playlist",
+};
+
 export const QUERY_PLAYLIST_DETAIL = {
   KEY: "QUERY_PLAYLIST_DETAIL",
   URL: "/playlist/detail",
@@ -106,6 +111,11 @@ export const MUTATE_USER_LOGIN_BY_PHONE = {
 export const MUTATE_USER_LOGIN_BY_EMAIL = {
   KEY: "MUTATE_USER_LOGIN_BY_EMAIL",
   URL: "/login",
+};
+
+export const MUTATE_USER_LOGOUT = {
+  KEY: "MUTATE_USER_LOGOUT",
+  URL: "/logout",
 };
 
 export const QUERY_RECOMMEND_SONGS = {
